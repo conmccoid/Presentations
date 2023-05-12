@@ -1,0 +1,898 @@
+<!doctype html>
+<html lang="en">
+
+    <head>
+        <meta charset="utf-8">
+
+        <title>Extrapolation as nonlinear Krylov methods</title>
+
+        <link rel="stylesheet" href="dist/reset.css">
+        <link rel="stylesheet" href="dist/reveal.css">
+        <link rel="stylesheet" href="dist/theme/white.css" id="theme">
+
+        <link rel="stylesheet" href="plugin/highlight/monokai.css">
+
+        <style id="span-fix" type="text/css">
+            
+        h1 span {
+            display:inline-block;
+        }
+        </style>
+    </head>
+
+    <body>
+        <div class="reveal">
+            <div class="slides">
+
+                <section>
+                    <h3>Extrapolation methods as nonlinear Krylov subspace methods</h3>
+
+                    <p>Conor McCoid</p>
+                    <p><small>Université Laval</small></p>
+
+                    <p><small>Completed under the supervision of Martin J. Gander at the Université de Genève</small></p>
+                    <img src="FIG/ULaval-C.png" height="105" width="255">
+                    <img src="FIG/UNIGE70.gif" height="105" width="300">
+                </section>
+
+                <section>
+                    <section>
+                        <h3>Extrapolation methods</h3>
+                    </section>
+
+                    <section>
+                        <p>What are extrapolation methods?</p>
+                        <img src="FIG/Extrapolation_example.png">
+                    </section>
+
+                    <section>
+                        <p>Extrapolation methods seek the limits of nonlinear vector sequences.</p>
+                        \[ \vec{x}_0, \ \vec{x}_{1}, \ \dots, \ \vec{x}_{n} \to \vec{x} \]
+
+                        <p class="fragment">These sequences can be slow, so we want to accelerate them with extrapolation methods.</p>
+                    </section>
+                    
+                    <section>
+                        <p>We create a new sequence with the same limit:
+                        \[ \hat{\vec{x}}_{0,1}, \ \hat{\vec{x}}_{1,1}, \ \dots, \ \hat{\vec{x}}_{n,1} \to \vec{x} \]
+                        where $\hat{\vec{x}}_{i,1} \in \text{span} \{ \vec{x}_i, \vec{x}_{i+1} \}$.
+                        </p>
+
+                        <p class="fragment">In general, we can construct the sequence $\set{ \hat{\vec{x}}_{n,k} }$ where
+                            \[ \hat{\vec{x}}_{n,k} \in \text{span} \{ \vec{x}_n, \vec{x}_{n+1}, \dots, \vec{x}_{n+k} \}. \]
+                        </p>
+                    </section>
+
+                    <section data-auto-animate>
+                        <p data-id="eq1">
+                            $\hat{\vec{x}}_{n,k} =$
+                        </p>
+                        <p>
+                            $\sum_{i=0}^k u_i \vec{x}_{n+i}$,
+                        </p>
+                        <p>
+                            where $\sum u_i = 1$.
+                        </p>
+                    </section>
+                    <section data-auto-animate>
+                        <p data-id="eq1">
+                            $\hat{\vec{x}}_{n,k} =$
+                        </p>
+                        <p>
+                            $\begin{bmatrix} \vec{x}_n & \vec{x}_{n+1} & \dots & \vec{x}_{n+k} \end{bmatrix} \begin{bmatrix} u_0 \\ u_1 \\ \vdots \\ u_k \end{bmatrix}$,
+                        </p>
+                        <p>
+                            where $\sum u_i = 1$.
+                        </p>
+                    </section>
+                    <section data-auto-animate>
+                        <p data-id="eq1">
+                            $\hat{\vec{x}}_{n,k} =$
+                        </p>
+                        <p>
+                            $X_{n,k} \vec{u}$,
+                        </p>
+                        <p>
+                            where $\vec{1}^\top \vec{u} = 1$.
+                        </p>
+                    </section>
+
+                    <section>
+                        <p>How do we choose $\vec{u}$?</p>
+                        <p class="fragment">
+                            Suppose there is a $\vec{u}$ such that $\hat{\vec{x}}_{n,k} = \vec{x}$, the limit.
+Then $\vec{x}$ is in the column space of $X_{n,k}$.
+                        </p>
+                        <p class="fragment">
+                            Suppose $\vec{x}$ is also in the column space of $X_{n+1,k}$, which happens as $\vec{x}_n$ approaches $\vec{x}$.
+                            Then \[	0 = \vec{x} - \vec{x} = (X_{n+1,k} - X_{n,k}) \vec{u} .\]
+                        </p>
+                    </section>
+                    <section>
+                        <p>
+                            Then $\vec{u}$ is the solution of the system
+                            \[\begin{bmatrix} 1 & \dots & 1 \\ \vec{x}_{n+1} - \vec{x}_n & \dots & \vec{x}_{n+k+1} - \vec{x}_{n+k} \end{bmatrix} \vec{u} = \begin{bmatrix} 1 \\ \vec{0} \end{bmatrix}.\]
+                        </p>
+                        <p class="fragment">
+                            This system is only square if $\vec{x} \in \mathbb{R}^k$.
+                            Otherwise, the system is overdetermined.
+                        </p>
+                    </section>
+                    <section>
+                        <p>
+                            Instead, we solve the system
+                        </p>
+                        <p>
+                            \[\begin{bmatrix} 1 & \dots & 1 \\ \vec{v}_1^\top (\vec{x}_{n+1} - \vec{x}_n) & \dots & \vec{v}_1^\top (\vec{x}_{n+k+1} - \vec{x}_{n+k}) \\ \vdots & & \vdots \\ \vec{v}_k^\top (\vec{x}_{n+1} - \vec{x}_n) & \dots & \vec{v}_k^\top (\vec{x}_{n+k+1} - \vec{x}_{n+k}) \end{bmatrix} \vec{u} = \begin{bmatrix} 1 \\ 0 \\ \vdots \\ 0 \end{bmatrix}.\]
+                        </p>
+                        <p>
+                            for some linearly independent vectors $ \{ \vec{v}_i \}_{i=1}^k$.
+                        </p>
+                        <p>
+                            Note that $X_{n,k} \vec{u} \bot \vec{v}_i$ as a consequence.
+                        </p>
+                    </section>
+                    <section>
+                        <p>
+                            This has the solution (thanks to Cramer's rule)
+                        </p>
+                        <p class="r-fit-text">
+                            \[
+                            u_i = \frac{ 
+                                \begin{vmatrix} \dots & 0 & 1 & 0 & \dots \\ \dots & \vec{v}_1^\top (\vec{x}_{n+i} - \vec{x}_{n+i-1}) & 0 & \vec{v}_1^\top (\vec{x}_{n+i+2} - \vec{x}_{n+i+1}) & \dots \\ & \vdots & \vdots & \vdots & \\ \dots & \vec{v}_k^\top (\vec{x}_{n+i} - \vec{x}_{n+i-1}) & 0 & \vec{v}_k^\top (\vec{x}_{n+i+2} - \vec{x}_{n+i+1}) & \dots \end{vmatrix} }{
+                                \begin{vmatrix} 1 & \dots & 1 \\ \vec{v}_1^\top (\vec{x}_{n+1} - \vec{x}_n) & \dots & \vec{v}_1^\top (\vec{x}_{n+k+1} - \vec{x}_{n+k}) \\ \vdots & & \vdots \\ \vec{v}_k^\top (\vec{x}_{n+1} - \vec{x}_n) & \dots & \vec{v}_k^\top (\vec{x}_{n+k+1} - \vec{x}_{n+k}) \end{vmatrix} } .
+                            \]
+                        </p>
+                    </section>
+                    <section>
+                        <p>Then $X_{n,k} \vec{u}$ is equal to</p>
+                        <p class="r-fit-text">
+                            \[
+                            \hat{\vec{x}}_{n,k} = \frac{ \begin{vmatrix}
+                            \vec{x}_n & \dots & \vec{x}_{n+k} \\
+                            \vec{v}_1^\top (\vec{x}_{n+1} - \vec{x}_n) & \dots & \vec{v}_1^\top (\vec{x}_{n+k+1} - \vec{x}_{n+k}) \\
+                            \vdots & & \vdots \\
+                            \vec{v}_k^\top (\vec{x}_{n+1} - \vec{x}_n) & \dots & \vec{v}_k^\top (\vec{x}_{n+k+1} - \vec{x}_{n+k}) \end{vmatrix}}{ \begin{vmatrix}
+                            1 & \dots & 1 \\
+                            \vec{v}_1^\top (\vec{x}_{n+1} - \vec{x}_n) & \dots & \vec{v}_1^\top (\vec{x}_{n+k+1} - \vec{x}_{n+k}) \\
+                            \vdots & & \vdots \\
+                            \vec{v}_k^\top (\vec{x}_{n+1} - \vec{x}_n) & \dots & \vec{v}_k^\top (\vec{x}_{n+k+1} - \vec{x}_{n+k}) \end{vmatrix}} .
+
+                            \]
+                        </p>
+                    </section>
+                    <section>
+                        <p>
+                            The numerator is a generalized determinant.
+                            Each vector in the first row is multiplied by the determinant of the submatrix formed by removing the first row and the vector's column:
+                        </p>
+                        <p>
+                            \[
+                            \begin{vmatrix} \vec{s}_0 & \dots & \vec{s}_k \\ \vec{t}_0 & \dots & \vec{t}_k \end{vmatrix} =
+                            \sum_{i=0}^k (-1)^i \vec{s}_i \begin{vmatrix} \vec{t}_0 & \dots & \vec{t}_{i-1} & \vec{t}_{i-1} & \dots & \vec{t}_k \end{vmatrix} .
+                            \]
+                        </p>
+                    </section>
+
+                    <section>
+                        <h4>Aitken's delta-squared process</h4>
+                        <p>
+                            Suppose $\{ x_n \} \subset \mathbb{R}$ (a sequence of scalars).
+                            Then an accelerated sequence is 
+                        </p>
+                        <p>
+                            \[ \begin{align*}
+                            \hat{x}_{n,1} = & \frac{
+                                \begin{vmatrix} x_n & x_{n+1} \\ (x_{n+1} - x_n) & (x_{n+2} - x_{n+1}) \end{vmatrix}
+                            }{
+                                \begin{vmatrix} 1 & 1 \\ (x_{n+1} - x_n) & (x_{n+2} - x_{n+1}) \end{vmatrix}
+                            } \\
+                                = & \frac{ x_n x_{n+2} - x_{n+1}^2 }{(x_{n+2} - x_{n+1}) - (x_{n+1} - x_n)} .
+                                \end{align*}
+                            \]
+                        </p>
+                    </section>
+
+                    <section data-auto-animate>
+                        <h4>Minimal polynomial extrapolation (MPE)</h4>
+                        <p>Back to vectors, suppose $\vec{v}_i = \vec{x}_{n+i} - \vec{x}_{n+i-1}$.</p>
+                        
+                        <p class="r-fit-text">
+                            \[
+                            \hat{\vec{x}}_{n,k} = \frac{ \begin{vmatrix}
+                            \vec{x}_n & \dots & \vec{x}_{n+k} \\
+                            (\vec{x}_{n+1} - \vec{x}_n)^\top (\vec{x}_{n+1} - \vec{x}_n) & \dots & (\vec{x}_{n+1} - \vec{x}_n)^\top (\vec{x}_{n+k+1} - \vec{x}_{n+k}) \\
+                            \vdots & & \vdots \\
+                            (\vec{x}_{n+k} - \vec{x}_{n+k-1})^\top (\vec{x}_{n+1} - \vec{x}_n) & \dots & (\vec{x}_{n+k} - \vec{x}_{n+k-1})^\top (\vec{x}_{n+k+1} - \vec{x}_{n+k}) \end{vmatrix}}{ \begin{vmatrix}
+                            1 & \dots & 1 \\
+                            (\vec{x}_{n+1} - \vec{x}_n)^\top (\vec{x}_{n+1} - \vec{x}_n) & \dots & (\vec{x}_{n+1} - \vec{x}_n)^\top (\vec{x}_{n+k+1} - \vec{x}_{n+k}) \\
+                            \vdots & & \vdots \\
+                            (\vec{x}_{n+k} - \vec{x}_{n+k-1})^\top (\vec{x}_{n+1} - \vec{x}_n) & \dots & (\vec{x}_{n+k} - \vec{x}_{n+k-1})^\top (\vec{x}_{n+k+1} - \vec{x}_{n+k}) \end{vmatrix}} .
+                            \]
+                        </p>
+                    </section>
+                    <section data-auto-animate>
+                        <p class="r-fit-text">
+                            \[
+                            \hat{\vec{x}}_{n,k} = \frac{ \begin{vmatrix}
+                            \vec{x}_n & \dots & \vec{x}_{n+k} \\
+                            (\vec{x}_{n+1} - \vec{x}_n)^\top (\vec{x}_{n+1} - \vec{x}_n) & \dots & (\vec{x}_{n+1} - \vec{x}_n)^\top (\vec{x}_{n+k+1} - \vec{x}_{n+k}) \\
+                            \vdots & & \vdots \\
+                            (\vec{x}_{n+k} - \vec{x}_{n+k-1})^\top (\vec{x}_{n+1} - \vec{x}_n) & \dots & (\vec{x}_{n+k} - \vec{x}_{n+k-1})^\top (\vec{x}_{n+k+1} - \vec{x}_{n+k}) \end{vmatrix}}{ \begin{vmatrix}
+                            1 & \dots & 1 \\
+                            (\vec{x}_{n+1} - \vec{x}_n)^\top (\vec{x}_{n+1} - \vec{x}_n) & \dots & (\vec{x}_{n+1} - \vec{x}_n)^\top (\vec{x}_{n+k+1} - \vec{x}_{n+k}) \\
+                            \vdots & & \vdots \\
+                            (\vec{x}_{n+k} - \vec{x}_{n+k-1})^\top (\vec{x}_{n+1} - \vec{x}_n) & \dots & (\vec{x}_{n+k} - \vec{x}_{n+k-1})^\top (\vec{x}_{n+k+1} - \vec{x}_{n+k}) \end{vmatrix}} .
+                            \]
+                        </p>
+                        <p>This is essentially the solution to the normal equations, meaning the new sequence is a series of least-squares solutions who are orthogonal to each other.</p>
+                    </section>
+
+                    <section data-auto-animate>
+                        <h4>Topological epsilon-algorithm (TEA)</h4>
+                        <p>
+                            Recall that we found $\vec{u}$ by assuming \[(X_{n+1,k} - X_{n,k}) \vec{u} = 0.\]
+                        </p>
+                        <p class="fragment">
+                            Suppose $(X_{n+i+1,k} - X_{n+i,k}) \vec{u}=0$ for many $i$.
+                        </p>
+                    </section>
+                    <section data-auto-animate>
+                        <p>
+                            Suppose $(X_{n+i+1,k} - X_{n+i,k}) \vec{u}=0$ for many $i$.
+                        </p>
+                        <p>
+                            Then $\vec{u}$ solves
+                        </p>
+                        <p class="r-fit-text">
+                            \[
+                            \begin{bmatrix} 1 & \dots & 1 \\ \vec{v}^\top (\vec{x}_{n+1} - \vec{x}_n) & \dots & \vec{v}^\top (\vec{x}_{n+k+1} - \vec{x}_{n+k}) \\ \vdots & & \vdots \\ \vec{v}^\top (\vec{x}_{n+k} - \vec{x}_{n+k-1}) & \dots & \vec{v}^\top (\vec{x}_{n+2k} - \vec{x}_{n+2k-1}) \end{bmatrix} \vec{u} = \begin{bmatrix} 1 \\ 0 \\ \vdots \\ 0 \end{bmatrix},
+                            \]
+                        </p>
+                        <p>
+                            for some $\vec{v}$.
+                        </p>
+                    </section>
+                </section>
+
+                <section>
+                    <section>
+                        <h3>Krylov subspace methods</h3>
+                    </section>
+
+                    <section data-auto-animate="">
+                        <p>Krylov subspace methods solve linear systems \[A \vec{x} = \vec{b}, \ A \in \mathbb{R}^{d \times d}, \] by searching for solutions in Krylov subspaces,</p>
+                        <p>
+                            \[
+                            \hat{\vec{x}}_k \in \text{span} \{ \vec{b}, A \vec{b}, \dots, A^{k-1} \vec{b} \} = \mathcal{K}_k(A,\vec{b}).
+                            \]
+                        </p>
+                    </section>
+                    <section data-auto-animate="">
+                        <p>
+                            \[
+                            \hat{\vec{x}}_k \in \text{span} \{ \vec{b}, A \vec{b}, \dots, A^{k-1} \vec{b} \} = \mathcal{K}_k(A,\vec{b}).
+                            \]
+                        </p>
+                        <p>
+                            Suppose $A^k \vec{b} \in \mathcal{K}_k(A,\vec{b})$, so that $\mathcal{K}_{k+1}(A,\vec{b}) = \mathcal{K}_k(A,\vec{b})$.
+                            Then
+                        </p>
+                        <p class="fragment">
+                            \[
+                            u_k A^k \vec{b} = u_0 \vec{b} + u_1 A \vec{b} + \dots + u_{k-1} A^{k-1} \vec{b}
+                            \]
+                        </p>
+                    </section>
+                    <section data-auto-animate>
+                        <p>
+                            \[
+                            u_k A^k \vec{b} = u_0 \vec{b} + u_1 A \vec{b} + \dots + u_{k-1} A^{k-1} \vec{b}
+                            \]
+                        </p>
+                        <p>
+                            \[
+                            A^{-1} \vec{b} = \frac{u_k}{u_0} A^{k-1} \vec{b} - \frac{u_1}{u_0} \vec{b} - \dots - \frac{u_{k-1}}{u_0} A^{k-2} \vec{b}
+                            \]
+                        </p>
+                    </section>
+                    <section data-auto-animate>
+                        <p>
+                            \[
+                            A^{-1} \vec{b} = \frac{u_k}{u_0} A^{k-1} \vec{b} - \frac{u_1}{u_0} \vec{b} - \dots - \frac{u_{k-1}}{u_0} A^{k-2} \vec{b}
+                            \]
+                        </p>
+                        <p>
+                            \[
+                            \vec{x} = \frac{u_k}{u_0} A^{k-1} \vec{b} - \frac{u_1}{u_0} \vec{b} - \dots - \frac{u_{k-1}}{u_0} A^{k-2} \vec{b}
+                            \]
+                        </p>
+                    </section>
+                    <section data-auto-animate>
+                        <p>
+                            \[
+                            \vec{x} = \frac{u_k}{u_0} A^{k-1} \vec{b} - \frac{u_1}{u_0} \vec{b} - \dots - \frac{u_{k-1}}{u_0} A^{k-2} \vec{b}
+                            \]
+                        </p>
+                        <p>
+                            \[
+                            \vec{x} \in \mathcal{K}_k(A,\vec{b})
+                            \]
+                        </p>
+                    </section>
+
+                    <section>
+                        <p>
+                            Since $A \in \mathbb{R}^{d \times d}$, it is certainly true that \[A^d \vec{b} \in \mathcal{K}_d(A,\vec{b}).\]
+                            There is a finite number of vectors $A^k \vec{b}$ to find.
+                        </p>
+                    </section>
+                    
+                    <section data-auto-animate>
+                        <p>
+                            Over the course of Krylov methods, we create linear vector sequences $\vec{x}_{n+1} = A \vec{x}_n$.
+                            From these, we find a new sequence:
+                        </p>
+                        <p class="fragment">
+                            \[
+                            \hat{\vec{x}}_k \in \text{span} \{\vec{x}_1, \dots, \vec{x}_k \} = \mathcal{K}_k(A,\vec{x}_1).
+                            \]
+                        </p>
+                    </section>
+                    <section data-auto-animate>
+                        <p>
+                            \[
+                            \hat{\vec{x}}_k \in \text{span} \{\vec{x}_1, \dots, \vec{x}_k \} = \mathcal{K}_k(A,\vec{x}_1).
+                            \]
+                        </p>
+                        <p>
+                            These vectors might be nearly linearly dependent, meaning we could run into numerical error.
+                        </p>
+                        <p class="fragment">
+                            We construct the vectors such that $\hat{\vec{x}}_k \bot \hat{\vec{x}}_j$ for all $j \neq k$, for some inner product.
+                            Then we normalize wrt the induced norm.
+                        </p>
+                        <p class="fragment">
+                            We then want $\hat{\vec{x}}_k$ to be the best solution in $\mathcal{K}_k(A,\vec{x}_1)$ wrt the induced norm.
+                        </p>
+                    </section>
+
+                    <section data-auto-animate>
+                        <h4>General minimal residual (GMRES)</h4>
+                        <p>
+                            Start with the unit vector $\vec{x}_1=\vec{b}/\Vert \vec{b} \Vert$.
+                        </p>
+                        <p class="fragment">
+                            Find $\vec{x}_2 := A \vec{x}_1$. 
+                            Remove the part of $\vec{x}_2$ in the direction of $\vec{x}_1$: 
+                        </p>
+                        <p class="fragment">
+                            \[h_{1,2} = \langle \vec{x}_2, \vec{x}_1 \rangle, \ \vec{x}_2 = \vec{x}_2 - h_{1,2} \vec{x}_1. \]
+                        </p>
+                        <p class="fragment">
+                            Then normalize:
+                        </p>
+                        <p class="fragment">
+                            \[h_{2,2} = \Vert \vec{x}_2 \Vert, \ \vec{x}_2 = \vec{x}_2 / h_{2,2} . \]
+                        </p>
+                    </section>
+                    <section data-auto-animate>
+                        <p>
+                            \[h_{1,2} = \langle \vec{x}_2, \vec{x}_1 \rangle, \ \vec{x}_2 = \vec{x}_2 - h_{1,2} \vec{x}_1. \]
+                        </p>
+                        <p>
+                            \[h_{2,2} = \Vert \vec{x}_2 \Vert, \ \vec{x}_2 = \vec{x}_2 / h_{2,2} . \]
+                        </p>
+                        <p>
+                            Then we can write
+                            \[A \vec{x}_1 = h_{1,2} \vec{x}_1 + h_{2,2} \vec{x}_2. \]
+                        </p>
+                    </section>
+                    <section data-auto-animate>
+                        <p>
+                            Then we can write
+                            \[A \vec{x}_1 = h_{1,2} \vec{x}_1 + h_{2,2} \vec{x}_2. \]
+                        </p>
+                        <p>
+                            If we repeat this $k$ times, we'll arrive at
+                        </p>
+                        <p>
+                            \[A X_{1,k-1} = X_{1,k} H_k \]
+                        </p>
+                        <p>
+                            where $H_k$ is a Hessenberg matrix and $X_{1,k}$ is orthonormal.
+                        </p>
+                    </section>
+                    <section data-auto-animate>
+                        <p>
+                            \[A X_{1,k-1} = X_{1,k} H_k \]
+                        </p>
+                        <p>
+                            We want to minimize $\Vert A \vec{x} - \vec{b} \Vert$ for some $\vec{x}$ in $\mathcal{K}_{k-1}(A,\vec{b})$.
+                        </p>
+                        <p>
+                            \[ \min \Vert A X_{1,k-1} \vec{u} - \vec{b} \Vert = \]
+                        </p>
+                        <p class="fragment">
+                            \[ \min \left \Vert X_{1,k} H_k \vec{u} - X_{1,k} \begin{bmatrix} \Vert \vec{b} \Vert \\ 0 \\ \vdots \\ 0 \end{bmatrix} \right \Vert \]
+                        </p>
+                    </section>
+                    <section data-auto-animate>
+                        <p>
+                            \[ \min \left \Vert X_{1,k} H_k \vec{u} - X_{1,k} \begin{bmatrix} \Vert \vec{b} \Vert \\ 0 \\ \vdots \\ 0 \end{bmatrix} \right \Vert \]
+                        </p>
+                        <p>
+                            \[ = \min \Vert H_k \vec{u} - \Vert \vec{b} \Vert \vec{e}_1 \Vert \]
+                        </p>
+                        <p class="fragment">
+                            \[ H_k^\top H_k \vec{u} = \Vert \vec{b} \Vert H_k^\top \vec{e}_1\]
+                        </p>
+                    </section>
+                    <section>
+                        <p>
+                            GMRES uses the Arnoldi iteration, usually with Householder reflections, to orthogonalize the Krylov subspace.
+                        </p>
+                        <p>
+                            Then it uses Givens rotations to solve the normal equations of the Hessenberg matrix.
+                        </p>
+                    </section>
+
+                    <section data-auto-animate>
+                        <h4>Equivalence between MPE and GMRES</h4>
+                        <p>
+                            When MPE is applied to a linear sequence, $\vec{x}_{n+1} = (A+I) \vec{x}_n - \vec{b}$, then
+                        </p>
+                        <p class="fragment">
+                            \[ \begin{align*}
+                            \vec{x}_{n+2} - \vec{x}_{n+1} = & (A+I) \vec{x}_{n+1} - \vec{b} - (A+I) \vec{x}_n + \vec{b} \\
+                                = & (A+I) (\vec{x}_{n+1} - \vec{x}_n), \\
+                            \vec{x}_{n+1} - \vec{x}_n = & (A+I) \vec{x}_{n} - \vec{b} - \vec{x}_n \\
+                                = & A \vec{x}_n - \vec{b}.
+                            \end{align*} \]
+                        </p>
+                    </section>
+                    <section data-auto-animate>
+                        <p>
+                            \[ \begin{align*}
+                            \vec{x}_{n+2} - \vec{x}_{n+1} = & (A+I) \vec{x}_{n+1} - \vec{b} - (A+I) \vec{x}_n + \vec{b} \\
+                                = & (A+I) (\vec{x}_{n+1} - \vec{x}_n), \\
+                            \vec{x}_{n+1} - \vec{x}_n = & (A+I) \vec{x}_{n} - \vec{b} - \vec{x}_n \\
+                                = & A \vec{x}_n - \vec{b}.
+                            \end{align*} \]
+                        </p>
+                        <p>
+                             Thus, the norm MPE minimizes is $\Vert A \vec{x} - \vec{b} \Vert$
+                             and $(\vec{x}_{n+k} - \vec{x}_{n+k-1}) \in \mathcal{K}_k(A+I,\vec{x}_{n+1}-\vec{x}_n)$.
+                        </p>
+                    </section>
+                    <section data-auto-animate>
+                        <p>
+                            Thus, the norm MPE minimizes is $\Vert A \vec{x} - \vec{b} \Vert$
+                            and $(\vec{x}_{n+k} - \vec{x}_{n+k-1}) \in \mathcal{K}_k(A+I,\vec{x}_{n+1}-\vec{x}_n)$.
+                       </p>
+                       <p>
+                            Since $\hat{\vec{x}}_{n,k} \bot (\vec{x}_{n+i+1} - \vec{x}_{n+i})$ for all $i < k$,
+                            the search directions of MPE are identical to those from GMRES.
+                       </p>
+                       <p class="fragment">
+                            The residual then decreases identically to GMRES.
+                       </p>
+                    </section>
+
+                    <section data-auto-animate>
+                        <pre data-id="GMRES"><code class="hljs matlab stretch" data-trim data-line-numbers="|1, 8, 16-17"><script type="text/template">
+                            function x=GMRES(A,b,x0)
+                                n=length(b);
+                                Q=zeros(n); H=zeros(n+1,n);
+
+                                r=A * x0 - b;
+                                Q(:,1)=r/norm(r);
+                                for k=1:n-1
+                                    y=A * Q(:,k);
+                                    for j=1:k-1
+                                        H(j,k)=Q(:,j)' * y;
+                                        y=y - H(j,k) * Q(:,j);
+                                    end 
+                                    H(k+1,k)=norm(y);
+                                    Q(:,k+1)=y/H(k+1,k);
+                                end
+                                u=H \ norm(r) * eye(n,1);
+                                x=Q * u + x0;
+                            end
+                        </script></code></pre>
+                    </section>
+                    <section data-auto-animate>
+                        <pre data-id="GMRES"><code class="hljs matlab stretch" data-trim data-line-numbers="1, 7, 9-10, 18-19|"><script type="text/template">
+                            function x=MPE(A,b,x0)
+                                n=length(b);
+                                Q=zeros(n); H=zeros(n+1,n);
+
+                                r=A * x0 - b;
+                                Q(:,1)=r/norm(r);
+                                X(:,1)=x0;
+                                for k=1:n-1
+                                    X(:,k+1)=(A+eye(n)) * X(:,k) - b;
+                                    y=x1-x0;
+                                    for j=1:k-1
+                                        H(j,k)=Q(:,j)' * y;
+                                        y=y - H(j,k) * Q(:,j);
+                                    end 
+                                    H(k+1,k)=norm(y);
+                                    Q(:,k+1)=y/H(k+1,k);
+                                end
+                                u=[ones(1,n); H] \ eye(n,1);
+                                x=X * u;
+                            end
+                        </script></code></pre>
+                    </section>
+
+                    <section>
+                        <h4>Biconjugate gradient (BiCG)</h4>
+                        <p>BiCG uses Lanczos biorthogonalization to make</p>
+                        <p>
+                            \[
+                            \vec{q}_k^\top \vec{p}_j = 0 \ \forall j < k ,
+                            \]
+                            such that $\vec{q}_k$ and $\vec{p_j}$ are in two different Krylov subspaces.
+                        </p>
+                    </section>
+                    <section data-auto-animate>
+                        <h4>Equivalence between BiCG and TEA</h4>
+                        <p>
+                            Apply TEA to the same linear sequence from before, \[\vec{x}_{n+1} = (A+I) \vec{x}_n - \vec{b}.\]
+                        </p>
+                        <p class="fragment">
+                            As before,
+                        </p>
+                        <p class="fragment">
+                            \[
+                            \vec{x}_{n+2} - \vec{x}_{n+1} = (A+I) (\vec{x}_{n+1} - \vec{x}_n)
+                            \]
+                        </p>
+                    </section>
+                    <section data-auto-animate>
+                        <p>
+                            \[
+                            \vec{x}_{n+2} - \vec{x}_{n+1} = (A+I) (\vec{x}_{n+1} - \vec{x}_n)
+                            \]
+                        </p>
+                        <p>
+                            \[
+                            \vec{v}^\top (\vec{x}_{n+2k} - \vec{x}_{n+2k-1}) = \vec{v}^\top (A+I)^{k-1} (\vec{x}_{n+k+1} - \vec{x}_{n+k})
+                            \]
+                        </p>
+                        <p class="r-fit-text fragment">
+                            \[
+                            \begin{bmatrix} 1 & \dots & 1 \\ \vec{v}^\top (\vec{x}_{n+1} - \vec{x}_n) & \dots & \vec{v}^\top (\vec{x}_{n+k+1} - \vec{x}_{n+k}) \\ \vdots & & \vdots \\ \vec{v}^\top (\vec{x}_{n+k} - \vec{x}_{n+k-1}) & \dots & \vec{v}^\top (\vec{x}_{n+2k} - \vec{x}_{n+2k-1}) \end{bmatrix} \vec{u} = \begin{bmatrix} 1 \\ 0 \\ \vdots \\ 0 \end{bmatrix}
+                            \]
+                        </p>
+                    </section>
+                    <section data-auto-animate>
+                        <p>
+                            \[
+                            \vec{x}_{n+2} - \vec{x}_{n+1} = (A+I) (\vec{x}_{n+1} - \vec{x}_n)
+                            \]
+                        </p>
+                        <p>
+                            \[
+                            \vec{v}^\top (\vec{x}_{n+2k} - \vec{x}_{n+2k-1}) = \vec{v}^\top (A+I)^{k-1} (\vec{x}_{n+k+1} - \vec{x}_{n+k})
+                            \]
+                        </p>
+                        <p class="r-fit-text">
+                            \[
+                            \begin{bmatrix} 1 & \dots & 1 \\ \vec{v}^\top (\vec{x}_{n+1} - \vec{x}_n) & \dots & \vec{v}^\top (\vec{x}_{n+k+1} - \vec{x}_{n+k}) \\ \vdots & & \vdots \\ \vec{v}^\top (A+I)^k (\vec{x}_{n+1} - \vec{x}_{n}) & \dots & \vec{v}^\top (A+I)^{k-1} (\vec{x}_{n+k+1} - \vec{x}_{n+k}) \end{bmatrix} \vec{u} = \begin{bmatrix} 1 \\ 0 \\ \vdots \\ 0 \end{bmatrix}
+                            \]
+                        </p>
+                    </section>
+                    <section data-auto-animate>
+                        <p class="r-fit-text">
+                            \[
+                            \begin{bmatrix} 1 & \dots & 1 \\ \vec{v}^\top (\vec{x}_{n+1} - \vec{x}_n) & \dots & \vec{v}^\top (\vec{x}_{n+k+1} - \vec{x}_{n+k}) \\ \vdots & & \vdots \\ \vec{v}^\top (A+I)^k (\vec{x}_{n+1} - \vec{x}_{n}) & \dots & \vec{v}^\top (A+I)^{k-1} (\vec{x}_{n+k+1} - \vec{x}_{n+k}) \end{bmatrix} \vec{u} = \begin{bmatrix} 1 \\ 0 \\ \vdots \\ 0 \end{bmatrix}
+                            \]
+                        </p>
+                        <p>
+                            The residuals are now orthogonal to $\mathcal{K}_k(A+I,\vec{v})$.
+                            This is exactly the second Krylov subspace of BiCG.
+                        </p>
+                    </section>
+                </section>
+
+                <section>
+                    <section>
+                        <h3>Multisecant equations</h3>
+                    </section>
+
+                    <section>
+                        <h4>Secant method in 1D</h4>
+                        <p>
+                            \[
+                            \hat{x} = x_{n+1} -  \frac{x_{n+1} - x_n}{f(x_{n+1}) - f(x_n)}f(x_{n+1}),
+                            \]
+                            which uses $f'(x_n) \approx (f(x_{n+1}) - f(x_n))/(x_{n+1} - x_n)$.
+                        </p>
+                        <img src="FIG/TIKZ_SecantMethod_20230302-1.png">
+                        <!--tikz figure goes here-->
+                    </section>
+                    <section data-auto-animate="">
+                        <h4>Secant method in nD</h4>
+                        <p>
+                            \[
+                            \vec{f}(\vec{x}_{n+i}) - \vec{f}(\vec{x}_{n}) \approx J(\vec{x}_n) (\vec{x}_{n+i} - \vec{x}_n )
+                            \]
+                        </p>
+                        <p class="fragment r-fit-text">
+                            \[
+                            \begin{bmatrix} \vec{f}(\vec{x}_{n+1}) - \vec{f}(\vec{x}_n) & \dots & \vec{f}(\vec{x}_{n+k}) - \vec{f}(\vec{x}_n) \end{bmatrix} = \hat{J} \begin{bmatrix} \vec{x}_{n+1} - \vec{x}_n & \dots & \vec{x}_{n+k} - \vec{x}_n \end{bmatrix}
+                            \]
+                        </p>
+                        <p class="fragment">
+                            \[
+                            \hat{\vec{x}} = \vec{x}_n - \hat{J}^{-1} \vec{f}(\vec{x}_n)
+                            \]
+                        </p>
+                    </section>
+                    <section data-auto-animate>
+                        <p class="r-fit-text">
+                            \[
+                            \begin{bmatrix} \vec{f}(\vec{x}_{n+1}) - \vec{f}(\vec{x}_n) & \dots & \vec{f}(\vec{x}_{n+k}) - \vec{f}(\vec{x}_n) \end{bmatrix} = \hat{J} \begin{bmatrix} \vec{x}_{n+1} - \vec{x}_n & \dots & \vec{x}_{n+k} - \vec{x}_n \end{bmatrix}
+                            \]
+                        </p>
+                        <p>
+                            \[
+                            F_{n,k} \begin{bmatrix} -1 & \dots & -1 \\ 1 \\ & \ddots \\ & & 1 \end{bmatrix} = \hat{J} X_{n,k} \begin{bmatrix} -1 & \dots & -1 \\ 1 \\ & \ddots \\ & & 1 \end{bmatrix}
+                            \]
+                        </p>
+                    </section>
+                    <section data-auto-animate>
+                        <p>
+                            \[
+                            F_{n,k} \begin{bmatrix} -1 & \dots & -1 \\ 1 \\ & \ddots \\ & & 1 \end{bmatrix} = \hat{J} X_{n,k} \begin{bmatrix} -1 & \dots & -1 \\ 1 \\ & \ddots \\ & & 1 \end{bmatrix}
+                            \]
+                        </p>
+                        <p>
+                            \[
+                            F_{n,k} \Delta_n = \hat{J} X_{n,k} \Delta_n
+                            \]
+                        </p>
+                        <p class="fragment">
+                            \[
+                            \hat{J}^{-1} F_{n,k} \Delta_n = X_{n,k} \Delta_n
+                            \]
+                        </p>
+                    </section>
+
+                    <section data-auto-animate>
+                        <p>
+                            \[
+                            \hat{\vec{x}}_{n,k} = \vec{x}_n - \hat{J}^{-1} \vec{f}(\vec{x}_n)
+                            \]
+                        </p>
+                        <p>
+                            \[
+                            \hat{J}^{-1} F_{n,k} \Delta_n = X_{n,k} \Delta_n
+                            \]
+                        </p>
+                        <p>
+                            Suppose $\vec{f}(\vec{x}_n) = F_{n,k} \Delta_n \tilde{\vec{u}}$ for some $\tilde{\vec{u}}$, then
+                        </p>
+                        <p class="fragment">
+                            \[
+                            F_{n,k} \Delta_n \tilde{\vec{u}} = \vec{f}(\vec{x}_n), \quad \hat{\vec{x}}_{n,k} = \vec{x}_n - X_{n,k} \Delta_n \tilde{\vec{u}}
+                            \]
+                        </p>
+                    </section>
+                    <section data-auto-animate>
+                        <p>
+                            \[
+                            F_{n,k} \Delta_n \tilde{\vec{u}} = \vec{f}(\vec{x}_n), \quad \hat{\vec{x}}_{n,k} = \vec{x}_n - X_{n,k} \Delta_n \tilde{\vec{u}}
+                            \]
+                        </p>
+                        <p>If the system to find $\hat{J}$ is underdetermined, then the system to find $\tilde{\vec{u}}$ is overdetermined.</p>
+                        <p>
+                            \[
+                            B^\top F_{n,k} \Delta_n \tilde{\vec{u}} = B^\top \vec{f}(\vec{x}_n), \quad \hat{\vec{x}}_{n,k} = \vec{x}_n - X_{n,k} \Delta_n \tilde{\vec{u}}
+                            \]
+                        </p>
+                    </section>
+                    <section data-auto-animate>
+                        <p>
+                            \[
+                            B^\top F_{n,k} \Delta_n \tilde{\vec{u}} = B^\top \vec{f}(\vec{x}_n), \quad \hat{\vec{x}}_{n,k} = \vec{x}_n - X_{n,k} \Delta_n \tilde{\vec{u}}
+                            \]
+                        </p>
+                        <p class="fragment">$\hat{\vec{u}}:=\Delta_n \tilde{\vec{u}} \implies$</p>
+                        <p class="fragment">
+                            \[
+                            \begin{bmatrix} \vec{1}^\top \\ B^\top F_{n,k} \end{bmatrix} \hat{\vec{u}} = \begin{bmatrix} 0 \\ B^\top \vec{f}(\vec{x}_n) \end{bmatrix}, \quad \hat{\vec{x}}_{n,k} = \vec{x}_n - X_{n,k} \hat{\vec{u}}
+                            \]
+                        </p>
+                    </section>
+                    <section data-auto-animate>
+                        <p>
+                            \[
+                            \begin{bmatrix} \vec{1}^\top \\ B^\top F_{n,k} \end{bmatrix} \hat{\vec{u}} = \begin{bmatrix} 0 \\ B^\top \vec{f}(\vec{x}_n) \end{bmatrix}, \quad \hat{\vec{x}}_{n,k} = \vec{x}_n - X_{n,k} \hat{\vec{u}}
+                            \]
+                        </p>
+                        <p class="r-fit-text">
+                            \[
+                            \begin{bmatrix} \vec{1}^\top \\ B^\top F_{n,k} \end{bmatrix} (\vec{e}_1 - \hat{\vec{u}}) = \begin{bmatrix} 1 \\ B^\top \vec{f}(\vec{x}_n) \end{bmatrix} - \begin{bmatrix} 0 \\ B^\top \vec{f}(\vec{x}_n) \end{bmatrix}, \quad \hat{\vec{x}}_{n,k} = X_{n,k} (\vec{e}_1 - \hat{\vec{u}})
+                            \]
+                        </p>
+                    </section>
+                    <section data-auto-animate=>
+                        <p class="r-fit-text">
+                            \[
+                            \begin{bmatrix} \vec{1}^\top \\ B^\top F_{n,k} \end{bmatrix} (\vec{e}_1 - \hat{\vec{u}}) = \begin{bmatrix} 1 \\ B^\top \vec{f}(\vec{x}_n) \end{bmatrix} - \begin{bmatrix} 0 \\ B^\top \vec{f}(\vec{x}_n) \end{bmatrix}, \quad \hat{\vec{x}}_{n,k} = X_{n,k} (\vec{e}_1 - \hat{\vec{u}})
+                            \]
+                        </p>
+                        <p class="fragment">$\vec{u}:=\vec{e}_1 - \hat{\vec{u}} \implies$</p>
+                        <p class="fragment">
+                            \[
+                            \begin{bmatrix} \vec{1}^\top \\ B^\top F_{n,k} \end{bmatrix} \vec{u} = \begin{bmatrix} 1 \\ \vec{0} \end{bmatrix}, \quad \hat{\vec{x}}_{n,k} = X_{n,k} \vec{u}
+                            \]
+                        </p>
+                    </section>
+                    <section data-auto-animate>
+                        <p>
+                            \[
+                            \begin{bmatrix} \vec{1}^\top \\ B^\top F_{n,k} \end{bmatrix} \vec{u} = \begin{bmatrix} 1 \\ \vec{0} \end{bmatrix}, \quad \hat{\vec{x}}_{n,k} = X_{n,k} \vec{u}
+                            \]
+                        </p>
+                        <p class="r-fit-text">
+                            \[
+                            \hat{\vec{x}}_{n,k} = \frac{ \begin{vmatrix}
+                            \vec{x}_n & \dots & \vec{x}_{n+k} \\
+                            \vec{v}_1^\top \vec{f}(\vec{x}_n) & \dots & \vec{v}_1^\top \vec{f}(\vec{x}_{n+k}) \\
+                            \vdots & & \vdots \\
+                            \vec{v}_k^\top \vec{f}(\vec{x}_n) & \dots & \vec{v}_k^\top \vec{f}(\vec{x}_{n+k}) \end{vmatrix}}{ \begin{vmatrix}
+                            1 & \dots & 1 \\
+                            \vec{v}_1^\top \vec{f}(\vec{x}_n) & \dots & \vec{v}_1^\top \vec{f}(\vec{x}_{n+k}) \\
+                            \vdots & & \vdots \\
+                            \vec{v}_k^\top \vec{f}(\vec{x}_n) & \dots & \vec{v}_k^\top \vec{f}(\vec{x}_{n+k}) \end{vmatrix}}
+                            \]
+                        </p>
+                    </section>
+                </section>
+
+                <section>
+                    <section>
+                        <h3>General Equivalence</h3>
+                    </section>
+
+                    <section>
+                        <ul>
+                            <li>Choose $\vec{f}(\vec{x}_n) = \vec{x}_{n+1} - \vec{x}_n$ and the multisecant equations are an extrapolation method.</li>
+                            <li class="fragment">Choose $\vec{f}(\vec{x}) = A \vec{x} - \vec{b}$ and the iterates lie in a Krylov subspace.</li>
+                            <li class="fragment">Choose $\vec{v}_i$ to lie in the same Krylov subspace and the residuals are orthogonal to the previous subspaces.</li>
+                            <li class="fragment">Choose $\vec{v}_i$ to be functions of the residuals and the iterates are minimums in some norm.</li>
+                        </ul>
+                    </section>
+
+                    <section>
+                        <p>
+                            For GMRES/MPE:
+                            <ul>
+                                <li class="fragment">$F_{n,k} = X_{n+1,k} - X_{n,k}$</li>
+                                <li class="fragment">$B = F_{n,k-1}$</li>
+                            </ul>
+                        </p>
+                        <!--numerical example-->
+                    </section>
+
+                    <section>
+                        <p>
+                            For BiCG/TEA:
+                            <ul>
+                                <li class="fragment">$F_{n,k} = X_{n+1,k} - X_{n,k}$</li>
+                                <li class="fragment">$\vec{v}_i = (A+I)^{i-1} \vec{v}$</li>
+                            </ul>
+                        </p>
+                    </section>
+
+                    <section>
+                        <img src="FIG/TIKZ_MEEquivalenceMap_202303021024_1.png" height="400">
+                        <p class="fragment">
+                            \[\textcolor{red}{\vec{f}(\vec{x}_n) = \vec{x}_{n+1} - \vec{x}_n}\]
+                            \[ \textcolor{blue}{\vec{x}_{n+2} - \vec{x}_{n+1} = (A+I) (\vec{x}_{n+1} - \vec{x}_{n}) } \]
+                        </p>
+                    </section>
+
+                    <section>
+                        <h4>Numerical examples</h4>
+                        <img src="FIG/MTLB_extrap_linearFPI_v1_20221103.png" height="600">
+                    </section>
+                </section>
+
+                <section>
+                    <section>
+                        <h3>quasi-Newton methods</h3>
+                    </section>
+
+                    <section data-auto-animate>
+                        <p>
+                            So far, we've solved the underdetermined system \[ \hat{J} X_{n,k} \Delta = F_{n,k} \Delta \] with added constraints.
+                        </p>
+                        <p class="fragment">
+                            Alternatively, we can pad out $X_{n,k}$ with arbitrary vectors.
+                        </p>
+                        <p class="fragment">
+                            \[ X_{n,k} \to \begin{bmatrix} X_{n,k} & Q_k \end{bmatrix} \]
+                        </p>
+                    </section>
+                    <section data-auto-animate>
+                        <p>
+                            \[ X_{n,k} \to \begin{bmatrix} X_{n,k} & Q_k \end{bmatrix} \]
+                        </p>
+                        <p>
+                            The matrix $F_{n,k}$ needs to be updated as well.
+                            $\hat{J}$ now updates with each choice of $Q_k$:
+                        </p>
+                        <p class="fragment">
+                            \[ \hat{J}_{k+1} \begin{bmatrix} X_{n,k} & Q_k \end{bmatrix} \Delta = \begin{bmatrix} F_{n,k} \Delta & \hat{J}_k Q_k \Delta \end{bmatrix} \]
+                        </p>
+                    </section>
+                    <section data-auto-animate>
+                        <h4>generalized Broyden's methods</h4>
+
+                        <p>
+                            \[ \hat{J}_{k+1} \begin{bmatrix} X_{n,k} & Q_k \end{bmatrix} \Delta = \begin{bmatrix} F_{n,k} \Delta & \hat{J}_k Q_k \Delta \end{bmatrix} \]
+                        </p>
+                        <p>
+                            In Broyden's method, $Q_k$ is chosen such that $(Q_k \Delta)^\top X_{n,k} \Delta = 0$.
+                        </p>
+                    </section>
+
+                    <section data-auto-animate>
+                        <p>
+                            As another alternative, add relaxation to the multisecant equations:
+                        </p>
+                        <p class="fragment">
+                            \[\hat{\vec{x}}_{n,k} = X_{n,k} \vec{u} + \beta F_{n,k} \vec{u} . \]
+                        </p>
+                        <p class="fragment">
+                            As we've seen, this is equivalent to:
+                        </p>
+                        <p class="fragment">
+                            \[\hat{\vec{x}}_{n,k} = \vec{x}_{n+k} - X_{n,k} \Delta \tilde{\vec{u}} + \beta( \vec{f}(\vec{x}_{n+k}) - F_{n,k} \Delta \tilde{\vec{u}}) . \]
+                        </p>
+                    </section>
+                    <section data-auto-animate>
+                        <h4>Anderson mixing</h4>
+                        <p>
+                            \[\hat{\vec{x}}_{n,k} = \vec{x}_{n+k} - X_{n,k} \Delta \tilde{\vec{u}} + \beta( \vec{f}(\vec{x}_{n+k}) - F_{n,k} \Delta \tilde{\vec{u}}) . \]
+                        </p>
+                    </section>
+
+                    <section>
+                        <img src="FIG/TIKZ_MEEquivalenceMap_v2_20230303-1.png">
+                    </section>
+                </section>
+
+                <section>
+                    <h3>Conclusions</h3>
+                    <ul>
+                        <li class="fragment">Extrapolation methods and Krylov subspace methods use the same underlying multisecant equations, and so they can share techniques.</li>
+                        <li class="fragment">We can use extrapolation methods to solve nonlinear sequences in place of Krylov subspace methods.</li>
+                    </ul>
+                </section>
+            </div>
+        </div>
+
+        <script src="dist/reveal.js"></script>
+		<script src="plugin/notes/notes.js"></script>
+		<script src="plugin/markdown/markdown.js"></script>
+		<script src="plugin/highlight/highlight.js"></script>
+        <script src="plugin/math/math.js"></script>
+		<script>
+			// More info about initialization & config:
+			// - https://revealjs.com/initialization/
+			// - https://revealjs.com/config/
+			Reveal.initialize({
+				hash: true,
+
+				// Learn about plugins: https://revealjs.com/plugins/
+				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes, RevealMath.KaTeX ]
+			});
+		</script>
+    </body>
+</html>
