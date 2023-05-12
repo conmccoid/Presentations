@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>Visualization of simplicial intersections</title>
+
+		<link rel="stylesheet" href="dist/reset.css">
+		<link rel="stylesheet" href="dist/reveal.css">
+		<link rel="stylesheet" href="dist/theme/white.css" id="theme">
+
+		<!-- Theme used for syntax highlighted code -->
+		<link rel="stylesheet" href="plugin/highlight/monokai.css">
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<section>
+                    <h3>Visualization of simplicial intersections</h3>
+
+                    <p>Conor McCoid</p>
+                    <p><small>Université Laval</small></p>
+
+                    <p><small>Completed under the supervision of Martin J. Gander at the Université de Genève</small></p>
+                    <img src="FIG/ULaval-C.png" height="105" width="255">
+                    <img src="FIG/UNIGE70.gif" height="105" width="300">
+                </section>
+
+				<section>
+					<section>
+						<h3>Why intersect simplices?</h3>
+					</section>
+
+					<section>
+						<h6>Nonmatching grids</h6>
+						<img src="FIG/gander_trianglemesh.gif">
+						<p><small>https://www.unige.ch/~gander/demo.php</small></p>
+					</section>
+
+					<section>
+						<h6>Clipping</h6>
+						<img src="FIG/nba2k13_wade_clipping.png">
+					</section>
+
+					<section>
+						<h6>Multiphysics</h6>
+						<img src="FIG/PorousMedia.jpg">
+					</section>
+
+					<section>
+						<h6>Parameter estimation</h6>
+						<img src="FIG/paulavicius.webp">
+
+						<p><small>Paulavičius, R., Žilinskas, J. Advantages of simplicial partitioning for Lipschitz optimization problems with linear constraints. Optim Lett 10, 237–246 (2016). https://doi.org/10.1007/s11590-014-0772-4
+						</small></p>
+					</section>
+				</section>
+
+				<section>
+					<section>
+						<h3>Sectioning</h3>
+					</section>
+
+					<section data-auto-animate>
+						<p>The intersection of two simplices can be found through successive intersections with hyperplanes</p>
+						<img src="FIG/TIKZ_LeftoverFigures_20230417/TIKZ_LeftoverFigures_20230417-1.png">
+						<img src="FIG/TIKZ_LeftoverFigures_20230417/TIKZ_LeftoverFigures_20230417-2.png" class="fragment">
+						<img src="FIG/TIKZ_LeftoverFigures_20230417/TIKZ_LeftoverFigures_20230417-3.png" class="fragment">
+						<!--figures for triangle and tetrahedron examples-->
+					</section>
+
+					<section data-auto-animate>
+						<p>The intersection of two simplices can be found through successive intersections with hyperplanes</p>
+						<img src="FIG/TIKZ_LeftoverFigures_20230417/TIKZ_LeftoverFigures_20230417-4.png">
+						<img src="FIG/TIKZ_LeftoverFigures_20230417/TIKZ_LeftoverFigures_20230417-5.png" class="fragment">
+					</section>
+
+					<section>
+						<p>Throughout this presentation, we will focus on two examples: the simplex in 2D and the simplex in 5D</p>
+						<img src="FIG/TIKZ_SimplexFlat_20230415/TIKZ_SimplexFlat_20230415-1.png" width="300">
+						<img src="FIG/TIKZ_SimplexFlat_20230415/TIKZ_SimplexFlat_20230415-4.png" width="300">
+					</section>
+
+					<section>
+						<p>A hyperplane divides vertices into two groups, one on each side</p>
+						<p class="fragment">We call the two groups <b>fathers and mothers</b></p>
+						<p class="fragment">Any vertices lying directly on the hyperplane are grouped with the fathers</p>
+						<img src="FIG/TIKZ_SimplexFlat_20230415/TIKZ_SimplexFlat_20230415-2.png" width="300">
+						<img src="FIG/TIKZ_SimplexFlat_20230415/TIKZ_SimplexFlat_20230415-5.png" width="300">
+					</section>
+
+					<section data-auto-animate>
+						<p>A father and a mother with an edge between them create an intersection (<b>child</b>) with the hyperplane</p>
+						<p class="fragment">Not all fathers have children with all mothers, they must neighbour each other</p>
+						<img src="FIG/TIKZ_SimplexFlat_20230415/TIKZ_SimplexFlat_20230415-3.png" width="300">
+						<img src="FIG/TIKZ_SimplexFlat_20230415/TIKZ_SimplexFlat_20230415-6.png" width="300">
+					</section>
+
+					<section data-auto-animate>
+						<p>We need to be able to uniquely identify any intersection between simplex and hyperplane</p>
+						<p class="fragment">Let each vertex of the simplex have an <b>index</b> from 0 to $n$</p>
+						<p class="fragment">Then let the index of the child of any two parents be the <b>union of their indices</b></p>
+						<img src="FIG/TIKZ_SimplexFlat_20230415/TIKZ_SimplexFlat_20230415-3.png" width="300">
+						<img src="FIG/TIKZ_SimplexFlat_20230415/TIKZ_SimplexFlat_20230415-6.png" width="300">
+					</section>
+				</section>
+
+				<section>
+					<section>
+						<h3>1st order sections</h3>
+
+						<p class="fragment">sectioning a simplex with one hyperplane</p>
+					</section>
+
+					<section data-auto-animate>
+						<p>Vertices of a section are the children of a father and a mother</p>
+						<p class="fragment">This gives a set of vertices, but not a set of edges</p>
+						<p class="fragment">Which children are neighbours in the section?</p>
+						<img src="FIG/TIKZ_SimplexFlat_20230415/TIKZ_SimplexFlat_20230415-3.png" width="300">
+						<img src="FIG/TIKZ_SimplexFlat_20230415/TIKZ_SimplexFlat_20230415-6.png" width="300">
+					</section>
+
+					<section data-auto-animate>
+						<p>Two vertices are neighbours if their <i>indices differ by exactly one element</i></p>
+						<p class="fragment">Indices increase by one element after each sectioning</p>
+						<img src="FIG/TIKZ_SimplexFlat_20230415/TIKZ_SimplexFlat_20230415-3.png" width="300">
+						<img src="FIG/TIKZ_SimplexFlat_20230415/TIKZ_SimplexFlat_20230415-6.png" width="300">
+					</section>
+
+					<section data-auto-animate>
+						<p>If two children share a parent then their indices share the parent's index and differ by one element</p>
+						<p class="fragment">These children, called <b>siblings</b>, are therefore neighbours and have an edge between them</p>
+						<img src="FIG/TIKZ_SimplexFlat_20230415/TIKZ_SimplexFlat_20230415-3.png" width="300">
+						<img src="FIG/TIKZ_SimplexFlat_20230415/TIKZ_SimplexFlat_20230415-6.png" width="300">
+					</section>
+
+					<section data-auto-animate>
+						<h2>Cross-hatching</h2>
+
+						<p>Diagram to help visualize sections</p>
+						<p class="fragment">For each father, draw a vertical line</p>
+						<p class="fragment">For each mother, draw a horizontal line</p>
+						<p class="fragment">Every intersection is a child in the 1st order section</p>
+						<img src="FIG/TIKZ_SimplexFlat_20230415/TIKZ_SimplexFlat_20230415-6.png" width="300">
+						<img src="FIG/TIKZ_Crosshatch_20230415/TIKZ_Crosshatch_20230415-2.png" width="300">
+					</section>
+
+					<section data-auto-animate>
+						<p>Any children connected along the same horizontal or vertical line of the cross-hatch are siblings</p>
+						<p>This means each line represents a simplex</p>
+						<p>This lets us draw the net of the section</p>
+						<img src="FIG/TIKZ_Crosshatch_20230415/TIKZ_Crosshatch_20230415-2.png" width="300">
+						<img src="FIG/TIKZ_NetSection_20230415/TIKZ_NetSection_20230415-2.png" width="300" class="fragment">
+					</section>
+
+					<section data-auto-animate>
+						<p>1st order sections are all duoprisms, the Cartesian product of two simplices</p>
+						<img src="FIG/TIKZ_NetSection_20230415/TIKZ_NetSection_20230415-2.png">
+						<!--proof?-->
+					</section>
+				</section>
+
+				<section>
+					<section>
+						<h3>2nd order sections</h3>
+					</section>
+
+					<section>
+						<p>The vertices of the 1st order section are now parents for the 2nd order section</p>
+						<p class="fragment">Colour each child in the cross-hatch based on whether it is a father or a mother</p>
+						<p class="fragment">Since the section is convex, fathers and mothers are split into contiguous groups</p>
+						<img src="FIG/TIKZ_Crosshatch_20230415/TIKZ_Crosshatch_20230415-3.png" width="300">
+					</section>
+<!--
+					<section>
+						<p>If two children have fathers who are neighbours and mothers who are neighbours, then these chilrden (<b>cousins</b>) are neighbours in sections of order 2 and higher</p>
+						proof?
+					</section>
+
+					<section>
+						<p>Only siblings and cousins are neighbours in 2nd order sections</p>
+						proof?
+					</section>
+-->
+					<section>
+						<p>In the cross-hatch diagram, if one can draw a right-angled triangle with vertices a father and two mothers, or a mother and two fathers, then the two children associated with these parents are siblings</p>
+						<img src="FIG/TIKZ_Crosshatch_20230415/TIKZ_Crosshatch_20230415-4.png">
+					</section>
+
+					<section>
+						<p>Also, if three parents form a line, then their children are siblings</p>
+						<img src="FIG/TIKZ_Crosshatch_20230415/TIKZ_Crosshatch_20230415-5.png">
+					</section>
+
+					<section data-auto-animate>
+						<p>If two children have fathers who are neighbours and mothers who are neighbours, then these chilrden (<b>cousins</b>) are neighbours in sections of order 2 and higher</p>
+						<img src="FIG/TIKZ_Crosshatch_20230415/TIKZ_Crosshatch_20230415-6.png">
+					</section>
+
+					<section data-auto-animate>
+						<p>Only siblings and cousins are neighbours in 2nd order sections</p>
+						<p class="fragment">If one can draw a rectangle with vertices two fathers and two mothers, then the associated children are cousins</p>
+						<img src="FIG/TIKZ_Crosshatch_20230415/TIKZ_Crosshatch_20230415-6.png">
+					</section>
+
+					<section>
+						<p>We can draw the net, but it doesn't necessarily help us see the structure</p>
+						<img src="FIG/TIKZ_NetSection_20230415/TIKZ_NetSection_20230415-3.png">
+					</section>
+
+					<section>
+						<p>Geometrically, this intersection cuts each cell (3D face) of the 1st order section with a plane</p>
+						<img src="FIG/TIKZ_NetSection_20230415/TIKZ_NetSection_20230415-4.png">
+					</section>
+				</section>
+
+				<section>
+					<section>
+						<h3>General sections</h3>
+					</section>
+
+					<section>
+						<p>Vertices whose indices share all but $m$ elements all lie on the same $m$-face of the simplex</p>
+						<img src="fig/TIKZ_NetSection_20230415/TIKZ_NetSection_20230415-5.png">
+					</section>
+
+					<section>
+						<p>Vertices of $k$-th order sections have exactly $n-k$ neighbours</p>
+					</section>
+				</section>
+
+				<section>
+					<section>
+						<h3>Conclusions</h3>
+
+						<p class="fragment">Cross-hatching provides strategies for visualizing the intersection between simplices and hyperplanes</p>
+						<p class="fragment">This can help consider problems that might arise in algorithm design and geometric proofs</p>
+					</section>
+				</section>
+			</div>
+		</div>
+
+		<script src="dist/reveal.js"></script>
+		<script src="plugin/notes/notes.js"></script>
+		<script src="plugin/markdown/markdown.js"></script>
+		<script src="plugin/highlight/highlight.js"></script>
+		<script src="plugin/math/math.js"></script>
+		<script>
+			// More info about initialization & config:
+			// - https://revealjs.com/initialization/
+			// - https://revealjs.com/config/
+			Reveal.initialize({
+				hash: true,
+
+				// Learn about plugins: https://revealjs.com/plugins/
+				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes, RevealMath.KaTeX ]
+			});
+		</script>
+	</body>
+</html>
