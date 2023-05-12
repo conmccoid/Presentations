@@ -1,0 +1,86 @@
+\documentclass[crop,tikz,multi=my]{standalone}
+
+\usetikzlibrary{decorations.pathreplacing,positioning,calc,intersections,3d,shapes.geometric,math}
+
+\begin{document}
+
+\newcommand{\crosshatch}[2]{
+	\foreach \x in {1,...,#1} {
+		\draw[thick,black] (\x,0) -- (\x,-1-#2);}
+	\foreach \x in {1,...,#2} {
+		\draw[thick,blue] (0,-\x) -- (1+#1,-\x);}
+	}
+\newcommand{\crosshatchNew}[2]{
+	\foreach[count=\i from 0] \x in {1,...,#1} {
+		\node (O\i) at (\x-1,0) {\i};
+		\node (T\i) at (\x-1,-#2-1) {};
+		\draw (O\i) -- (T\i);}
+	\foreach[count=\j from #1] \y in {1,...,#2} {
+		\node (O\j) at (-1,-\y) {\j};
+		\node (T\j) at (#1,-\y) {};
+		\draw (O\j) -- (T\j);}
+	\foreach[count=\i from 0] \x in {1,...,#1} {
+		\foreach[count=\j from #1] \y in {1,...,#2} {
+			\coordinate (\i\j) at (intersection of {O\i--T\i} and {O\j--T\j});
+			}}
+	}
+\newcommand{\crosshatchExample}{
+	\crosshatchNew{3}{3}
+			\foreach \x in {03,04,13} {\filldraw[black] (\x) circle (2pt);}
+			\foreach \x in {05,14,15,23,24,25} {\filldraw[blue,opacity=0.7] ([xshift=-2pt,yshift=-2pt]\x) rectangle ++(4pt,4pt);}
+	}
+
+	\begin{my}
+		\begin{tikzpicture}
+			\crosshatchNew{1}{2}
+		\end{tikzpicture}
+	\end{my}
+	
+	\begin{my}
+		\begin{tikzpicture}
+			\crosshatchNew{3}{3}
+		\end{tikzpicture}
+	\end{my}
+	
+	\begin{my}
+		\begin{tikzpicture}
+			\crosshatchExample
+			\path[red,bend left,->] (03) edge (23) edge (05)
+				(04) edge (14) edge (24) edge (05)
+				(13) edge (14) edge (23) edge (15);
+		\end{tikzpicture}
+	\end{my}
+	
+	\begin{my}
+		\begin{tikzpicture}
+		\matrix[row sep=1em, column sep=1em, every cell/.style={scale=0.5}]{
+			\crosshatchExample \draw[thick,red] (03)--(23); \draw[thick,red] (03)--(05); \filldraw[red,opacity=0.3] (03)--(23)--(05)--cycle; &
+			\crosshatchExample \filldraw[red,opacity=0.3] (13)--(23)--(15)--cycle; &
+			\crosshatchExample \filldraw[red,opacity=0.3] (13)--(23)--(14)--cycle; \\
+			\crosshatchExample \filldraw[red,opacity=0.3] (04)--(14)--(05)--cycle; &
+			\crosshatchExample \filldraw[red,opacity=0.3] (04)--(24)--(05)--cycle; &
+			\crosshatchExample \filldraw[red,opacity=0.3] (14)--(13)--(04)--cycle; & \\};
+		\end{tikzpicture}
+	\end{my}
+	
+	\begin{my}
+		\begin{tikzpicture}
+		\matrix[row sep=1em, column sep=1em, every cell/.style={scale=0.5}]{
+			\crosshatchExample \filldraw[red,opacity=0.3] (03) to [bend left=20] (05) to [bend left=20] cycle; &
+			\crosshatchExample \filldraw[red,opacity=0.3] (13) to [bend left=20] (15) to [bend left=20] cycle; &
+			\crosshatchExample \filldraw[red,opacity=0.3] (03) to [bend left=20] (23) to [bend left=20] cycle; &
+			\crosshatchExample \filldraw[red,opacity=0.3] (04) to [bend left=20] (24) to [bend left=20] cycle;
+			\\};
+		\end{tikzpicture}
+	\end{my}
+	
+	\begin{my}
+		\begin{tikzpicture}
+		\matrix[row sep=1em, column sep=1em, every cell/.style={scale=0.5}]{
+			\crosshatchExample \filldraw[red,opacity=0.3] (03)--(13)--(15)--(05)--cycle; &
+			\crosshatchExample \filldraw[red,opacity=0.3] (03)--(23)--(24)--(04)--cycle;
+			\\};
+		\end{tikzpicture}
+	\end{my}
+	
+\end{document}

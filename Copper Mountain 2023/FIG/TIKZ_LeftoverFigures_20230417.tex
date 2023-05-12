@@ -1,0 +1,137 @@
+\documentclass[crop,tikz,multi=my]{standalone}
+
+\usetikzlibrary{decorations.pathreplacing,positioning,calc,intersections,3d,shapes.geometric,math}
+
+\begin{document}
+
+\newcommand{\SimpGraph}[4]{
+	\foreach \x in {1,...,#1} {
+		\coordinate (#3\x) at ($#2 + (90-\x*360/#1+180/#1:#4)$);
+		\filldraw[black] (#3\x) circle (1pt);}
+	\foreach \x in {1,...,#1} {
+		\foreach \y in {\x,...,#1} {
+			\draw[black] (#3\x) -- (#3\y);}}
+	}
+	
+\newcommand{\TetCoords}{
+		\coordinate (A1) at (-1,-1);
+		\coordinate (B1) at (0,-0.75);
+		\coordinate (C1) at (-0.5,1);
+		\coordinate (D1) at (-1.5,0);
+		
+		\coordinate (D2) at (2,-1);
+		\coordinate (B2) at (3,-0.75);
+		\coordinate (C2) at (2.5,1);
+		\coordinate (A2) at (3.5,0);
+		
+		\coordinate (S1) at (0,-2);
+		\coordinate (S2) at (0,2);
+		\coordinate (S3) at (2,1);
+		\coordinate (S4) at (2,-1);
+		
+		\coordinate (T1) at (-0.75,1.5);
+		\coordinate (T2) at (-0.75,-1.5);
+		\coordinate (T3) at (2.25,-1.5);
+		\coordinate (T4) at (2.25,1.5);
+		
+		\coordinate (int1) at ($.5*(A1)+.5*(D2)$);
+		\coordinate (int2) at ($.5*(B1)+.5*(D2)$);
+		\coordinate (int3) at ($.5*(C1)+.5*(D2)$);
+		\coordinate (int4) at ($.5*(A1)+.5*(C2)$);
+		\coordinate (int5) at ($.5*(B1)+.5*(C2)$);
+		\coordinate (int6) at ($.5*(A1)+.5*(B2)$);
+}
+\newcommand{\tetra}[2]{
+	\filldraw[red] \foreach \x in {#1} {(\x) circle (1.5pt)};
+	\filldraw[blue,fill opacity=0.2] (S1) -- (S2) -- (S3) -- (S4) -- cycle;
+	\filldraw[red] \foreach \x in {#2} {(\x) circle (1.5pt)};
+}
+\newcommand{\blueplane}[4]{
+	\filldraw[blue,fill opacity=0.4] #1 -- #2 -- #3 -- #4 -- cycle;
+}
+\newcommand{\redplanes}[4]{
+	\filldraw[red,fill opacity=0.2] #1 -- #2 -- #3 -- cycle;
+	\filldraw[red,fill opacity=0.2] #1 -- #2 -- #4 -- cycle;
+	\filldraw[red,fill opacity=0.2] #1 -- #3 -- #4 -- cycle;
+}
+\newcommand{\tikzint}[4]{{(#1*#4-#3*#2)/(#4-#2)}}
+\newcommand{\Tetra}[9]{
+	\coordinate (X1) at (#1,#2,#3); \coordinate (X2) at (#4,#5,#6); \coordinate (X3) at (-2,-2,-2); \coordinate (X4) at (#7,#8,#9);
+	\coordinate (z1) at (\tikzint{#4}{#6}{#1}{#3},\tikzint{#5}{#6}{#2}{#3},0);
+	\coordinate (z2) at (\tikzint{#4}{#6}{-2}{-2},\tikzint{#5}{#6}{-2}{-2},0);
+	\coordinate (z3) at (\tikzint{#4}{#6}{#7}{#9},\tikzint{#5}{#6}{#8}{#9},0);
+	\coordinate (z4) at (\tikzint{#7}{#9}{-2}{-2},\tikzint{#8}{#9}{-2}{-2},0);
+	\coordinate (z5) at (\tikzint{#1}{#3}{-2}{-2},\tikzint{#2}{#3}{-2}{-2},0);
+	\coordinate (z6) at (\tikzint{#7}{#9}{#1}{#3},\tikzint{#8}{#9}{#2}{#3},0);
+	
+	\coordinate (x1) at (0,\tikzint{#2}{#1}{#5}{#4},\tikzint{#3}{#1}{#6}{#4});
+	\coordinate (x2) at (0,\tikzint{#2}{#1}{-2}{-2},\tikzint{#3}{#1}{-2}{-2});
+	\coordinate (x3) at (0,\tikzint{#2}{#1}{#8}{#7},\tikzint{#3}{#1}{#9}{#7});
+	\coordinate (x4) at (0,\tikzint{#8}{#7}{-2}{-2},\tikzint{#9}{#7}{-2}{-2});
+	\coordinate (x5) at (0,\tikzint{-2}{-2}{#5}{#4},\tikzint{-2}{-2}{#6}{#4});
+	\coordinate (x6) at (0,\tikzint{#8}{#7}{#5}{#4},\tikzint{#9}{#7}{#6}{#4});
+	
+	\draw[black] (0,-2,0) -- (0,2,0);
+	\filldraw[blue,fill opacity=0.2] (2,-2,0) -- (2,2,0) -- (0,2,0) -- (0,2,-2) -- (0,-2,-2) -- (0,-2,0) -- cycle;
+	\filldraw[red] \foreach \x in {(X1),(X2),(X3),(X4)} {\x circle (1.5pt)};
+	\filldraw[red,fill opacity=0.2] (X1) -- (X2) -- (X3) -- cycle;
+	\filldraw[red,fill opacity=0.2] (X1) -- (X2) -- (X4) -- cycle;
+	\filldraw[red,fill opacity=0.2] (X4) -- (X2) -- (X3) -- cycle;
+	\filldraw[red,fill opacity=0.2] (X1) -- (X4) -- (X3) -- cycle;
+	\filldraw[blue,fill opacity=0.2] (-2,-2,0) -- (-2,2,0) -- (0,2,0) -- (0,2,2) -- (0,-2,2) -- (0,-2,0) -- cycle;
+}
+
+	\begin{my}
+		\begin{tikzpicture}
+			\SimpGraph{3}{(0,-1.5)}{S}{2}
+			\coordinate (T1) at (1.5,-2); \coordinate (T2) at (0,0); \draw[very thick, red] (T1)--(T2);
+			\filldraw[blue] (intersection of S1--S2 and T1--T2) circle (3pt);
+			\filldraw[blue] (intersection of S1--S3 and T1--T2) circle (3pt);
+		\end{tikzpicture}
+	\end{my}
+	
+	\begin{my}
+		\begin{tikzpicture}
+			\SimpGraph{3}{(0,-1.5)}{S}{2}
+			\coordinate (T1) at (1.5,-2); \coordinate (T2) at (0,0); \draw[very thick, red] (T1)--(T2);
+			\filldraw[blue] (intersection of S1--S2 and T1--T2) circle (3pt);
+			\filldraw[blue] (intersection of S1--S3 and T1--T2) circle (3pt);
+			\coordinate (U1) at (1.5,-1.9); \coordinate (U2) at (-2,-1.9); \draw[very thick, red] (U1)--(U2);
+			\filldraw[blue] (intersection of S3--S2 and U1--U2) circle (3pt);
+			\filldraw[blue] (intersection of S1--S2 and U1--U2) circle (3pt);
+		\end{tikzpicture}
+	\end{my}
+	
+	\begin{my}
+		\begin{tikzpicture}
+			\SimpGraph{3}{(0,-1.5)}{S}{2}
+			\coordinate (T1) at (1.5,-2); \coordinate (T2) at (0,0); \draw[very thick, red] (T1)--(T2);
+			\filldraw[blue] (intersection of S1--S2 and T1--T2) circle (3pt);
+			\filldraw[blue] (intersection of S1--S3 and T1--T2) circle (3pt);
+			\coordinate (U1) at (1.5,-1.9); \coordinate (U2) at (-2,-1.9); \draw[very thick, red] (U1)--(U2);
+			\filldraw[blue] (intersection of S3--S2 and U1--U2) circle (3pt);
+			\filldraw[blue] (intersection of S1--S2 and U1--U2) circle (3pt);
+			\coordinate(W1) at (-2,-2); \coordinate (W2) at (-1,0); \draw[very thick, red] (W1)--(W2);
+			\filldraw[blue] (intersection of S1--S3 and W1--W2) circle (3pt);
+			\filldraw[blue] (intersection of S2--S3 and W1--W2) circle (3pt);
+		\end{tikzpicture}
+	\end{my}
+	
+	\begin{my}
+		\begin{tikzpicture}
+			\TetCoords
+			\tetra{A1,B1}{C2,D2} \redplanes{(A1)}{(B1)}{(C2)}{(D2)} \blueplane{(int1)}{(int2)}{(int5)}{(int4)}
+		\end{tikzpicture}
+	\end{my}
+	
+	\begin{my}
+		\begin{tikzpicture}
+			\TetCoords
+			\filldraw[blue,fill opacity=0.2] (S1) -- (S2) -- (S3) -- (S4) -- cycle;
+			\blueplane{(int1)}{(int2)}{(int5)}{(int4)}
+			\filldraw[purple,fill opacity=0.2] (T1) -- (T2) -- (T3) -- (T4) -- cycle;
+			\draw[thick] (intersection of S3--S2 and T1--T4) -- (intersection of S1--S4 and T3--T2);
+		\end{tikzpicture}
+	\end{my}
+	
+\end{document}

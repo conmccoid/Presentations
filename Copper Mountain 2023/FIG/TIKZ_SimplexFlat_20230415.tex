@@ -1,0 +1,65 @@
+\documentclass[crop,tikz,multi=my]{standalone}
+
+\usetikzlibrary{decorations.pathreplacing,positioning,calc,intersections,3d,shapes.geometric,math}
+
+\begin{document}
+
+\newcommand{\SimpGraph}[4]{
+	\foreach \x in {1,...,#1} {
+		\coordinate (#3\x) at ($#2 + (90-\x*360/#1+180/#1:#4)$);
+		\filldraw[black] (#3\x) circle (1pt);}
+	\foreach \x in {1,...,#1} {
+		\foreach \y in {\x,...,#1} {
+			\draw[black] (#3\x) -- (#3\y);}}
+	}
+	
+	\begin{my}
+		\begin{tikzpicture}
+			\SimpGraph{3}{(0,-1.5)}{S}{2}
+			\node[above right] at (S1) {0}; \node[below] at (S2) {1}; \node[above left] at (S3) {2};
+		\end{tikzpicture}
+	\end{my}
+
+	\begin{my}
+		\begin{tikzpicture}
+			\SimpGraph{3}{(0,-1.5)}{S}{2}
+			\node[above right] at (S1) {0}; \node[below] at (S2) {1}; \node[above left] at (S3) {2};
+			\coordinate (T1) at (1.5,-2); \coordinate (T2) at (0,0); \draw[very thick, red] (T1)--(T2);
+		\end{tikzpicture}
+	\end{my}
+	
+	\begin{my}
+		\begin{tikzpicture}
+			\SimpGraph{3}{(0,-1.5)}{S}{2}
+			\node[above right] at (S1) {0}; \node[below] at (S2) {1}; \node[above left] at (S3) {2};
+			\coordinate (T1) at (1.5,-2); \coordinate (T2) at (0,0); \draw[very thick, red] (T1)--(T2);
+			\filldraw[blue] (intersection of S1--S2 and T1--T2) circle (3pt);
+			\filldraw[blue] (intersection of S1--S3 and T1--T2) circle (3pt);
+		\end{tikzpicture}
+	\end{my}
+	
+	\begin{my}
+		\begin{tikzpicture}
+			\SimpGraph{6}{(0,-2)}{S}{2} 
+			\foreach \x in {0,1,...,5} {\node at ($(0,-2)+(60-\x*60:2.3)$) {\x};}
+		\end{tikzpicture}
+	\end{my}
+	
+	\begin{my}
+		\begin{tikzpicture}
+			\SimpGraph{6}{(0,-2)}{S}{2} 
+			\foreach \x in {0,1,...,5} {\node at ($(0,-2)+(60-\x*60:2.3)$) {\x};}
+			\coordinate (T1) at (0.25,-4); \coordinate (T2) at (0.25,0); \draw[very thick,red] (T1) -- (T2); 
+		\end{tikzpicture}
+	\end{my}
+	
+	\begin{my}
+		\begin{tikzpicture}
+			\SimpGraph{6}{(0,-2)}{S}{2} 
+			\foreach \x in {0,1,...,5} {\node at ($(0,-2)+(60-\x*60:2.3)$) {\x};}
+			\coordinate (T1) at (0.25,-4); \coordinate (T2) at (0.25,0); \draw[very thick,red] (T1) -- (T2); 
+			\foreach \x in {1,2,3} {\foreach \y in {4,5,6} {\filldraw[blue] (intersection of S\x--{S\y} and T1--T2) circle (3pt);}}
+		\end{tikzpicture}
+	\end{my}
+	
+\end{document}
