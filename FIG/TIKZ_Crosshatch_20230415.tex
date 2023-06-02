@@ -83,4 +83,14 @@
 		\end{tikzpicture}
 	\end{my}
 	
+	\begin{my}
+	\begin{tikzpicture}
+		\matrix[row sep=1em, column sep=1em, every cell/.style={scale=0.5}]{
+		\crosshatchExample \draw[thick,red] (03)--(23); \draw[thick,red] (03)--(05); \filldraw[red,opacity=0.3] (03)--(23)--(05)--cycle; &
+		\crosshatchExample \filldraw[red,opacity=0.3] (03) to [bend left=20] (05) to [bend left=20] cycle; &
+		\crosshatchExample \filldraw[red,opacity=0.3] (03)--(13)--(15)--(05)--cycle;
+		\\};
+	\end{tikzpicture}
+	\end{my}
+	
 \end{document}

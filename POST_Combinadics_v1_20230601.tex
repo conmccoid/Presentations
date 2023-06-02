@@ -1,0 +1,256 @@
+\documentclass[a0paper,portrait,final]{baposter}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{tikz}
+\usetikzlibrary{decorations.pathreplacing,positioning,calc,intersections,3d,shapes.geometric,shapes,chains,math,fit,backgrounds}
+\usepackage{colortbl}
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+\usepackage{xcolor}
+
+\usepackage{pdfpages}
+\usepackage{multicol}
+
+\newcommand{\abs}[1]{\left \vert #1 \right \vert}
+\newcommand{\norm}[1]{\left \Vert #1 \right \Vert}
+\newcommand{\order}[1]{\mathcal{O} \left ( #1 \right )}
+\newcommand{\set}[1]{\left \{ #1 \right \}}
+\newcommand{\Set}[2]{\left \{ #1 \ \middle \vert \ #2 \right \}}
+\newcommand{\vmat}[1]{\begin{vmatrix} #1 \end{vmatrix}}
+\DeclareMathOperator{\sign}{sign}
+\DeclareMathOperator{\conv}{conv}
+\DeclareMathOperator{\Span}{span}
+\DeclareMathOperator{\diag}{diag}
+
+\newcommand{\bbn}{\mathbb{N}}
+\newcommand{\bbz}{\mathbb{Z}}
+\newcommand{\bbq}{\mathbb{Q}}
+\newcommand{\bbr}{\mathbb{R}}
+\newcommand{\bbc}{\mathbb{C}}
+\newcommand{\bbf}{\mathbb{F}}
+
+\newtheorem{conj}{Conjecture}
+\newtheorem{definition}{Definition}
+\newtheorem{proposition}{Proposition}
+\newtheorem{lemma}{Lemma}
+\newtheorem{corollary}{Corollary}
+\newtheorem{theorem}{Theorem}
+
+\definecolor{darkgreen}{rgb}{0,0.6,0.1}
+
+\let\vec\mathbf
+
+\begin{document}
+
+\begin{poster}{
+grid=true,
+eyecatcher=true,
+%=== Column spacing ===
+% columns=2,
+colspacing=1em,
+%=== Color style ===
+bgColorOne=white,
+bgColorTwo=white,
+borderColor=blue,
+headerColorOne=blue,
+headerColorTwo=blue,
+headerFontColor=white,
+boxColorOne=white,
+%boxColorTwo=lightblue,
+%=== Format of textbox ===
+textborder=rounded,
+%=== Format of text header ===
+headerborder=closed,
+headerheight=0.1\textheight,
+%  textfont=\sc, An example of changing the text font
+headershape=roundedright,
+headershade=shadelr,
+headerfont=\Large\bf\textsc, %Sans Serif
+textfont={\setlength{\parindent}{1.5em}},
+boxshade=plain,
+%  background=shade-tb,
+background=plain,
+linewidth=2pt%
+}
+
+{\centering\bf\textsc{Combinadics adjacency matrix}\vspace{0.2em}}
+{\textsc{Conor McCoid\\ \small{Universit\'e Laval}}}
+% nb: add logo to right
+
+\headerbox{Combinadics}{name=def,column=0,row=0,span=1,height=0.19}{
+The combinatorial number system, or combinadics, is a way to enumerate all $m$-combinations.
+Each combination of $m$ natural numbers is given a ranking from 0 to $\binom{n}{m} - 1$.
+
+The ranking $N(J)$ of an $m$--combination $J=\set{c_1,\dots,c_m}$, arranged in lexicographical order, of natural numbers $\set{0,\dots,n-1}$ is equal to
+\begin{equation*}
+N(J) = \binom{c_m}{m} + \dots + \binom{c_1}{1}.
+\end{equation*}
+}
+
+
+\headerbox{Unranking}{name=rank,column=1,row=0,span=1,height=0.19}{
+Generating $J$ from $N(J)$, called unranking, can be achieved through a greedy algorithm using the same coefficients.
+Let $c$ be the largest number in $\set{0,\dots,n-1}$ such that $N(J) \geq \binom{c}{m}$.
+Then $c \in J$.
+Subtract $\binom{c}{m}$ from $N(J)$ and repeat, now considering the numbers $\set{0,\dots,c-1}$ and the $(m-1)$--combination $J \setminus \set{c}$.
+}
+
+\headerbox{Important lemma}{name=lemma,column=2,row=0,span=1,height=0.08}{
+\begin{lemma} \label{lem: rank sum}
+For $m$-combination $J$
+\begin{equation*}
+N(J^\complement) + N(J) = \binom{n}{m} - 1
+\end{equation*}
+\end{lemma}
+}
+
+\headerbox{Anti-transpose}{name=unrank,column=2,row=0,span=1,height=0.1,below=lemma}{
+The anti-transpose of a matrix $A$, denoted $A^\tau$, is its reflection over its northeast-to-southwest diagonal.
+That is, if $A \in \bbr^{m \times m}$ then $\left ( A^\tau \right )_{i,j} = \left ( A \right )_{m-j+1, m-i+1}$, where $i,j=\set{1,\dots,m}$.
+}
+
+\headerbox{Adjacency matrix}{name=adj mat, column=0,row=2,span=1,height=0.4, below=def}{
+\begin{definition}[Adjacency]
+Two combinations $J$ and $K$ with the same cardinality are said to be adjacent if they differ by one element.
+That is,
+$$|K \cap J| = |K|-1=|J|-1.$$
+\end{definition}
+
+Let $A_m^n$ be the adjacency matrix for $m$-combinations taken over $n$ elements.
+The following lemma gives a recurrence relation to construct $A_m^n$.
+
+\begin{lemma} \label{lem: recurrence}
+For $n > m > 1$
+\begin{align*}
+A_m^n = & \begin{bmatrix} A^{n-1}_m & \tilde{A}_m^n \\ (\tilde{A}_m^n)^\top & A_{m-1}^{n-1} \end{bmatrix}, \\
+\tilde{A}_m^n = & \begin{bmatrix} \tilde{A}_m^{n-1} & 0_{\binom{n-2}{m-2} \times \binom{n-2}{m}} \\ I_{\binom{n-2}{m-1}} & \tilde{A}_{m-1}^{n-1} \end{bmatrix},
+\end{align*}
+with starting conditions
+\begin{align*}
+A_1^n = & \begin{bmatrix} 0 & 1 & \dots & 1 \\ 1 & 0 & \ddots & \vdots \\ \vdots & \ddots & \ddots & 1 \\ 1 & \dots & 1 & 0 \end{bmatrix}, &
+%\tilde{A}_1^n = & \begin{bmatrix} 1 \\ \vdots \\ 1 \end{bmatrix}, &
+\tilde{A}_2^4 = & \begin{bmatrix} 1 & 1 & 0 \\ 1 & 0 & 1 \\ 0 & 1 & 1 \end{bmatrix} .
+\end{align*}
+\end{lemma}
+}
+
+\headerbox{Proof}{name=proof, column=1, row=2,span=2, height=0.4, below=rank}{
+\begin{multicols}{2}
+
+\begin{center}
+\begin{tabular}{r | c c}
+	& $J_i$ & $J_j$ \\ \hline
+	$K_i$ & $A^{n-1}_m$ & $\tilde{A}^n_m$ \\
+	$K_j$ & $(\tilde{A}^n_m)^\tau$ & $A^{n-1}_{m-1}$
+\end{tabular}
+\end{center}
+
+The combinations $J_i$ and $K_i$ are $m$-combinations over $n-1$ elements, so the upper left block is $A_m^{n-1}$:
+\begin{equation*}
+\left ( A_m^{n-1} \right )_{N(J_i)+1,N(K_i)+1} = \left ( A_m^n \right )_{N(J_i)+1,N(K_i)+1}.
+\end{equation*}
+
+Both $J_j$ and $K_j$ have the element $n-1$, so
+\begin{align*}
+N(J_j) = & \binom{n-1}{m} + N(J_j \setminus \set{n-1}), \\
+N(K_j) = & \binom{n-1}{m} + N(K_j \setminus \set{n-1}).
+\end{align*}
+This makes the bottom right block $A_{m-1}^{n-1}$.
+
+Subdivide the combinations $J_i$ and $K_j$ into sets that do or do not contain $n-1$ or $n-2$.
+\begin{center}
+\begin{tabular}{r | c c}
+	& $n-1 \notin$ & $n-1 \in$ \\ \hline
+	$n-2 \notin$ & $\tilde{K}_i$ & $\tilde{J}_i$ \\
+	$n-2 \in$ & $\tilde{K}_j$ & $\tilde{J}_j$
+\end{tabular}
+\end{center}
+$\tilde{K}_i$ and $\tilde{J}_j$ differ by at least two elements, so the relevant block is a zero matrix.
+$\tilde{J}_i$ and $\tilde{K}_j$ are adjacent if and only if $\tilde{J}_i \setminus \set{n-1} = \tilde{K}_j \setminus \set{n-2}$.
+This makes the relevant block an identity matrix.
+$\tilde{J}_j$ and $\tilde{K}_j$ are adjacent if and only if $\tilde{J}_j \setminus \set{n-1}$ and $\tilde{K}_j \setminus \set{n-2}$ are adjacent.
+The relevant block is then a copy of $\tilde{A}_{m-1}^{n-1}$.
+
+For the final block, consider a new set $J_k = \tilde{J}_i \setminus \set{n-1} \cup \set{n-2}$.
+Then $\tilde{J}_i$ is adjacent to $\tilde{K}_i$ if and only if $J_k$ is adjacent to $\tilde{K}_i$.
+Thus,
+\begin{equation*}
+\left ( A_m^n \right )_{N(\tilde{J}_i)+1,N(\tilde{K}_i)+1} = \left ( A_m^{n-1} \right )_{N(J_k)+1,N(\tilde{K}_i)+1}.
+\end{equation*}
+The block is then a copy of $\tilde{A}_m^{n-1}$.
+
+Since adjacency is bidirectional, $A_m^n$ is symmetric, and the bottom left block is the transpose of the upper right block.
+
+The following corollary means only half of all $A_m^n$ need to be found.
+\begin{corollary} \label{lem: anti-transpose}
+\begin{equation*}
+(A_m^n)^\tau = A_{n-m}^n.
+\end{equation*}
+\end{corollary}
+\end{multicols}
+}
+
+\headerbox{Union of adjacent combinations}{name=add, column=0,row=3,span=2,height=0.25,below=adj mat}{
+
+Define a matrix $B_m^n$ that stores the values of $N(J \cup K)$ for when $J$ and $K$ are adjacent:
+\begin{equation*}
+\left ( B^n_m \right )_{N(J) + 1, N(K)+1} = \begin{cases} N(J \cup K)+1 & J,K \text{ adjacent} \\ 0 & \text{otherwise} \end{cases}
+\end{equation*}
+
+\begin{multicols}{2}
+
+\begin{lemma}
+\begin{align*}
+B^n_1 = & \begin{bmatrix} 0 & 1 & 2 & \dots & \binom{n}{2}+1 \\
+							& 0 & 3 & \dots & \binom{n}{2}+2 \\
+							&    & \ddots & \dots & \vdots \\
+							&	&	&	0	&	\binom{n}{2}+n \\
+							&	&	&		&	0 \end{bmatrix}, &
+B^n_{n-1} = & A^n_1.
+\end{align*}
+\end{lemma}
+
+\begin{lemma}
+\begin{align*}
+B^n_m = & \begin{bmatrix} B^{n-1}_m & \tilde{B}^n_m \\ ( \tilde{B}^n_m )^\top & B^{n-1}_{m-1} \end{bmatrix} + \binom{n-1}{m+1} \begin{bmatrix} 0 & \tilde{A}^n_m \\ 0 & A^{n-1}_{m-1} \end{bmatrix}, \\
+\tilde{B}^n_m = & \begin{bmatrix} \tilde{B}^{n-1}_m & 0 \\ \diag(K) & \tilde{B}^{n-1}_{m-1} \end{bmatrix} - \binom{n-2}{m+1} \begin{bmatrix} \tilde{A}^{n-1}_m & 0 \\ 0 & 0 \end{bmatrix},
+\end{align*}
+where $\diag(K)$ is the diagonal matrix with entries equal to the row index.
+\end{lemma}
+
+\end{multicols}
+}
+\headerbox{Intersections}{name=sub,column=2,span=1,height=0.25,below=proof}{
+\begin{corollary}
+Let $J$ and $K$ be two adjacent $m$--combinations, then
+$$\left ( B^n_m \right )^\tau_{N(J)+1,N(K)+1} = \binom{n}{m} - N(J \cap K) .$$
+\end{corollary}
+
+\begin{align*}
+\left ( B^n_m \right)^\tau_{N(J)+1,N(K)+1} = & \left ( B^n_m \right)_{\binom{n}{m} - N(K), \binom{n}{m} - N(J)} \\
+	= & \left ( B^n_m \right)_{N(K^\complement)+1, N(J^\complement) + 1} \\
+	= & N(K^\complement \cup J^\complement)+1 \\
+	= & N( (J \cap K)^\complement )+1 \\
+	= & \binom{n}{m} - N(J \cap K).
+\end{align*}
+}
+
+\nocite{lehmer1964machine, mccaffrey2004generating, donnot2020unranking, macaulay1927some}
+
+\headerbox{References}{name=ref,column=0,span=3,below=add}{
+\begin{multicols}{2}
+\bibliographystyle{siam}
+\renewcommand{\section}[2]{\vskip 0.05em}
+\bibliography{REF_Combinadics_v1_20230601}
+\end{multicols}
+}
+ 
+\end{poster}
+
+\end{document}
