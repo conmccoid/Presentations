@@ -69,5 +69,17 @@
 			\draw[decorate,decoration={brace,amplitude=4pt,raise=6pt},blue] (Om12) -- node[left=8pt] {$\Delta T_1^2$} (Om13);
 	\end{tikzpicture}
 \end{my}
+
+\begin{my}
+	\begin{tikzpicture}
+			\SolveLadder
+			\draw[black, ->] (Om1) -- (Om21) -- (Om12) -- (Om23);
+			\draw[black, ->] (Om2) -- (Om11) -- (Om22) -- (Om13);
+			\draw[decorate,decoration={brace,mirror,amplitude=4pt,raise=6pt},blue] (Om21) -- node[right=8pt] {$\Delta T_2^2$} (Om22);
+			\draw[decorate,decoration={brace,amplitude=4pt,raise=6pt},blue] (Om11) -- node[left=8pt] {$\Delta T_1^2$} (Om12);
+			\draw[decorate,decoration={brace,mirror,amplitude=4pt,raise=6pt},blue] (Om22) -- node[right=8pt] {$\Delta T_2^3$} (Om23);
+			\draw[decorate,decoration={brace,amplitude=4pt,raise=6pt},blue] (Om12) -- node[left=8pt] {$\Delta T_1^3$} (Om13);
+	\end{tikzpicture}
+\end{my}
 	
 \end{document}

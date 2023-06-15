@@ -71,6 +71,7 @@
 
                     <section data-auto-animate>
                         <p>Schwarz methods divide the domain into smaller problems</p>
+                        <img src="FIG/AOSM/TIKZ_AOSM_20230614-1.png">
                         <!--pic of subdomain splitting-->
                     </section>
 
@@ -124,7 +125,7 @@
 
                     <section data-auto-animate>
                         <p>We could use Robin BCs instead, and have no overlap</p>
-
+                        <img src="FIG/AOSM/TIKZ_AOSM_20230614-2.png">
                         <!--pic of non-overlapping subdomains-->
                     </section>
 
@@ -218,6 +219,7 @@
                     </section>
 
                     <section>
+                        <img src="FIG/AOSM/TIKZ_AOSM_20230614-3.png">
                         <!--alt-AOSM solve ladder-->
                     </section>
 
@@ -226,11 +228,50 @@
                         <p class="fragment">Since we're applying a modified Gram-Schmidt to these vectors, this method is equivalent to GMRES</p>
                         <p class="fragment">Unlike GMRES, we can easily save the results for future use, and we can minimize communication issues</p>
                     </section>
+
+                    <section>
+                        <p>There's also the option to update the BCs at every iteration</p>
+                        <img src="FIG/AOSM/TIKZ_AOSM_20230614-4.png">
+                        <!--para-AOSM solve ladder-->
+                    </section>
                 </section>
 
                 <section>
                     <section>
                         <h3>Numerical experiments</h3>
+                    </section>
+
+                    <section>
+                        <p class="r-fit-text">Recall the sample problem:
+                            \[\Delta u(x,y) = f(x,y), \quad (x,y) \in \Omega = [-1,1] \times [-1,1]\]
+                            \[u(x,y)=h(x,y), \quad (x,y) \in \partial \Omega\]
+                        </p>
+
+                        <p>Let's apply AOSMs to this problem</p>
+                    </section>
+
+                    <section>
+                        <img src="FIG/AOSM/PLOT_AOSMConv_base_20230615.png">
+                    </section>
+
+                    <section>
+                        <img src="FIG/AOSM/PLOT_AOSMConv_saves_20230615.png">
+                    </section>
+
+                    <section>
+                        <img src="FIG/AOSM/PLOT_AOSMConv_restarts_20230615.png">
+                    </section>
+
+                    <section>
+                        <!--heat eqn-->
+                    </section>
+
+                    <section>
+                        <!--figures-->
+                    </section>
+
+                    <section>
+                        <!--figures-->
                     </section>
                 </section>
 
@@ -239,24 +280,31 @@
                         <h3>Woodbury matrix identity</h3>
                     </section>
 
-                    <section>
+                    <section data-auto-animate>
                         <p>The updates to $T_1$ and $T_2$ are low rank</p>
 
                         <p class="fragment">In order to preserve any matrix factorizations, we can use the Woodbury matrix identity to apply these low rank updates</p>
+                        
+                        <p class="fragment">
+                            \[(A - V W^\top) \vec{u} = \vec{f},\]
+                            \[\vec{u} = A^{-1} \vec{f} + A^{-1} V (I_{k \times k} - W^\top A^{-1} V)^{-1} W^\top A^{-1} \vec{f}\]
+                        </p>
+                    </section>
 
-                        <!--equation for Woodbury-->
+                    <section data-auto-animate>
+                        <p>
+                            \[(A - V W^\top) \vec{u} = \vec{f},\]
+                            \[\vec{u} = A^{-1} \vec{f} + A^{-1} V (I_{k \times k} - W^\top A^{-1} V)^{-1} W^\top A^{-1} \vec{f}\]
+                        </p>
+
+                        <p>This requires one additional solve per iteration, $A^{-1} \vec{v}$</p>
+
+                        <p class="fragment">For any factorization to be faster, it needs to reduce the computation time by a factor of 1.5</p>
                     </section>
 
                     <section>
-                        <!--additional solves for Woodbury-->
-                    </section>
-
-                    <section>
-                        <!--possible analytic forms of these solves-->
-                    </section>
-
-                    <section>
-                        <!--accumulation of round-off in analytic forms, incl. figures of num. exp.-->
+                        <p>There are analytic forms of this additional solve, but they are prone to accumulation of round-off error</p>
+                        <img src="FIG/AOSM/PLOT_AOSMConv_Woodbury_20230615.png">
                     </section>
                 </section>
 
@@ -264,7 +312,7 @@
                     <h3>Conclusions</h3>
                     <ul>
                         <li class="fragment">AOSMs give GMRES convergence without GMRES cost</li>
-                        <li class="fragment"></li>
+                        <li class="fragment">Some stability issues still need to be solved</li>
                     </ul>
                 </section>
             </div>
