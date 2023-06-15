@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="en">
+
+    <head>
+        <meta charset="utf-8">
+
+        <title>Adaptive optimised Schwarz methods</title>
+
+        <link rel="stylesheet" href="dist/reset.css">
+        <link rel="stylesheet" href="dist/reveal.css">
+        <link rel="stylesheet" href="dist/theme/white.css" id="theme">
+
+        <link rel="stylesheet" href="plugin/highlight/monokai.css">
+
+        <style id="span-fix" type="text/css">
+            
+        h1 span {
+            display:inline-block;
+        }
+        </style>
+    </head>
+
+    <body>
+        <div class="reveal">
+            <div class="slides">
+
+                <section>
+                    <h3>Adaptive optimised Schwarz methods</h3>
+
+                    <p>Conor McCoid</p>
+                    <p>Felix Kwok</p>
+                    <p><small>Université Laval</small></p>
+
+                    <img src="FIG/ULaval-C.png" height="105" width="255">
+                </section>
+
+                <section>
+                    <section>
+                        <h3>Schwarz methods</h3>
+                    </section>
+
+                    <section data-auto-animate>
+                        <p class="r-fit-text">Consider the following sample problem:
+                            \[\Delta u(x,y) = f(x,y), \quad (x,y) \in \Omega = [-1,1] \times [-1,1]\]
+                            \[u(x,y)=h(x,y), \quad (x,y) \in \partial \Omega\]
+                        </p>
+
+                        <p class="fragment">We'll discretize this into</p>
+                        <p class="fragment">
+                            \[A \vec{u} = \vec{f}, \quad A \in \mathbb{R}^{N \times N}\]
+                        </p>
+                    </section>
+
+                    <section data-auto-animate>
+                        <p> 
+                            \[A \vec{u} = \vec{f}, \quad A \in \mathbb{R}^{N \times N}\]
+                        </p>
+                        <p>If $N$ is very large, this can take a long time to find $\vec{u}$</p>
+                        <p class="fragment">Schwarz methods divide the domain into smaller problems</p>
+                    </section>
+
+                    <section data-auto-animate>
+                        <p>Schwarz methods divide the domain into smaller problems</p>
+                        <p class="r-fit-text">
+                            \[\Delta u_1^n(x,y) = f(x,y), \quad (x,y) \in \Omega_1 = [-1,\alpha] \times [-1,1]\]
+                            \[u_1^n(\alpha,y)=u_2^{n-1}(\alpha,y)\]
+                            \[\Delta u_2^n(x,y) = f(x,y), \quad (x,y) \in \Omega_2 = [\beta,1] \times [-1,1]\]
+                            \[u_2^n(\beta,y)=u_1^{n-1}(\beta,y)\]
+                        </p>
+                    </section>
+
+                    <section data-auto-animate>
+                        <p>Schwarz methods divide the domain into smaller problems</p>
+                        <!--pic of subdomain splitting-->
+                    </section>
+
+                    <section data-auto-animate>
+                        <p>Schwarz methods divide the domain into smaller problems</p>
+                        <p>
+                            \[\begin{bmatrix} A_{11} & A_{1\Gamma} \\ A_{\Gamma 1} & A_{\Gamma \Gamma} & A_{\Gamma 2} \\ & A_{2 \Gamma} & A_{22} \end{bmatrix}
+                            \begin{bmatrix} \vec{u}_1 \\ \vec{u}_\Gamma \\ \vec{u}_2 \end{bmatrix}
+                            = \begin{bmatrix} \vec{f}_1 \\ \vec{f}_\Gamma \\ \vec{f}_2 \end{bmatrix}\]
+                        </p>
+                    </section>
+
+                    <section data-auto-animate>
+                        <p>Schwarz methods divide the domain into smaller problems</p>
+                        <p class="r-fit-text">
+                            \[\begin{bmatrix} A_{11} & A_{1 \Gamma} \\ A_{\Gamma 1} & A_{\Gamma \Gamma} + T_2 \end{bmatrix}
+                            \begin{bmatrix} \vec{u}_1^{n+1} \\ \vec{u}_{1 \Gamma}^{n+1} \end{bmatrix}
+                            = \begin{bmatrix} \vec{f}_1 \\ \vec{f}_\Gamma \end{bmatrix}
+                            + \begin{bmatrix} ~ \\ -A_{\Gamma 2} \vec{u}_2^n + T_2 \vec{u}_{2 \Gamma}^n \end{bmatrix}\]
+                            \[\begin{bmatrix} A_{22} & A_{2 \Gamma} \\ A_{\Gamma 2} & A_{\Gamma \Gamma} + T_1 \end{bmatrix}
+                            \begin{bmatrix} \vec{u}_2^{n+1} \\ \vec{u}_{2 \Gamma}^{n+1} \end{bmatrix}
+                            = \begin{bmatrix} \vec{f}_2 \\ \vec{f}_\Gamma \end{bmatrix}
+                            + \begin{bmatrix} ~ \\ -A_{\Gamma 1} \vec{u}_1^n + T_1 \vec{u}_{1 \Gamma}^n \end{bmatrix}\]
+                        </p>
+                    </section>
+                </section>
+
+                <section>
+                    <section>
+                        <h3>Optimised Schwarz methods</h3>
+                    </section>
+
+                    <section data-auto-animate>
+                        <p>Boundary conditions transport information between the two subdomains</p>
+
+                        <p class="fragment">We've used Dirichlet BCs, which require an overlap</p>
+
+                        <p class="fragment">We could use Robin BCs instead, and have no overlap</p>
+                    </section>
+
+                    <section data-auto-animate>
+                        <p>We could use Robin BCs instead, and have no overlap</p>
+
+                        <p class="r-fit-text">
+                            \[\Delta u_1^n(x,y) = f(x,y), \quad (x,y) \in \Omega_1 = [-1,0] \times [-1,1]\]
+                            \[\frac{\partial u_1^n}{\partial x} + p u_1^n(0,y)= \frac{\partial u_2^{n-1}}{\partial x} + p u_2^{n-1}(0,y)\]
+                            \[\Delta u_2^n(x,y) = f(x,y), \quad (x,y) \in \Omega_2 = [0,1] \times [-1,1]\]
+                            \[\frac{\partial u_2^n}{\partial x} + p u_2^n(0,y)= \frac{\partial u_1^{n-1}}{\partial x} + p u_1^{n-1}(0,y)\]
+                        </p>
+                    </section>
+
+                    <section data-auto-animate>
+                        <p>We could use Robin BCs instead, and have no overlap</p>
+
+                        <!--pic of non-overlapping subdomains-->
+                    </section>
+
+                    <section>
+                        <p>Now there's a choice in Robin parameter $p$, and this choice can be optimised</p>
+
+                        <p class="fragment">Optimisation is done using Fourier analysis and finds the best $p$ for all Fourier modes</p>
+
+                        <p class="fragment">If you have a specific Fourier mode in mind, you can also pick the best $p$ for just that mode</p>
+                    </section>
+
+                    <section>
+                        <p>Robin BCs aren't the only option for optimised BCs</p>
+
+                        <p class="fragment">Tangential BCs are also a popular choice, and give a second parameter $q$ to optimise
+                            \[\frac{\partial u_1^n}{\partial x} + p u_1^n(0,y) + q \frac{\partial u_1^n}{\partial y}=\]
+                            \[\frac{\partial u_2^{n-1}}{\partial x} + p u_2^{n-1}(0,y) + q \frac{\partial u_2^n}{\partial y}\]
+                        </p>
+                    </section>
+
+                    <section>
+                        <p>But the best BCs are absorbing BCs, which are used in perfectly matched layers</p>
+
+                        <p>These are dense, and correspond to Schur complements
+                            \[T_2 \to S_2 = -A_{\Gamma 2} A_{22}^{-1} A_{2 \Gamma},\]
+                            \[T_1 \to S_1 = -A_{\Gamma 1} A_{11}^{-1} A_{1 \Gamma}\]
+                        </p>
+                    </section>
+                </section>
+
+                <section>
+                    <section>
+                        <h3>Adaptive optimised Schwarz methods</h3>
+                    </section>
+
+                    <section>
+                        <p>Finding optimised BCs requires Fourier analysis on each given problem,</p>
+                        <p class="fragment">and the optimal BCs need Schur complements which are expensive to calculate</p>
+
+                        <p class="fragment">We want cheap, black box BCs</p>
+
+                        <p class="fragment">To get them, we'll find them adaptively</p>
+                    </section>
+
+                    <section>
+                        <p>Let's look at the differences between iterates for a single sudomain</p>
+
+                        <p class="r-fit-text">
+                            \[
+                                \begin{bmatrix} A_{11} & A_{1 \Gamma} \\ A_{\Gamma 1} & A_{\Gamma \Gamma} + T_2 \end{bmatrix}
+                                \left ( \begin{bmatrix} \vec{u}_1^{n+1} \\ \vec{u}_{1 \Gamma}^{n+1} \end{bmatrix} - \begin{bmatrix} \vec{u}_1^n \\ \vec{u}_{1 \Gamma}^n \end{bmatrix} \right )
+                                = 
+                            \]\[
+                                \begin{bmatrix} \vec{f}_1 \\ \vec{f}_\Gamma \end{bmatrix}
+                                + \begin{bmatrix} ~ \\ -A_{\Gamma 2} \vec{u}_2^n + T_2 \vec{u}_{2 \Gamma}^n \end{bmatrix}
+                                - \left (\begin{bmatrix} \vec{f}_1 \\ \vec{f}_\Gamma \end{bmatrix}
+                                + \begin{bmatrix} ~ \\ -A_{\Gamma 2} \vec{u}_2^{n-1} + T_2 \vec{u}_{2 \Gamma}^{n-1} \end{bmatrix} \right )
+                            \]
+                        </p>
+                    </section>
+
+                    <section data-auto-animate>
+                        <p>This leads to</p>
+                        <p>
+                            \[(A_{\Gamma \Gamma} + S_1 + T_2 - S_2) \vec{d}_{1 \Gamma}^{n+1} = (T_2 - S_2) \vec{d}_{2 \Gamma}^n \]
+                        </p>
+
+                        <p class="fragment">
+                            \[ \vec{y}^{n+1} = E_2 \vec{d}_{2 \Gamma}^n \]
+                        </p>
+                    </section>
+
+                    <section data-auto-animate>
+                        <p>
+                            \[ \vec{y}^{n+1} = E_2 \vec{d}_{2 \Gamma}^n \]
+                        </p>
+                        <p>At every other iteration, we're going to update $E_2$</p>
+                        
+                        <p class="fragment">
+                            \[ E_2 \to E_2 - \frac{ \vec{y} \vec{d}^\top }{ \Vert \vec{d} \Vert } \]
+                        </p>
+                    </section>
+
+                    <section data-auto-animate>
+                        <p>
+                            \[ \vec{y}^{n+1} = E_2 \vec{d}_{2 \Gamma}^n \]
+                        </p>
+
+                        <p>We can apply a modified Gram-Schmidt process to the vectors $\vec{d}$</p>
+                        <p class="fragment">We'll generate a low rank approximation of $E_2$, which we'll subtract off of $T_2$ to make optimised BCs</p>
+                    </section>
+
+                    <section>
+                        <!--alt-AOSM solve ladder-->
+                    </section>
+
+                    <section>
+                        <p>The vectors $\vec{d}$ lie in a Krylov subspace</p>
+                        <p class="fragment">Since we're applying a modified Gram-Schmidt to these vectors, this method is equivalent to GMRES</p>
+                        <p class="fragment">Unlike GMRES, we can easily save the results for future use, and we can minimize communication issues</p>
+                    </section>
+                </section>
+
+                <section>
+                    <section>
+                        <h3>Numerical experiments</h3>
+                    </section>
+                </section>
+
+                <section>
+                    <section>
+                        <h3>Woodbury matrix identity</h3>
+                    </section>
+
+                    <section>
+                        <p>The updates to $T_1$ and $T_2$ are low rank</p>
+
+                        <p class="fragment">In order to preserve any matrix factorizations, we can use the Woodbury matrix identity to apply these low rank updates</p>
+
+                        <!--equation for Woodbury-->
+                    </section>
+
+                    <section>
+                        <!--additional solves for Woodbury-->
+                    </section>
+
+                    <section>
+                        <!--possible analytic forms of these solves-->
+                    </section>
+
+                    <section>
+                        <!--accumulation of round-off in analytic forms, incl. figures of num. exp.-->
+                    </section>
+                </section>
+
+                <section>
+                    <h3>Conclusions</h3>
+                    <ul>
+                        <li class="fragment">AOSMs give GMRES convergence without GMRES cost</li>
+                        <li class="fragment"></li>
+                    </ul>
+                </section>
+            </div>
+        </div>
+
+        <script src="dist/reveal.js"></script>
+		<script src="plugin/notes/notes.js"></script>
+		<script src="plugin/markdown/markdown.js"></script>
+		<script src="plugin/highlight/highlight.js"></script>
+        <script src="plugin/math/math.js"></script>
+		<script>
+			// More info about initialization & config:
+			// - https://revealjs.com/initialization/
+			// - https://revealjs.com/config/
+			Reveal.initialize({
+				hash: true,
+
+				// Learn about plugins: https://revealjs.com/plugins/
+				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes, RevealMath.KaTeX ]
+			});
+		</script>
+    </body>
+</html>
