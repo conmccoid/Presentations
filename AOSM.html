@@ -117,9 +117,9 @@
 
                         <p class="r-fit-text">
                             \[\Delta u_1^n(x,y) = f(x,y), \quad (x,y) \in \Omega_1 = [-1,0] \times [-1,1]\]
-                            \[\frac{\partial u_1^n}{\partial x} + p u_1^n(0,y)= \frac{\partial u_2^{n-1}}{\partial x} + p u_2^{n-1}(0,y)\]
+                            \[\frac{\partial u_1^n}{\partial x} - p u_1^n(0,y)= \frac{\partial u_2^{n-1}}{\partial x} - p u_2^{n-1}(0,y)\]
                             \[\Delta u_2^n(x,y) = f(x,y), \quad (x,y) \in \Omega_2 = [0,1] \times [-1,1]\]
-                            \[\frac{\partial u_2^n}{\partial x} + p u_2^n(0,y)= \frac{\partial u_1^{n-1}}{\partial x} + p u_1^{n-1}(0,y)\]
+                            \[\frac{\partial u_2^n}{\partial x} - p u_2^n(0,y)= \frac{\partial u_1^{n-1}}{\partial x} - p u_1^{n-1}(0,y)\]
                         </p>
                     </section>
 
@@ -141,8 +141,8 @@
                         <p>Robin BCs aren't the only option for optimised BCs</p>
 
                         <p class="fragment">Tangential BCs are also a popular choice, and give a second parameter $q$ to optimise
-                            \[\frac{\partial u_1^n}{\partial x} + p u_1^n(0,y) + q \frac{\partial u_1^n}{\partial y}=\]
-                            \[\frac{\partial u_2^{n-1}}{\partial x} + p u_2^{n-1}(0,y) + q \frac{\partial u_2^n}{\partial y}\]
+                            \[\frac{\partial u_1^n}{\partial x} - p u_1^n(0,y) + q \frac{\partial u_1^n}{\partial y}=\]
+                            \[\frac{\partial u_2^{n-1}}{\partial x} - p u_2^{n-1}(0,y) + q \frac{\partial u_2^n}{\partial y}\]
                         </p>
                     </section>
 
