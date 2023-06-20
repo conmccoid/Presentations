@@ -264,14 +264,22 @@
 
                     <section>
                         <!--heat eqn-->
+                        <p class="r-fit-text">
+                            \[ u_t(x,y,t) = \Delta u(x,y,t), \quad (x,y) \in \Omega = [-1,1] \times [-1,1], \ t \in [0,T] \]
+                		    \[ u(x,y,0) = u_0(x,y), \quad (x,y) \in \Omega, \]
+		                    \[ u(x,y,t) = h(x,y), \quad (x,y) \in \partial \Omega, \ t \in [0,T] \]
+                        </p>
                     </section>
 
                     <section>
-                        <!--figures-->
+                        <p>
+                            \[\frac{u_{n+1} - u_n}{\Delta t} = A u_{n+1}\]
+                            \[(I - \Delta t A) u_{n+1} = u_n\]
+                        </p>
                     </section>
 
                     <section>
-                        <!--figures-->
+                        <img src="FIG/AOSM/PLOT_AOSMHeat_conv_20230620.png">
                     </section>
                 </section>
 
