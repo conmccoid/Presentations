@@ -25,7 +25,7 @@
             <div class="slides">
 
                 <section>
-                    <h3>Adaptive optimised Schwarz methods</h3>
+                    <h3>Adaptive optimized Schwarz methods</h3>
 
                     <p>Conor McCoid</p>
                     <p>Felix Kwok</p>
@@ -77,21 +77,27 @@
 
                     <section data-auto-animate>
                         <p>Schwarz methods divide the domain into smaller problems</p>
+                        <p>Multiplicative Schwarz: solve one subdomain after the other</p>
+                        <p class="fragment">Additive Schwarz: solve both subdomains at the same time</p>
+                    </section>
+
+                    <section data-auto-animate>
+                        <p>Schwarz methods divide the domain into smaller problems</p>
                         <p>
                             \[\begin{bmatrix} A_{11} & A_{1\Gamma} \\ A_{\Gamma 1} & A_{\Gamma \Gamma} & A_{\Gamma 2} \\ & A_{2 \Gamma} & A_{22} \end{bmatrix}
                             \begin{bmatrix} \vec{u}_1 \\ \vec{u}_\Gamma \\ \vec{u}_2 \end{bmatrix}
                             = \begin{bmatrix} \vec{f}_1 \\ \vec{f}_\Gamma \\ \vec{f}_2 \end{bmatrix}\]
                         </p>
                     </section>
-
+                    
                     <section data-auto-animate>
                         <p>Schwarz methods divide the domain into smaller problems</p>
                         <p class="r-fit-text">
-                            \[\begin{bmatrix} A_{11} & A_{1 \Gamma} \\ A_{\Gamma 1} & A_{\Gamma \Gamma} + T_2 \end{bmatrix}
+                            \[\begin{bmatrix} A_{11} & A_{1 \Gamma} \\ A_{\Gamma 1} & A_{\Gamma \Gamma} + T_{2 \to 1} \end{bmatrix}
                             \begin{bmatrix} \vec{u}_1^{n+1} \\ \vec{u}_{1 \Gamma}^{n+1} \end{bmatrix}
                             = \begin{bmatrix} \vec{f}_1 \\ \vec{f}_\Gamma \end{bmatrix}
                             + \begin{bmatrix} ~ \\ -A_{\Gamma 2} \vec{u}_2^n + T_2 \vec{u}_{2 \Gamma}^n \end{bmatrix}\]
-                            \[\begin{bmatrix} A_{22} & A_{2 \Gamma} \\ A_{\Gamma 2} & A_{\Gamma \Gamma} + T_1 \end{bmatrix}
+                            \[\begin{bmatrix} A_{22} & A_{2 \Gamma} \\ A_{\Gamma 2} & A_{\Gamma \Gamma} + T_{1 \to 2} \end{bmatrix}
                             \begin{bmatrix} \vec{u}_2^{n+1} \\ \vec{u}_{2 \Gamma}^{n+1} \end{bmatrix}
                             = \begin{bmatrix} \vec{f}_2 \\ \vec{f}_\Gamma \end{bmatrix}
                             + \begin{bmatrix} ~ \\ -A_{\Gamma 1} \vec{u}_1^n + T_1 \vec{u}_{1 \Gamma}^n \end{bmatrix}\]
@@ -101,11 +107,11 @@
 
                 <section>
                     <section>
-                        <h3>Optimised Schwarz methods</h3>
+                        <h3>Optimized Schwarz methods</h3>
                     </section>
 
                     <section data-auto-animate>
-                        <p>Boundary conditions transport information between the two subdomains</p>
+                        <p>Boundary conditions transmit information between the two subdomains</p>
 
                         <p class="fragment">We've used Dirichlet BCs, which require an overlap</p>
 
@@ -130,40 +136,49 @@
                     </section>
 
                     <section>
-                        <p>Now there's a choice in Robin parameter $p$, and this choice can be optimised</p>
+                        <p>Now there's a choice in Robin parameter $p$, and this choice can be optimized</p>
 
-                        <p class="fragment">Optimisation is done using Fourier analysis and finds the best $p$ for all Fourier modes</p>
+                        <p class="fragment">Optimization is done using Fourier analysis and finds the best $p$ for all Fourier modes</p>
 
                         <p class="fragment">If you have a specific Fourier mode in mind, you can also pick the best $p$ for just that mode</p>
                     </section>
 
                     <section>
-                        <p>Robin BCs aren't the only option for optimised BCs</p>
+                        <p>Robin BCs aren't the only option for optimized BCs</p>
 
-                        <p class="fragment">Tangential BCs are also a popular choice, and give a second parameter $q$ to optimise
+                        <p class="fragment">Tangential BCs are also a popular choice, and give a second parameter $q$ to optimize
                             \[\frac{\partial u_1^n}{\partial x} - p u_1^n(0,y) + q \frac{\partial u_1^n}{\partial y}=\]
                             \[\frac{\partial u_2^{n-1}}{\partial x} - p u_2^{n-1}(0,y) + q \frac{\partial u_2^n}{\partial y}\]
                         </p>
                     </section>
 
-                    <section>
+                    <section data-auto-animate>
                         <p>But the best BCs are absorbing BCs, which are used in perfectly matched layers</p>
 
                         <p>These are dense, and correspond to Schur complements
-                            \[T_2 \to S_2 = -A_{\Gamma 2} A_{22}^{-1} A_{2 \Gamma},\]
-                            \[T_1 \to S_1 = -A_{\Gamma 1} A_{11}^{-1} A_{1 \Gamma}\]
+                            \[T_{2 \to 1} \to S_{2 \to 1} = -A_{\Gamma 2} A_{22}^{-1} A_{2 \Gamma},\]
+                            \[T_{1 \to 2} \to S_{1 \to 2} = -A_{\Gamma 1} A_{11}^{-1} A_{1 \Gamma}\]
                         </p>
+                    </section>
+
+                    <section data-auto-animate>
+                        <p>These are dense, and correspond to Schur complements
+                            \[T_{2 \to 1} \to S_{2 \to 1} = -A_{\Gamma 2} A_{22}^{-1} A_{2 \Gamma},\]
+                            \[T_{1 \to 2} \to S_{1 \to 2} = -A_{\Gamma 1} A_{11}^{-1} A_{1 \Gamma}\]
+                        </p>
+                        <p>This means they have about the same computation time as $M$ iterations, where $M$ is the size of the overlap</p>
                     </section>
                 </section>
 
                 <section>
                     <section>
-                        <h3>Adaptive optimised Schwarz methods</h3>
+                        <h3>Adaptive transmission conditions</h3>
                     </section>
 
                     <section>
-                        <p>Finding optimised BCs requires Fourier analysis on each given problem,</p>
-                        <p class="fragment">and the optimal BCs need Schur complements which are expensive to calculate</p>
+                        <p>Finding optimized BCs requires Fourier analysis on each given problem</p>
+
+                        <p class="fragment">And the optimal BCs need Schur complements which are expensive to calculate</p>
 
                         <p class="fragment">We want cheap, black box BCs</p>
 
@@ -175,32 +190,38 @@
 
                         <p class="r-fit-text">
                             \[
-                                \begin{bmatrix} A_{11} & A_{1 \Gamma} \\ A_{\Gamma 1} & A_{\Gamma \Gamma} + T_2 \end{bmatrix}
+                                \begin{bmatrix} A_{11} & A_{1 \Gamma} \\ A_{\Gamma 1} & A_{\Gamma \Gamma} + T_{2 \to 1} \end{bmatrix}
                                 \left ( \begin{bmatrix} \vec{u}_1^{n+1} \\ \vec{u}_{1 \Gamma}^{n+1} \end{bmatrix} - \begin{bmatrix} \vec{u}_1^n \\ \vec{u}_{1 \Gamma}^n \end{bmatrix} \right )
                                 = 
                             \]\[
                                 \begin{bmatrix} \vec{f}_1 \\ \vec{f}_\Gamma \end{bmatrix}
-                                + \begin{bmatrix} ~ \\ -A_{\Gamma 2} \vec{u}_2^n + T_2 \vec{u}_{2 \Gamma}^n \end{bmatrix}
+                                + \begin{bmatrix} ~ \\ -A_{\Gamma 2} \vec{u}_2^n + T_{2 \to 1} \vec{u}_{2 \Gamma}^n \end{bmatrix}
                                 - \left (\begin{bmatrix} \vec{f}_1 \\ \vec{f}_\Gamma \end{bmatrix}
-                                + \begin{bmatrix} ~ \\ -A_{\Gamma 2} \vec{u}_2^{n-1} + T_2 \vec{u}_{2 \Gamma}^{n-1} \end{bmatrix} \right )
+                                + \begin{bmatrix} ~ \\ -A_{\Gamma 2} \vec{u}_2^{n-1} + T_{2 \to 1} \vec{u}_{2 \Gamma}^{n-1} \end{bmatrix} \right )
                             \]
+                        </p>
+                    </section>
+
+                    <section>
+                        <p>We then perform what's known as static condensation by noting that
+                            \[A_{11} \vec{d}_1^{n+1} = -A_{\Gamma 1} \vec{d}_{1 \Gamma}^{n+1} \]
                         </p>
                     </section>
 
                     <section data-auto-animate>
                         <p>This leads to</p>
                         <p>
-                            \[(A_{\Gamma \Gamma} + S_1 + T_2) \vec{d}_{1 \Gamma}^{n+1} = (T_2 - S_2) \vec{d}_{2 \Gamma}^n \]
+                            \[(A_{\Gamma \Gamma} + S_{1 \to 2} + T_{2 \to 1}) \vec{d}_{1 \Gamma}^{n+1} = (T_{2 \to 1} - S_{2 \to 1}) \vec{d}_{2 \Gamma}^n \]
                         </p>
 
                         <p class="fragment">
-                            \[ \vec{y}^{n+1} = E_2 \vec{d}_{2 \Gamma}^n \]
+                            \[ \vec{y}^{n+1} = E_2 \vec{d}_{2 \Gamma}^n = -A_{\Gamma 2} \vec{d}_2^n + T_{2 \to 1} \vec{d}_{2 \Gamma}^n \]
                         </p>
                     </section>
 
                     <section data-auto-animate>
                         <p>
-                            \[ \vec{y}^{n+1} = E_2 \vec{d}_{2 \Gamma}^n \]
+                            \[ \vec{y}^{n+1} = E_2 \vec{d}_{2 \Gamma}^n = -A_{\Gamma 2} \vec{d}_2^n + T_{2 \to 1} \vec{d}_{2 \Gamma}^n \]
                         </p>
                         <p>At every other iteration, we're going to update $E_2$</p>
                         
@@ -211,28 +232,70 @@
 
                     <section data-auto-animate>
                         <p>
-                            \[ \vec{y}^{n+1} = E_2 \vec{d}_{2 \Gamma}^n \]
+                            \[ E_2 \to E_2 - \frac{ \vec{y} \vec{d}^\top }{ \Vert \vec{d} \Vert^2 } \]
                         </p>
-
-                        <p>We can apply a modified Gram-Schmidt process to the vectors $\vec{d}$</p>
-                        <p class="fragment">We'll generate a low rank approximation of $E_2$, which we'll subtract off of $T_2$ to make optimised BCs</p>
+                        <p>With each iteration, there's a new pair of $\vec{y}$ and $\vec{d}$</p>
+                        <p class="fragment">We can apply a modified Gram-Schmidt process to the vectors $\vec{d}$, making the vectors $\vec{w}$</p>
+                        <p class="fragment">Through this process, the vectors $\vec{y}$ get modified as well, to the vectors $\vec{v}$</p>
+                    </section>
+                    <section data-auto-animate>
+                        <p>
+                            \[ E_2 \to E_2 - V W^\top \]
+                        </p>
+                        <p class="fragment">Since $V = E_2 W$, this is equivalent to
+                            \[ E_2 \to E_2 \left ( I - W W^\top \right ) \]
+                        </p>
+                        <p class="fragment">We generate a low rank approximation of $E_2$</p>
+                        <p class="fragment">To make the optimized BCs, we subtract this from $T_{2 \to 1}$</p>
                     </section>
 
                     <section>
-                        <img src="FIG/AOSM/TIKZ_AOSM_20230614-3.png">
+                        <p>The transmission conditions $T_{2 \to 1}$ and $T_{1 \to 2}$ now change iteratively</p>
+                        <img src="FIG/AOSM/TIKZ_AOSM_20230614_3.png">
                         <!--alt-AOSM solve ladder-->
                     </section>
 
                     <section>
+                        <p>Recall:
+                            \[(A_{\Gamma \Gamma} + S_{1 \to 2} + T_{2 \to 1}) \vec{d}_{1 \Gamma}^{n+1} = (T_{2 \to 1} - S_{2 \to 1}) \vec{d}_{2 \Gamma}^n \]
+                        </p>
                         <p>The vectors $\vec{d}$ lie in a Krylov subspace</p>
                         <p class="fragment">Since we're applying a modified Gram-Schmidt to these vectors, this method is equivalent to GMRES</p>
-                        <p class="fragment">Unlike GMRES, we can easily save the results for future use, and we can minimize communication issues</p>
                     </section>
 
                     <section>
                         <p>There's also the option to update the BCs at every iteration</p>
-                        <img src="FIG/AOSM/TIKZ_AOSM_20230614-4.png">
+                        <img src="FIG/AOSM/TIKZ_AOSM_20230614_4.png">
                         <!--para-AOSM solve ladder-->
+                    </section>
+                </section>
+
+                <section>
+                    <section>
+                        <h3>Adaptive Optimized Schwarz Methods (AOSMs)</h3>
+                    </section>
+                    <!--write out algorithm steps-->
+
+                    <section>
+                        <h2>Woodbury matrix identity</h2>
+                    </section>
+
+                    <section data-auto-animate>
+                        <p>The updates to $T_1$ and $T_2$ are low rank</p>
+
+                        <p class="fragment">In order to preserve any matrix factorizations, we can use the Woodbury matrix identity to apply these low rank updates</p>
+                        
+                        <p class="fragment">
+                            \[(A - V W^\top) \vec{u} = \vec{f},\]
+                            \[\vec{u} = A^{-1} \vec{f} + A^{-1} V (I_{k \times k} - W^\top A^{-1} V)^{-1} W^\top A^{-1} \vec{f}\]
+                        </p>
+                    </section>
+
+                    <section data-auto-animate>
+                        <p>
+                            \[(A - V W^\top) \vec{u} = \vec{f},\]
+                            \[\vec{u} = A^{-1} \vec{f} + A^{-1} V (I_{k \times k} - W^\top A^{-1} V)^{-1} W^\top A^{-1} \vec{f}\]
+                        </p>
                     </section>
                 </section>
 
@@ -251,15 +314,11 @@
                     </section>
 
                     <section>
-                        <img src="FIG/AOSM/PLOT_AOSMConv_base_20230615.png">
+                        <img src="FIG/AOSM/PLOT_faltAOSMConv_Laplace.png">
                     </section>
 
                     <section>
-                        <img src="FIG/AOSM/PLOT_AOSMConv_saves_20230615.png">
-                    </section>
-
-                    <section>
-                        <img src="FIG/AOSM/PLOT_AOSMConv_restarts_20230615.png">
+                        <img src="FIG/AOSM/PLOT_fparaAOSMConv_Laplace.png">
                     </section>
 
                     <section>
@@ -279,40 +338,33 @@
                     </section>
 
                     <section>
-                        <img src="FIG/AOSM/PLOT_AOSMHeat_conv_20230620.png">
-                    </section>
-                </section>
-
-                <section>
-                    <section>
-                        <h3>Woodbury matrix identity</h3>
-                    </section>
-
-                    <section data-auto-animate>
-                        <p>The updates to $T_1$ and $T_2$ are low rank</p>
-
-                        <p class="fragment">In order to preserve any matrix factorizations, we can use the Woodbury matrix identity to apply these low rank updates</p>
-                        
-                        <p class="fragment">
-                            \[(A - V W^\top) \vec{u} = \vec{f},\]
-                            \[\vec{u} = A^{-1} \vec{f} + A^{-1} V (I_{k \times k} - W^\top A^{-1} V)^{-1} W^\top A^{-1} \vec{f}\]
-                        </p>
-                    </section>
-
-                    <section data-auto-animate>
-                        <p>
-                            \[(A - V W^\top) \vec{u} = \vec{f},\]
-                            \[\vec{u} = A^{-1} \vec{f} + A^{-1} V (I_{k \times k} - W^\top A^{-1} V)^{-1} W^\top A^{-1} \vec{f}\]
-                        </p>
-
-                        <p>This requires one additional solve per iteration, $A^{-1} \vec{v}$</p>
-
-                        <p class="fragment">For any factorization to be faster, it needs to reduce the computation time by a factor of 1.5</p>
+                        <img src="FIG/AOSM/PLOT_AOSMConv_Heat_v1.png">
                     </section>
 
                     <section>
-                        <p>There are analytic forms of this additional solve, but they are prone to accumulation of round-off error</p>
-                        <img src="FIG/AOSM/PLOT_AOSMConv_Woodbury_20230615.png">
+                        <img src="FIG/AOSM/PLOT_AOSMConv_Heat_v2.png">
+                    </section>
+
+                    <section>
+                        <!--Loneland example-->
+                        <p class="r-fit-text">
+                            \[ \nabla (\alpha(x,y) \cdot \nabla u(x,y) ) = f(x,y), \quad (x,y) \in \Omega = [-1,1] \times [-1,1], \]
+                		    \[ u(x,y) = h(x,y), \quad (x,y) \in partial \Omega, \]
+                        </p>
+                        <p>Solve this using FEM software</p>
+                    </section>
+
+                    <section>
+                        <img src="FIG/AOSM/PLOT_MEFPP_loneland_K.png">
+                    </section>
+                    <section>
+                        <img src="FIG/AOSM/PLOT_MEFPP_loneland_subdomains.png">
+                    </section>
+                    <section>
+                        <img src="FIG/AOSM/PLOT_MEFPP_loneland_1.png">
+                    </section>
+                    <section>
+                        <img src="FIG/AOSM/PLOT_MEFPP_loneland_2.png">
                     </section>
                 </section>
 
@@ -320,7 +372,7 @@
                     <h3>Conclusions</h3>
                     <ul>
                         <li class="fragment">AOSMs give GMRES convergence without GMRES cost</li>
-                        <li class="fragment">Some stability issues still need to be solved</li>
+                        <li class="fragment">Transmission conditions can be re-used, for restarts and time steps</li>
                     </ul>
                 </section>
             </div>

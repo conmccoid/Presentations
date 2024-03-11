@@ -64,9 +64,8 @@
 	\begin{tikzpicture}
 			\SolveLadder
 			\draw[black, ->] (Om1) -- (Om21) -- (Om12) -- (Om23);
-			\draw[black, ->] (Om2) -- (Om11) -- (Om22) -- (Om13);
-			\draw[decorate,decoration={brace,mirror,amplitude=4pt,raise=6pt},blue] (Om21) -- node[right=8pt] {$\Delta T_2^2$} (Om22);
-			\draw[decorate,decoration={brace,amplitude=4pt,raise=6pt},blue] (Om12) -- node[left=8pt] {$\Delta T_1^2$} (Om13);
+			\draw[decorate,decoration={brace,mirror,amplitude=4pt,raise=6pt},blue] (Om21) -- node[right=8pt] {$\Delta T_{2 \to 1}^3$} (Om23);
+			\draw[decorate,decoration={brace,amplitude=4pt,raise=6pt},blue] (Om1) -- node[left=8pt] {$\Delta T_{1 \to 2}^2$} (Om12);
 	\end{tikzpicture}
 \end{my}
 
@@ -75,10 +74,12 @@
 			\SolveLadder
 			\draw[black, ->] (Om1) -- (Om21) -- (Om12) -- (Om23);
 			\draw[black, ->] (Om2) -- (Om11) -- (Om22) -- (Om13);
-			\draw[decorate,decoration={brace,mirror,amplitude=4pt,raise=6pt},blue] (Om21) -- node[right=8pt] {$\Delta T_2^2$} (Om22);
-			\draw[decorate,decoration={brace,amplitude=4pt,raise=6pt},blue] (Om11) -- node[left=8pt] {$\Delta T_1^2$} (Om12);
-			\draw[decorate,decoration={brace,mirror,amplitude=4pt,raise=6pt},blue] (Om22) -- node[right=8pt] {$\Delta T_2^3$} (Om23);
-			\draw[decorate,decoration={brace,amplitude=4pt,raise=6pt},blue] (Om12) -- node[left=8pt] {$\Delta T_1^3$} (Om13);
+			\draw[decorate,decoration={brace,mirror,amplitude=4pt,raise=6pt},blue] (Om2) -- node[right=8pt] {$\Delta T_{2 \to 1}^1$} (Om21);
+			\draw[decorate,decoration={brace,amplitude=4pt,raise=6pt},blue] (Om1) -- node[left=8pt] {$\Delta T_{1 \to 2}^1$} (Om11);
+			\draw[decorate,decoration={brace,mirror,amplitude=4pt,raise=6pt},blue] (Om21) -- node[right=8pt] {$\Delta T_{2 \to 1}^2$} (Om22);
+			\draw[decorate,decoration={brace,amplitude=4pt,raise=6pt},blue] (Om11) -- node[left=8pt] {$\Delta T_{1 \to 2}^2$} (Om12);
+			\draw[decorate,decoration={brace,mirror,amplitude=4pt,raise=6pt},blue] (Om22) -- node[right=8pt] {$\Delta T_{2 \to 1}^3$} (Om23);
+			\draw[decorate,decoration={brace,amplitude=4pt,raise=6pt},blue] (Om12) -- node[left=8pt] {$\Delta T_{1 \to 2}^3$} (Om13);
 	\end{tikzpicture}
 \end{my}
 	
