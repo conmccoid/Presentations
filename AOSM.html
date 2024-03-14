@@ -17,6 +17,10 @@
         h1 span {
             display:inline-block;
         }
+        img {
+            object-fit:cover;
+            max-width: 100%;
+        }
         </style>
     </head>
 
@@ -52,7 +56,7 @@
                     </section>
 
                     <section data-auto-animate>
-                        <p> 
+                        <p>
                             \[A \vec{u} = \vec{f}, \quad A \in \mathbb{R}^{N \times N}\]
                         </p>
                         <p>If $N$ is very large, this can take a long time to find $\vec{u}$</p>
@@ -71,7 +75,7 @@
 
                     <section data-auto-animate>
                         <p>Schwarz methods divide the domain into smaller problems</p>
-                        <img src="FIG/AOSM/TIKZ_AOSM_20230614-1.png">
+                        <img src="FIG/AOSM/TIKZ_AOSM_20230614_1.png" width="600">
                         <!--pic of subdomain splitting-->
                     </section>
 
@@ -131,7 +135,7 @@
 
                     <section data-auto-animate>
                         <p>We could use Robin BCs instead, and have no overlap</p>
-                        <img src="FIG/AOSM/TIKZ_AOSM_20230614-2.png">
+                        <img src="FIG/AOSM/TIKZ_AOSM_20230614_2.png" width="600">
                         <!--pic of non-overlapping subdomains-->
                     </section>
 
@@ -251,7 +255,7 @@
 
                     <section>
                         <p>The transmission conditions $T_{2 \to 1}$ and $T_{1 \to 2}$ now change iteratively</p>
-                        <img src="FIG/AOSM/TIKZ_AOSM_20230614_3.png">
+                        <img src="FIG/AOSM/TIKZ_AOSM_20230614_3.png" width="600">
                         <!--alt-AOSM solve ladder-->
                     </section>
 
@@ -265,7 +269,7 @@
 
                     <section>
                         <p>There's also the option to update the BCs at every iteration</p>
-                        <img src="FIG/AOSM/TIKZ_AOSM_20230614_4.png">
+                        <img src="FIG/AOSM/TIKZ_AOSM_20230614_4.png" width="600">
                         <!--para-AOSM solve ladder-->
                     </section>
                 </section>
@@ -277,11 +281,11 @@
                     <!--write out algorithm steps-->
 
                     <section>
-                        <h1>1. Initial guesses</h1>
+                        <h5>1. Initial guesses</h5>
 
-                        <p class="fragment">Make initial choices of $\vec{u}_{1 \Gamma}^0$, $T_{1 \to 2}^1$ and $T_{2 \to 1}^1</p>
+                        <p class="fragment">Make initial choices of $\vec{u}_{1 \Gamma}^0$, $T_{1 \to 2}^1$ and $T_{2 \to 1}^1$</p>
                         <p class="fragment">Find $\vec{u}_1^0 = A_{11}^{-1} \left ( \vec{f}_1 - A_{1 \Gamma} \vec{u}_{1 \Gamma}^0 \right )$</p>
-                        <p class="fragment">Solve 
+                        <p class="fragment r-fit-text">Solve 
                             \[ \begin{bmatrix} A_{22} & A_{2 \Gamma} \\ A_{\Gamma 2} & A_{\Gamma \Gamma} + T_{1 \to 2}^1 \end{bmatrix}
                             \begin{bmatrix} \vec{u}_{2}^1 \\ \vec{u}_{2 \Gamma}^1 \end{bmatrix} 
                             = \begin{bmatrix} \vec{f}_2 \\ \vec{f}_\Gamma \end{bmatrix} 
@@ -290,9 +294,9 @@
                     </section>
 
                     <section data-auto-animate>
-                        <h1>2. Seed Krylov subspace</h1>
+                        <h5>2. Seed Krylov subspace</h5>
 
-                        <p class="fragment">Solve
+                        <p class="fragment r-fit-text">Solve
                             \[ \begin{bmatrix} A_{11} & A_{1 \Gamma} \\ A_{\Gamma 1} & A_{\Gamma \Gamma} + T_{2 \to 1}^1 \end{bmatrix}
                             \begin{bmatrix} \vec{u}_{1}^2 \\ \vec{u}_{1 \Gamma}^2 \end{bmatrix} 
                             = \begin{bmatrix} \vec{f}_1 \\ \vec{f}_\Gamma \end{bmatrix} 
@@ -304,7 +308,7 @@
                     </section>
 
                     <section data-auto-animate>
-                        <h1>2. Seed Krylov subspace</h1>
+                        <h5>2. Seed Krylov subspace</h5>
                         
                         <p>Calculate $\vec{d}_{1 \Gamma}^2 = \vec{u}_{1 \Gamma}^2 - \vec{u}_{1 \Gamma}^0$ and
                             $\vec{d}_{1}^2 = \vec{u}_{1}^2 - \vec{u}_{1}^0$
@@ -318,27 +322,33 @@
                     </section>
 
                     <section data-auto-animate>
-                        <h1>2. Seed Krylov subspace</h1>
+                        <h5>2. Seed Krylov subspace</h5>
 
-                        <p class="fragment">Solve
-                            \[ \begin{bmatrix} A_{22} & A_{2 \Gamma} \\ A_{\Gamma 2} & A_{\Gamma \Gamma} + T_{1 \to 2}^1 \end{bmatrix}
-                            \begin{bmatrix} \vec{d}_{2}^3 \\ \vec{d}_{2 \Gamma}^3 \end{bmatrix} 
-                            = \begin{bmatrix} ~ \\ -A_{\Gamma 1} \vec{d}_1^2 + T_{1 \to 2}^2 \vec{d}_{1 \Gamma}^2 - \Delta T_{1 \to 2}^2 ( \vec{u}_{2 \Gamma}^1 - \vec{u}_{1 \Gamma}^0 \right ) \end{bmatrix} \]
+                        <p>Solve</p>
+                        <p>
+                            \[ \begin{bmatrix} A_{22} & A_{2 \Gamma} \\ A_{\Gamma 2} & A_{\Gamma \Gamma} + T_{1 \to 2}^2 \end{bmatrix}
+                            \begin{bmatrix} \vec{d}_{2}^3 \\ \vec{d}_{2 \Gamma}^3 \end{bmatrix} \]
+                        </p>
+                        <p>
+                            \[ = \begin{bmatrix} ~ \\ -A_{\Gamma 1} \vec{d}_1^2 + T_{1 \to 2}^2 \vec{d}_{1 \Gamma}^2 - \Delta T_{1 \to 2}^2 \left ( \vec{u}_{2 \Gamma}^1 - \vec{u}_{1 \Gamma}^0 \right ) \end{bmatrix} \]
                         </p>
                     </section>
 
                     <section data-auto-animate>
-                        <h1>2. Seed Krylov subspace</h1>
+                        <h5>2. Seed Krylov subspace</h5>
 
-                        <p>Solve
-                            \[ \begin{bmatrix} A_{22} & A_{2 \Gamma} \\ A_{\Gamma 2} & A_{\Gamma \Gamma} + T_{1 \to 2}^1 \end{bmatrix}
-                            \begin{bmatrix} \vec{d}_{2}^3 \\ \vec{d}_{2 \Gamma}^3 \end{bmatrix} 
-                            = \langle \vec{w}_1^2 \right, \vec{u}_{2 \Gamma}^1 - \vec{u}_{1 \Gamma}^0 \rangle \begin{bmatrix} ~ \\ \vec{v}_1^2 \end{bmatrix} \]
+                        <p>Solve</p>
+                        <p>
+                            \[ \begin{bmatrix} A_{22} & A_{2 \Gamma} \\ A_{\Gamma 2} & A_{\Gamma \Gamma} + T_{1 \to 2}^2 \end{bmatrix}
+                            \begin{bmatrix} \vec{d}_{2}^3 \\ \vec{d}_{2 \Gamma}^3 \end{bmatrix} \]
+                        </p>
+                        <p>
+                            \[ = \langle \vec{w}_1^2, \vec{u}_{2 \Gamma}^1 - \vec{u}_{1 \Gamma}^0 \rangle \begin{bmatrix} ~ \\ \vec{v}_1^2 \end{bmatrix} \]
                         </p>
                     </section>
                     
                     <section data-auto-animate>
-                        <h1>2. Seed Krylov subspace</h1>
+                        <h5>2. Seed Krylov subspace</h5>
                         
                         <p>Normalize $\vec{d}_{2 \Gamma}^3$ using $\alpha_2^3$ such that $\vec{w}_2^3 = \alpha_2^3 \vec{d}_{2 \Gamma}^3$ and calculate 
                             \[ \vec{v}_2^3 = \alpha_2^3 \left ( -A_{\Gamma 2} \vec{d}_2^3 + T_{2 \to 1}^1 \vec{d}_{2 \Gamma}^3 \right ) \]
@@ -349,7 +359,7 @@
                     </section>
 
                     <section data-auto-animate>
-                        <h1>3. Iterate</h1>
+                        <h5>3. Iterate</h5>
 
                         <p class="fragment">Solve for $\vec{d}_i^n$ and $\vec{d}_{i \Gamma}^n$</p>
                         <p class="fragment">Apply modified Gram-Schmidt to find $\vec{v}_i^n$ and $\vec{w}_i^n$</p>
@@ -357,7 +367,7 @@
                     </section>
 
                     <section>
-                        <h2>Woodbury matrix identity</h2>
+                        <h4>Woodbury matrix identity</h4>
                     </section>
 
                     <section data-auto-animate>
@@ -366,13 +376,6 @@
                         <p class="fragment">In order to preserve any matrix factorizations, we can use the Woodbury matrix identity to apply these low rank updates</p>
                         
                         <p class="fragment">
-                            \[(A - V W^\top) \vec{u} = \vec{f},\]
-                            \[\vec{u} = A^{-1} \vec{f} + A^{-1} V (I_{k \times k} - W^\top A^{-1} V)^{-1} W^\top A^{-1} \vec{f}\]
-                        </p>
-                    </section>
-
-                    <section data-auto-animate>
-                        <p>
                             \[(A - V W^\top) \vec{u} = \vec{f},\]
                             \[\vec{u} = A^{-1} \vec{f} + A^{-1} V (I_{k \times k} - W^\top A^{-1} V)^{-1} W^\top A^{-1} \vec{f}\]
                         </p>
@@ -429,7 +432,7 @@
                         <!--Loneland example-->
                         <p class="r-fit-text">
                             \[ \nabla (\alpha(x,y) \cdot \nabla u(x,y) ) = f(x,y), \quad (x,y) \in \Omega = [-1,1] \times [-1,1], \]
-                		    \[ u(x,y) = h(x,y), \quad (x,y) \in partial \Omega, \]
+                		    \[ u(x,y) = h(x,y), \quad (x,y) \in \partial \Omega, \]
                         </p>
                         <p>Solve this using FEM software</p>
                     </section>
