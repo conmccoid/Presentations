@@ -117,13 +117,13 @@
                     <section data-auto-animate>
                         <p>Boundary conditions transmit information between the two subdomains</p>
 
-                        <p class="fragment">We've used Dirichlet BCs, which require an overlap</p>
+                        <p class="fragment">We've used Dirichlet BCs</p>
 
-                        <p class="fragment">We could use Robin BCs instead, and have no overlap</p>
+                        <p class="fragment">We could use Robin BCs instead</p>
                     </section>
 
                     <section data-auto-animate>
-                        <p>We could use Robin BCs instead, and have no overlap</p>
+                        <p>We could use Robin BCs instead</p>
 
                         <p class="r-fit-text">
                             \[\Delta u_1^n(x,y) = f(x,y), \quad (x,y) \in \Omega_1 = [-1,0] \times [-1,1]\]
@@ -134,7 +134,7 @@
                     </section>
 
                     <section data-auto-animate>
-                        <p>We could use Robin BCs instead, and have no overlap</p>
+                        <p>We could use Robin BCs instead</p>
                         <img src="FIG/AOSM/TIKZ_AOSM_20230614_2.png" width="600">
                         <!--pic of non-overlapping subdomains-->
                     </section>
@@ -189,7 +189,7 @@
                         <p class="fragment">To get them, we'll find them adaptively</p>
                     </section>
 
-                    <section>
+                    <section data-auto-animate>
                         <p>Let's look at the differences between iterates for a single sudomain</p>
 
                         <p class="r-fit-text">
@@ -202,6 +202,20 @@
                                 + \begin{bmatrix} ~ \\ -A_{\Gamma 2} \vec{u}_2^n + T_{2 \to 1} \vec{u}_{2 \Gamma}^n \end{bmatrix}
                                 - \left (\begin{bmatrix} \vec{f}_1 \\ \vec{f}_\Gamma \end{bmatrix}
                                 + \begin{bmatrix} ~ \\ -A_{\Gamma 2} \vec{u}_2^{n-1} + T_{2 \to 1} \vec{u}_{2 \Gamma}^{n-1} \end{bmatrix} \right )
+                            \]
+                        </p>
+                    </section>
+
+                    <section data-auto-animate>
+                        <p>Let's look at the differences between iterates for a single sudomain</p>
+                        
+                        <p>
+                            \[
+                                \begin{bmatrix} A_{11} & A_{1 \Gamma} \\ A_{\Gamma 1} & A_{\Gamma \Gamma} + T_{2 \to 1} \end{bmatrix}
+                                \begin{bmatrix} \vec{d}_1^{n+1} \\ \vec{d}_{1 \Gamma}^{n+1} \end{bmatrix}
+                                = 
+                            \]\[
+                                \begin{bmatrix} ~ \\ -A_{\Gamma 2} \vec{d}_2^n + T_{2 \to 1} \vec{d}_{2 \Gamma}^n \end{bmatrix}
                             \]
                         </p>
                     </section>
