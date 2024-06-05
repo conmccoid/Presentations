@@ -278,7 +278,7 @@
                             \[(A_{\Gamma \Gamma} + S_{1 \to 2} + T_{2 \to 1}) \vec{d}_{1 \Gamma}^{n+1} = (T_{2 \to 1} - S_{2 \to 1}) \vec{d}_{2 \Gamma}^n \]
                         </p>
                         <p>The vectors $\vec{d}$ lie in a Krylov subspace</p>
-                        <p class="fragment">Since we're applying a modified Gram-Schmidt to these vectors, this method is equivalent to GMRES</p>
+                        <p class="fragment">They satisfy an implicit Galerkin condition</p>
                     </section>
 
                     <section>
@@ -439,10 +439,6 @@
                     </section>
 
                     <section>
-                        <img src="FIG/AOSM/PLOT_AOSMConv_Heat_v2.png">
-                    </section>
-
-                    <section>
                         <!--Loneland example-->
                         <p class="r-fit-text">
                             \[ \nabla (\alpha(x,y) \cdot \nabla u(x,y) ) = f(x,y), \quad (x,y) \in \Omega = [-1,1] \times [-1,1], \]
@@ -455,13 +451,10 @@
                         <img src="FIG/AOSM/PLOT_MEFPP_loneland_K.png">
                     </section>
                     <section>
-                        <img src="FIG/AOSM/PLOT_MEFPP_loneland_subdomains.png">
+                        <img src="FIG/AOSM/PLOT_MEFPP_loneland_v1.png">
                     </section>
                     <section>
-                        <img src="FIG/AOSM/PLOT_MEFPP_loneland_1.png">
-                    </section>
-                    <section>
-                        <img src="FIG/AOSM/PLOT_MEFPP_loneland_2.png">
+                        <img src="FIG/AOSM/PLOT_MEFPP_loneland_v3.png">
                     </section>
                 </section>
 
@@ -470,6 +463,11 @@
                     <ul>
                         <li class="fragment">AOSMs give GMRES convergence without GMRES cost</li>
                         <li class="fragment">Transmission conditions can be re-used, for restarts and time steps</li>
+                    </ul>
+                    <h3 class="fragment">Future work</h3>
+                    <ul>
+                        <li class="fragment">Track down stability issues</li>
+                        <li class="fragment">Test out other choices of adaptive transmission conditions</li>
                     </ul>
                 </section>
             </div>
