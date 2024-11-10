@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+
+    <head>
+        <meta charset="utf-8">
+
+        <title>Adaptive optimised Schwarz methods</title>
+
+        <link rel="stylesheet" href="dist/reset.css">
+        <link rel="stylesheet" href="dist/reveal.css">
+        <link rel="stylesheet" href="dist/theme/white.css" id="theme">
+
+        <link rel="stylesheet" href="plugin/highlight/monokai.css">
+
+        <style id="span-fix" type="text/css">
+            
+        h1 span {
+            display:inline-block;
+        }
+        img {
+            object-fit:cover;
+            max-width: 100%;
+        }
+        </style>
+    </head>
+
+    <body>
+        <div class="reveal">
+            <div class="slides">
+                <section>
+                    <h3>Mozart Ex Machina</h3>
+                    <h4>A first project in machine learning</h4>
+
+                    <p>Conor McCoid</p>
+                    <p><small>McMaster University</small></p>
+
+                </section>
+
+                <section>
+
+                    <!-- intro section -->
+
+                    <!-- scope of the project: Name That Tune -->
+
+                    <section data-markdown>
+                        <textarea data-template>
+                            ## Blog posts for similar projects
+                            - [data-flair](https://data-flair.training/blogs/automatic-music-generation-lstm-deep-learning/)
+                            - [interviewquery](https://www.interviewquery.com/p/music-machine-learning)
+                            - [ChordSuggester](https://medium.com/@huanlui/chordsuggester-i-3a1261d4ea9e)
+                        </textarea>
+                    </section>
+
+                    <section data-markdown>
+                        <textarea data-template>
+                            ## Coding tools
+                            - [Original source of dataset](http://www.piano-midi.de/mozart.htm)
+                            - [scikit-learn, a Python machine learning library](https://scikit-learn.org/stable/getting_started.html)
+                            - [music21](https://web.mit.edu/music21/doc/), an MIT project for music analysis
+                            - also consider Pandas for data manipulation and PyTorch for more advanced machine learning
+                        </textarea>
+                    </section>
+
+                    <!-- dataset & copyright -->
+
+                    <!-- scikit-learn -->
+
+                </section>
+
+                <section>
+                    <!-- midi & music21 details -->
+                </section>
+
+                <section>
+                    <!-- feature space & early mistakes -->
+                </section>
+
+                <section>
+                    <!-- preprocessing data -->
+                </section>
+
+                <section>
+                    <!-- RandomForestClassifier -->
+                </section>
+
+                <section>
+                    <!-- results -->
+                </section>
+            </div>
+        </div>
+    
+        <script src="dist/reveal.js"></script>
+		<script src="plugin/notes/notes.js"></script>
+		<script src="plugin/markdown/markdown.js"></script>
+		<script src="plugin/highlight/highlight.js"></script>
+        <script src="plugin/math/math.js"></script>
+		<script>
+			// More info about initialization & config:
+			// - https://revealjs.com/initialization/
+			// - https://revealjs.com/config/
+			Reveal.initialize({
+				hash: true,
+
+				// Learn about plugins: https://revealjs.com/plugins/
+				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes, RevealMath.KaTeX ]
+			});
+		</script>
+    </body>
+</html>
