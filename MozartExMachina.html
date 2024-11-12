@@ -108,7 +108,7 @@
                         <textarea data-template>
                             ## Manipulating the data
 
-                            To manipulate the data, I'm using [music21](https://www.music21.org/music21docs/).
+                            To manipulate the data, I'm using [music21](https://www.music21.org/music21docs/){target="_blank"}.
                             This is an open-source Python toolkit for handling MIDI files, which is the format of the data.
                         </textarea>
                         <textarea data-template>
@@ -122,10 +122,13 @@
                     <section data-markdown>
                         <textarea data-template>
                             Let's check the data.
+                        </textarea>
+                        <textarea data-template>
                             ```python
                             midi_data.measure(144).show('text')
                             ```
-
+                        </textarea>
+                        <textarea data-template>
                             We see information on the 144th measure of this song:
                             what instruments were played,
                             the clef, key, tempo and meter,
@@ -144,7 +147,9 @@
                     </section>
 
                     <section data-markdown>
-                        <p>So to extract all notes from the data, we need to recurse through all of these layers.</p>
+                        <textarea data-template>
+                            So to extract all notes from the data, we need to recurse through all of these layers.
+                        </textarea>
 
                         <textarea data-template>
                             ```python
@@ -152,7 +157,9 @@
                             ```
                         </textarea>
 
-                        <p>This gives us a master list of notes for the entire song.</p>
+                        <textarea data-template>
+                            This gives us a master list of notes for the entire song.
+                        </textarea>
                     </section>
                 </section>
 
@@ -287,10 +294,10 @@
                     </section>
 
                     <section data-markdown>
-                        <p>To use the classifier, first split up the data into training and test sets,
+                        <textarea data-template>To use the classifier, first split up the data into training and test sets,
                             initialize the classifier,
                             and feed it the training set.
-                        </p>
+                        </textarea>
 
                         <textarea data-template>
                             ```python
@@ -314,14 +321,14 @@
                     </section>
 
                     <section data-markdown>
-                        <p>For that task, we use the test dataset we split off earlier.</p>
+                        <textarea data-template>For that task, we use the test dataset we split off earlier.</textarea>
                         <textarea data-template>
                             ```python
                             from sklearn.metrics import accuracy_score
                             print(accuracy_score(clf.predict(X_test),y_test))
                             ```
                         </textarea>
-                        <p>We need the accuracy score to be greater than 1/21, or the classifier is only as good as a random guess.</p>
+                        <textarea data-template>We need the accuracy score to be greater than 1/21, or the classifier is only as good as a random guess.</textarea>
                     </section>
 
                     <section>
