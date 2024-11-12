@@ -189,7 +189,7 @@
                             ```python
                             def read_chord(chord,group_offset):
                                 output=[]
-                                if type(chord)==music21.note.Note:
+                                if type(chord)==music21.note.Note :
                                     output.append(chord.pitch.ps)
                                     output.append(chord.duration.quarterLength)
                                     output.append(chord.offset - group_offset)
@@ -352,6 +352,7 @@
         </div>
     
         <script src="dist/reveal.js"></script>
+		<script src="plugin/notes/notes.js"></script>
 		<script src="plugin/markdown/markdown.js"></script>
 		<script src="plugin/highlight/highlight.js"></script>
         <script src="plugin/math/math.js"></script>
@@ -363,7 +364,7 @@
 				hash: true,
 
 				// Learn about plugins: https://revealjs.com/plugins/
-				plugins: [ RevealMarkdown, RevealHighlight, RevealMath.KaTeX ]
+				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes, RevealMath.KaTeX ]
 			});
 		</script>
     </body>
