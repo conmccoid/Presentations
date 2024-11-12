@@ -105,14 +105,13 @@
                 <section>
                     <!-- midi & music21 details -->
                     <section data-markdown>
-                        <h4>Manipulating the data</h4>
-
-                        <p>
-                            To manipulate the data, I'm using <a href="https://www.music21.org/music21docs/">music21</a>.
-                            This is an open-source Python toolkit for handling MIDI files, which is the format of the data.
-                        </p>
 
                         <textarea data-template>
+                        ## Manipulating the data
+
+                            To manipulate the data, I'm using <a href="https://www.music21.org/music21docs/">music21</a>.
+                            This is an open-source Python toolkit for handling MIDI files, which is the format of the data.
+
                             ```python
                             import music21
                             midi_data=music21.converter.parse('mz_311_1.mid')
@@ -121,20 +120,18 @@
                     </section>
 
                     <section data-markdown>
-                        <p>Let's check the data.</p>
 
                         <textarea data-template>
+                        Let's check the data.
                             ```python
                             midi_data.measure(144).show('text')
                             ```
-                        </textarea>
 
-                        <p>
                             We see information on the 144th measure of this song:
                             what instruments were played,
                             the clef, key, tempo and meter,
                             and a list of notes.
-                        </p>
+                        </textarea>
                     </section>
 
                     <section>
