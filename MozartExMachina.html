@@ -41,6 +41,15 @@
                     <!-- intro section -->
 
                     <!-- scope of the project: Name That Tune -->
+                     <section>
+                        <h3>Name That Tune</h3>
+
+                        <p>The goal of this project is to get some firsthand experience with machine learning.</p>
+
+                        <p>We start with a basic task: create an artificial neural network that can predict a song based on a sequence of notes.</p>
+
+                        <p>To keep the problem simple, we'll look exclusively at music by Mozart.</p>
+                     </section>
 
                     <section data-markdown>
                         <textarea data-template>
@@ -56,35 +65,287 @@
                             ## Coding tools
                             - [Original source of dataset](http://www.piano-midi.de/mozart.htm)
                             - [scikit-learn, a Python machine learning library](https://scikit-learn.org/stable/getting_started.html)
-                            - [music21](https://web.mit.edu/music21/doc/), an MIT project for music analysis
+                            - [music21](https://www.music21.org/music21docs/), an MIT project for music analysis
                             - also consider Pandas for data manipulation and PyTorch for more advanced machine learning
                         </textarea>
                     </section>
 
                     <!-- dataset & copyright -->
+                    <section data-auto-animate>
+                        <h4>Dataset</h4>
+
+                        <p>
+                            I found Mozart's music available online at <a href="http://www.piano-midi.de/mozart.htm">http://www.piano-midi.de/mozart.htm</a>.
+                            The music itself is in the public domain, and the files are made available by a Creative Commons license.
+                            This license requires that I acknowledge the original copyright owner of the files (Bernd Krueger) and make any content built on this data available under the same license.
+                        </p>
+                    </section>
+
+                    <section data-auto-animate>
+                        <h4>Dataset</h4>
+
+                        <p>
+                            The dataset contains 21 movements, three each for seven pieces.
+                            These pieces are numbered 311, 330, 331, 332, 333, 545, and 570.
+                            Their files names are <code>mz_311_1.mid</code>, indicating composer, piece, and movement.
+                        </p>
+                    </section>
 
                     <!-- scikit-learn -->
+                    <section>
+                        <h4>Machine Learning package</h4>
+
+                        <p>
+                            Next, I'll need software to program my ANNs.
+                            Here I'm using scikit-learn, an open-source Python library.
+                            Open-source projects are good choices for research as they are harder to make defunct.
+                        </p>
+                    </section>
 
                 </section>
 
                 <section>
                     <!-- midi & music21 details -->
+                    <section data-markdown>
+                        <h4>Manipulating the data</h4>
+
+                        <p>
+                            To manipulate the data, I'm using <a href="https://www.music21.org/music21docs/">music21</a>.
+                            This is an open-source Python toolkit for handling MIDI files, which is the format of the data.
+                        </p>
+
+                        <textarea data-template>
+                            ```python
+                            import music21
+                            midi_data=music21.converter.parse('mz_311_1.mid')
+                            ```
+                        </textarea>
+                    </section>
+
+                    <section data-markdown>
+                        <p>Let's check the data.</p>
+
+                        <textarea data-template>
+                            ```python
+                            midi_data.measure(144).show('text')
+                            ```
+                        </textarea>
+
+                        <p>
+                            We see information on the 144th measure of this song:
+                            what instruments were played,
+                            the clef, key, tempo and meter,
+                            and a list of notes.
+                        </p>
+                    </section>
+
+                    <section>
+                        <p>
+                            Data in `music21` is stored as streams.
+                            Data extracted from the MIDI files is stored as scores.
+                            Each score is divided in to parts, usually Piano Left and Piano Right.
+                            These parts are then divided into measures.
+                            Each measure contains its notes and rests.
+                        </p>
+                    </section>
+
+                    <section data-markdown>
+                        <p>So to extract all notes from the data, we need to recurse through all of these layers.</p>
+
+                        <textarea data-template>
+                            ```python
+                            data=midi_data.recurse().notes
+                            ```
+                        </textarea>
+
+                        <p>This gives us a master list of notes for the entire song.</p>
+                    </section>
                 </section>
 
                 <section>
                     <!-- feature space & early mistakes -->
+                    <section>
+                        <h4>Feature Space</h4>
+
+                        <p>
+                            To feed data to an ANN, we need to identify features we want the network to learn.
+                            Based on the goal of the project, we want these features to relate to a selection of music.
+                        </p>
+                    </section>
+
+                    <section>
+                        <p>
+                            Based on the way music is stored in MIDI files and manipulated by `music21`,
+                            we can represent a selection of music as a set of notes, their duration, and their offset from a reference point.
+                            For each note in our datum, we have 3 features.
+                            So if each datum is a sequence of 10 notes, then that datum has 30 features.
+                        </p>
+                    </section>
+
+                    <section>
+                        <p>
+                            We can represent notes by their pitch.
+                            Chords, however, are made up of many notes and can't be easily reduced to an ordinal format.
+                            We sidestep this by dividing chords into their consituent notes.
+                        </p>
+                    </section>
+
+                    <section data-markdown>
+                        <textarea data-template>
+                            ```python
+                            def read_chord(chord,group_offset):
+                                output=[]
+                                if type(chord)==music21.note.Note:
+                                    output.append(chord.pitch.ps)
+                                    output.append(chord.duration.quarterLength)
+                                    output.append(chord.offset - group_offset)
+                                elif type(chord)==music21.chord.Chord:
+                                    for k in range(len(chord.notes)):
+                                        noteChord=chord.notes[k]
+                                        output.append(noteChord.pitch.ps)
+                                        output.append(noteChord.duration.quarterLength)
+                                        output.append(noteChord.offset - group_offset)
+                                return output
+                            ```
+                        </textarea>
+                    </section>
                 </section>
 
                 <section>
                     <!-- preprocessing data -->
+                    <section>
+                        <h4>Preprocessing data</h4>
+
+                        <p>
+                            We need to split up each song into data and classify each datum.
+                        </p>
+                    </section>
+
+                    <section data-markdown>
+                        <textarea data-template>
+                            ```python
+                            def read_noteGroups(file,n):
+                                midi_data=music21.converter.parse(file)
+                                data=midi_data.recurse().notes
+                                N=len(data)
+                                output=[]
+                                for i in range(N-n):
+                                    group_offset=data[i].offset
+                                    group=[]
+                                    for j in range(n):
+                                        chord_out=read_chord(data[i+j],group_offset)
+                                        for note_out in chord_out:
+                                            group.append(note_out)
+                                    output.append(group[0:3*n])
+                                return output
+                            ```
+                        </textarea>
+                    </section>
+
+                    <section data-markdown>
+                        <textarea data-template>
+                            ```python
+                            import music21
+                            X=[]; y=[]; i=0;
+                            for ind in ['311','330','331','332','333','545','570']:
+                                for j in ['_1','_2','_3']:
+                                    i+=1
+                                    pitches_output=read_noteGroups('mozart/mz_'+ind+j+'.mid',20)
+                                    num_output=len(pitches_output)
+                                    for pitch_out in pitches_output:
+                                        X.append(pitch_out)
+                                        y.append(i)
+                            ```
+                        </textarea>
+                    </section>
                 </section>
 
                 <section>
                     <!-- RandomForestClassifier -->
+                    <section>
+                        <h4>RandomForestClassifier</h4>
+
+                        <p>
+                            We need a classifier neural network.
+                            We're going with a random forest classifier.
+                        </p>
+                    </section>
+
+                    <section>
+                        <p>
+                            A random forest model classifies samples into qualitative groups.
+                            Each model is a collection of decision trees.
+                            Each node of a tree is a binary split based on a randomly chosen selection of features.
+                        </p>
+
+                        <img src="https://serokell.io/files/vz/vz1f8191.Ensemble-of-decision-trees.png">
+                    </section>
+
+                    <section>
+                        <p>There are four main parameters to tweak:</p>
+                        <ul>
+                            <li>n-estimators: number of trees to make (default 100)</li>
+                            <li>max_features: number of features to consider at each split</li>
+                            <li>max_depth: maximum number of nodes in each tree</li>
+                            <li>min_samples_split: number of samples split off by each node</li>
+                        </ul>
+                        <p>Setting max_depth to None and min_samples_split to 2 results in fully developed trees.</p>
+                    </section>
+
+                    <section data-markdown>
+                        <p>To use the classifier, first split up the data into training and test sets,
+                            initialize the classifier,
+                            and feed it the training set.
+                        </p>
+
+                        <textarea data-template>
+                            ```python
+                            from sklearn.model_selection import train_test_split
+                            X_train, X_test, y_train, y_test = train_test_split(X,y,random_state=0)
+
+                            from sklearn.ensemble import RandomForestClassifier
+                            clf = RandomForestClassifier(n_estimators=100, max_features='sqrt', max_depth=None, min_samples_split=2)
+                            clf.fit(X_train,y_train)
+                            ```
+                        </textarea>
+                    </section>
                 </section>
 
                 <section>
                     <!-- results -->
+                    <section>
+                        <h4>Measuring the results</h4>
+
+                        <p>Now that we have a working ANN, let's see how good it is.</p>
+                    </section>
+
+                    <section data-markdown>
+                        <p>For that task, we use the test dataset we split off earlier.</p>
+                        <textarea data-template>
+                            ```python
+                            from sklearn.metrics import accuracy_score
+                            print(accuracy_score(clf.predict(X_test),y_test))
+                            ```
+                        </textarea>
+                        <p>We need the accuracy score to be greater than 1/21, or the classifier is only as good as a random guess.</p>
+                    </section>
+
+                    <section>
+                        <h4>So let's run some code</h4>
+                    </section>
+
+                    <section>
+                        <h4>Mistakes I made</h4>
+                    </section>
+
+                    <section>
+                        <ul>
+                            <li>I originally tried to keep chords whole, but I had no obvious way of encoding the feature space.</li>
+                            <li>I didn't put any importance on max_features when initializing the classifier.
+                                I thought I only needed to include more notes in the sequences, but without a corresponding increase in max_features, the classifier wouldn't notice the difference.
+                            </li>
+                        </ul>
+                    </section>
                 </section>
             </div>
         </div>
