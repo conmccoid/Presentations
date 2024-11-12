@@ -189,7 +189,7 @@
                             ```python
                             def read_chord(chord,group_offset):
                                 output=[]
-                                if type(chord)==music21:
+                                if type(chord)==music21.note.Note:
                                     output.append(chord.pitch.ps)
                                     output.append(chord.duration.quarterLength)
                                     output.append(chord.offset - group_offset)
