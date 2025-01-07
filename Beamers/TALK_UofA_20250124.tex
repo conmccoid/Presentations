@@ -21,6 +21,203 @@
 
 \maketitle
 
+\section{Brief history of domain decomposition} % 5 min
+
+% Schwarz (incl. keyhole domain)
+
+% P.L. Lions
+
+% OSM? incl. algebraic transmission conditions
+
+% ASPIN/MSPIN/RASPEN
+
+\section{Alternate minimization in phase-field fracture models} % 15 min
+
+% phase-field fracture model
+
+% algebraic form of equations
+
+% alternate minimization
+
+% AltMin as multiplicative Schwarz
+
+% applying Newton -> MSPIN
+
+\section{Adaptive optimized Schwarz methods} % 30 min
+
+% predictor-corrector formulation
+\begin{frame}{Schwarz method with adaptive transmission conditions}
+
+Let $T_{i \to j}$ change at each iteration, so that the transmission conditions adapt.
+We can formulate such a Schwarz method, acting only on the difference in successive solutions,n as
+\begin{equation*}
+	\begin{bmatrix} A_{ii} & A_{i \Gamma} \\ A_{\Gamma i} & A_{\Gamma \Gamma} + T_{j \to i}^{n+1} \end{bmatrix}
+	\begin{bmatrix} \vec{d}_i^{n+1} \\ \vec{d}_{i \Gamma}^{n+1} \end{bmatrix}
+	= \begin{bmatrix} ~ \\ -A_{\Gamma j} \vec{d}_j^n + T_{j \to i}^{n+1} \vec{d}_{j \Gamma}^n - \Delta T_{j \to i}^n \left ( \vec{u}_{i \Gamma}^n - \vec{u}_{j \Gamma}^{n-1} \right ) \end{bmatrix},
+\end{equation*}
+where $i=1,2$, $j=3-i$, and $\Delta T_{j \to i}^n$ represents the update to the transmission condition $T_{j \to i}^n$ at this step,
+\begin{equation*}
+	T_{j \to i}^{n+1} = T_{j \to i}^n + \Delta T_{j \to i}^n.
+\end{equation*}
+\end{frame}
+
+\begin{frame}{Condensing the iteration}
+
+We can condense these iterations to express them as only acting on the difference at the interface.
+First we note from the first row of blocks that
+\begin{equation*}
+	\vec{d}_i^{n+1} = -A_{ii}^{-1} A_{i \Gamma} \vec{d}_{i \Gamma}^{n+1},
+\end{equation*}
+and so likewise
+\begin{equation*}
+	\vec{d}_j^{n} = -A_{jj}^{-1} A_{j \Gamma} \vec{d}_{j \Gamma}^{n}.
+\end{equation*}
+Combining with the second row of blocks gives
+\begin{align*}
+	\left ( A_{\Gamma \Gamma} + S_{i \to j} + T_{j \to i}^{n+1} \right ) \vec{d}_{i \Gamma}^{n+1} =
+	& \left ( T_{j \to i}^{n+1} - S_{j \to i} \right ) \vec{d}_{j \Gamma}^n \\
+	& - \Delta T_{j \to i}^n \left ( \vec{u}_{i \Gamma} - \vec{u}_{j \Gamma}^{n-1} \right ).
+\end{align*}
+\end{frame}
+
+\begin{frame}{Difference between $T$ and $S$}
+Notice the difference between the $T$ matrices and the Schur complements in these systems.
+If we represent this difference as
+\begin{equation*}
+	E_{i \to j}^{n+1} := T_{i \to j}^{n+1} - S_{i \to j},
+\end{equation*}
+and write $\hat{A} := A_{\Gamma \Gamma} + S_{1 \to 2} + S_{2 \to 1}$, then these systems become
+\begin{equation*}
+	\left ( \hat{A} + E_{i \to j}^{n+1} \right ) \vec{d}_{j \Gamma}^{n+1} = E_{i \to j}^{n+1} \vec{d}_{i \Gamma}^n - \Delta T_{i \to j}^n \left ( \vec{u}_{j \Gamma}^n - \vec{u}_{i \Gamma}^{n-1} \right ).
+\end{equation*}
+The matrix $E_{i \to j}^{n+1}$ is as expensive to calculate as the Schur complement, meaning this system is not practical.
+However, it has immense theoretical value.
+\end{frame}
+
+\begin{frame}{Action of $E$}
+The matrix-vector product $E_{i \to j}^{n+1} \vec{d}_{i \Gamma}^n$, equal to
+\begin{equation*}
+	E_{i \to j}^{n+1} \vec{d}_{i \Gamma}^n = -A_{\Gamma i} \vec{d}_i^n + T_{i \to j}^{n+1} \vec{d}_{i \Gamma}^n,
+\end{equation*}
+is computed in the course of the Schwarz method.
+Thus, we will have a sequence of vector pairs, $\left ( \vec{d}_{i \Gamma}^n, E_{i \to j}^{n+1} \vec{d}_{i \Gamma}^n \right )$ which we can use to approximate $E$ without ever calculating it.
+
+Each vector pair gives a rank one approximation of $E$:
+\begin{equation*}
+	E_{i \to j}^{n+1} \approx \frac{E_{i \to j}^{n+1} \vec{d}_{i \Gamma}^n}{\norm{\vec{d}_{i \Gamma}^n}_2^2}.
+\end{equation*}
+To combine these rank one matrices, we apply \textbf{modified Gram-Schmidt} to the vectors $\vec{d}$ and a commenserate process to the vectors $E \vec{d}$.
+\end{frame}
+
+% IAA algo + lemma
+\begin{frame}
+\begin{algorithm}[H]
+	\caption{Iterative action approximation \\ $[V_n,W_n]=\iaa \left ( \set{\vec{x}_k}_{k=1}^n, E \right )$}
+	\begin{algorithmic}[1]
+		\State Inputs: $\set{\vec{x}_k}_{k=1}^{n} \subset \bbr^M$, $E \in \bbr^{M \times M}$
+		\State $\alpha_1 := 1 / \norm{\vec{x}_1}$, $\vec{w}_1 := \alpha_1 \vec{x}_1$, $\vec{v}_1 := \alpha_1 E \vec{x}_1$
+		\For{$k=2 : n$}
+			\State $\vec{w}_k := \vec{x}_k$, $\vec{v}_k := E \vec{x}_k$
+			\For{$i=1 : k-1$}
+				\State $h \gets \langle \vec{w}_i, \vec{w}_k \rangle$, $\vec{w}_k \gets \vec{w}_k - h \vec{w}_i$
+				\State $\vec{v}_k \gets \vec{v}_k - h \vec{v}_i$ \label{line: implicit}
+			\EndFor
+			\State $\alpha_k := 1 / \norm{\vec{w}_k}$, $\vec{w}_k \gets \alpha_k \vec{w}_k$, $\vec{v}_k \gets \alpha_k \vec{v}_k$
+		\EndFor
+		\State Outputs: $W_{n} = \begin{bmatrix} \vec{w}_1 & \vec{w}_2 & \dots & \vec{w}_{n} \end{bmatrix}$, $V_{n} = \begin{bmatrix} \vec{v}_1 & \vec{v}_2 & \dots & \vec{v}_{n} \end{bmatrix}$
+		\State $V_{n} W_{n}^\top \approx E$
+	\end{algorithmic}
+	\label{alg: IAA}
+\end{algorithm}
+\end{frame}
+
+\begin{frame}{Properties of the IAA}
+\begin{lemma} \label{lem: iaa}
+	Let $\mathcal{S}=\set{\vec{x}_k}_{k=1}^n \subset \bbr^M$ be a set of linearly independent vectors, $E \in \bbr^{M \times M}$ a matrix.
+	Let $[V_n,W_n]=\iaa(\mathcal{S},E)$ with columns $\vec{v}_k$ and $\vec{w}_k$, respectively.
+	Let $E^1 := E$ and let $E^{k+1} := E^k - \vec{v}_k \vec{w}_k^\top$.
+	Then
+	\begin{align*}
+		E^{k+1} = & E (I - W_k W_k^\top), \\
+		\vec{v}_k = & E \vec{w}_k = E^k \vec{w}_k
+	\end{align*}
+	for $1 \leq k \leq n$, where $W_k$ is the first $k$ columns of $W_n$.
+\end{lemma}
+\end{frame}
+
+% choice of adaptive transmission conditions + altAOSM + solve ladder(s?)
+\begin{frame}{Choice of adaptive transmission conditions}
+For our adaptive transmission conditions, we want
+\begin{align*}
+	[ V_i^n, W_i^n ] & = \iaa \left ( \set{ \vec{d}_{i \Gamma}^k }_{k=1}^n, E_{i \to j}^1 \right ), \\
+	\text{where} \ E_{i \to j}^1 \vec{d}_{i \Gamma}^k & = -A_{\Gamma i} \vec{d}_i^k + T_{i \to j}^1 \vec{d}_{i \Gamma}^k.
+\end{align*}
+Each time we find a new $\vec{d}_{i \Gamma}^k$, with corresponding $\vec{d}_i^k$, we can compute a new $\vec{v}_i^k$ and $\vec{w}_i^k$.
+This gives us a rank one update to the transmission conditions:
+\begin{equation*}
+	\Delta T_{i \to j}^n = - \vec{v}_i^k \left ( \vec{w}_i^k \right )^\top.
+\end{equation*}
+
+This choice of $\Delta T$ eliminates the product $E_{i \to j}^{n+1} \vec{d}_{i \Gamma}^n$ from the earlier systems.
+We must now solve
+\begin{equation*}
+	\begin{bmatrix} A_{jj} & A_{j \Gamma} \\ A_{\Gamma j} & A_{\Gamma \Gamma} + T_{i \to j}^{n+1} \end{bmatrix}
+	\begin{bmatrix} \vec{d}_j^{n+1} \\ \vec{d}_{j \Gamma}^{n+1} \end{bmatrix}
+	= (\vec{w}_i^n)^\top \left ( \vec{u}_{j \Gamma}^n - \vec{u}_{i \Gamma}^{n-1} \right )\begin{bmatrix} ~ \\ \vec{v}_i^n \end{bmatrix}
+\end{equation*}
+at every step.
+\end{frame}
+
+\begin{frame}
+\begin{algorithm}[H]
+	\caption{altAOSM: AOSM applied to multiplicative Schwarz} %nb: include function defn like iaa?
+	\label{alg: alt}
+	\begin{algorithmic}[1]
+		\State Start with initial transmission conditions $T_{1 \to 2}^1$ and $T_{2 \to 1}^1$
+		\State Make initial guess $\vec{u}_{1 \Gamma}^0$
+		\State Calculate $\vec{u}_1^0 = A_{11}^{-1} ( \vec{f}_1 - A_{1 \Gamma} \vec{u}_{1 \Gamma}^0 )$
+		\State Solve for $\vec{u}_2^1$ and $\vec{u}_{2 \Gamma}^1$, then for $\vec{u}_1^2$ and $\vec{u}_{1 \Gamma}^2$
+		\State Calculate $\vec{d}_{1 \Gamma}^2 = \vec{u}_{1 \Gamma}^2 - \vec{u}_{1 \Gamma}^0$ and $\vec{d}_1^2$ and set $n=2$
+		\While{$\norm{ \vec{d}_{1 \Gamma}^n } + \norm{ \vec{d}_{2 \Gamma}^{n-1} } \geq tol$}
+			\For{$i=1 : 2$}
+				\State Run an iteration of IAA
+				\State Set $\Delta T_{i \to j}^n = - \vec{v}_i^n (\vec{w}_i^n)^\top$
+				\State Solve for $\vec{d}_{j \Gamma}^{n+1}$ and $\vec{d}_j^{n+1}$
+				\State $\vec{u}_j^{n+1} := \vec{u}_j^{n-1} + \vec{d}_j^{n+1}$, $\vec{u}_{j \Gamma}^{n+1} := \vec{u}_{j \Gamma}^{n-1} + \vec{d}_{j \Gamma}^{n+1}$
+				\State $n \gets n+1$
+			\EndFor
+		\EndWhile
+		\State Output: $\vec{u} = [ \vec{u}_1^n \ ; \ (\vec{u}_{1 \Gamma}^n + \vec{u}_{2 \Gamma}^{n-1})/2 \ ; \ \vec{u}_2^{n-1} ]$
+	\end{algorithmic}
+\end{algorithm}
+\end{frame}
+
+\begin{frame}
+\centering
+\includegraphics[width=0.45\textwidth]{AOSM/TIKZ_AOSM_20230614_3.png}
+\includegraphics[width=0.45\textwidth]{AOSM/TIKZ_AOSM_20230614_4.png}
+\end{frame}
+
+% Galerkin condition for AOSM
+\begin{frame}{AOSM Galerkin condition}
+
+\begin{theorem} \label{thm: opt}
+If $\hat{A} + E_{i \to j}^{n+1}$ is invertible, then the update to the solution due to an AOSM is $$\vec{d}_{j \Gamma}^{n+1} = \AijE \vec{x},$$ where
+$\vec{x} \in  \Span(W_i^n)$ such that the residual of
+\begin{align*}
+	& \left ( I - \left ( \hat{A} + E_{i \to j}^{n+1} \right )^{-1} E_{i \to j}^{n+1} \right ) \vec{u}_\Gamma \\
+	& = \left ( \hat{A} + E_{i \to j}^{n+1} \right )^{-1} \left ( \vec{f}_\Gamma - A_{\Gamma j} A_{jj}^{-1} \vec{f}_j - A_{\Gamma i} A_{ii}^{-1} \vec{f}_i \right )
+\end{align*}
+applied to $\vec{u}_{i \Gamma}^{n-1} + \vec{x}$ is orthogonal to $\Span(W_i^n)$. 
+\end{theorem}
+\end{frame}
+
+% numerical results: basic comparison with GMRES
+
+% multiple subdomains (Schur complements for red-black)
+
+% symmetrized cells
+
 \begin{frame}{Algebraic Schwarz}
 
 \includegraphics[width=\textwidth]{AOSM/TIKZ_AOSM_20230614_1.png}
@@ -180,53 +377,6 @@ Let us reformulate the systems again, into a corrector form that works on the di
 \end{frame}
 
 \begin{frame}{Adaptive Transmission Conditions}
-\begin{align*}
-	& \begin{bmatrix} A_{11} & A_{1 \Gamma} \\ A_{\Gamma 1} & A_{\Gamma \Gamma} + T_{2 \to 1}^{n+1} \end{bmatrix}
-	\begin{bmatrix} \vec{d}_1^{n+1} \\ \vec{d}_{1 \Gamma}^{n+1} \end{bmatrix} \\
-	& \quad = - \begin{bmatrix} ~ \\ A_{\Gamma 2} \vec{d}_2^n \end{bmatrix}
-	+ \begin{bmatrix} ~ \\ T_{2 \to 1}^{n+1} \vec{d}_{2 \Gamma}^n \end{bmatrix}
-	- \begin{bmatrix} ~ \\ \Delta T_{2 \to 1}^n (\vec{u}_{1 \Gamma}^n - \vec{u}_{2 \Gamma}^{n-1}) \end{bmatrix}, \\
-	~ \\
-	& \begin{bmatrix} A_{22} & A_{2 \Gamma} \\ A_{\Gamma 2} & A_{\Gamma \Gamma} + T_{1 \to 2}^{n+1} \end{bmatrix}
-	\begin{bmatrix} \vec{d}_2^{n+1} \\ \vec{d}_{2 \Gamma}^{n+1} \end{bmatrix} \\
-	& \quad = - \begin{bmatrix} ~ \\ A_{\Gamma 1} \vec{d}_1^n \end{bmatrix}
-	+ \begin{bmatrix} ~ \\ T_{1 \to 2}^{n+1} \vec{d}_{1 \Gamma}^n \end{bmatrix}
-	- \begin{bmatrix} ~ \\ \Delta T_{1 \to 2}^n (\vec{u}_{2 \Gamma}^n - \vec{u}_{1 \Gamma}^{n-1}) \end{bmatrix}.
-\end{align*}
-\end{frame}
-
-\begin{frame}{Adaptive Transmission Conditions}
-The first line of blocks in each of these systems lets us write
-\begin{equation*}
-	\vec{d}_1^{n+1} = -A_{11}^{-1} A_{1 \Gamma} \vec{d}_{1 \Gamma}^{n+1}, \quad
-	\vec{d}_2^{n+1} = -A_{22}^{-1} A_{2 \Gamma} \vec{d}_{2 \Gamma}^{n+1}.
-\end{equation*}
-Combined with the second line of blocks, the systems reduce to
-\begin{align*}
-	\left ( A_{\Gamma \Gamma} + S_{1 \to 2} + T_{2 \to 1}^{n+1} \right ) \vec{d}_{1 \Gamma}^{n+1}
-	= & \left ( T_{2 \to 1}^{n+1} - S_{2 \to 1} \right ) \vec{d}_{2 \Gamma}^n \\
-	&  - \Delta T_{2 \to 1}^n \left ( \vec{u}_{1 \Gamma}^n - \vec{u}_{2 \Gamma}^{n-1} \right ), \\
-	\left ( A_{\Gamma \Gamma} + S_{2 \to 1} + T_{1 \to 2}^{n+1} \right ) \vec{d}_{2 \Gamma}^{n+1}
-	= & \left ( T_{1 \to 2}^{n+1} - S_{1 \to 2} \right ) \vec{d}_{1 \Gamma}^n \\
-	& - \Delta T_{1 \to 2}^n \left ( \vec{u}_{2 \Gamma}^n - \vec{u}_{1 \Gamma}^{n-1} \right ).
-\end{align*}
-\end{frame}
-
-\begin{frame}{Adaptive Transmission Conditions}
-Notice the difference between the $T$ matrices and the Schur complements in these systems.
-If we represent this difference as
-\begin{equation*}
-	E_{i \to j}^{n+1} := T_{i \to j}^{n+1} - S_{i \to j},
-\end{equation*}
-and write $\hat{A} := A_{\Gamma \Gamma} + S_{1 \to 2} + S_{2 \to 1}$, then these systems become
-\begin{equation*}
-	\left ( \hat{A} + E_{i \to j}^{n+1} \right ) \vec{d}_{j \Gamma}^{n+1} = E_{i \to j}^{n+1} \vec{d}_{i \Gamma}^n - \Delta T_{i \to j}^n \left ( \vec{u}_{j \Gamma}^n - \vec{u}_{i \Gamma}^{n-1} \right ).
-\end{equation*}
-The matrix $E_{i \to j}^{n+1}$ is as expensive to calculate as the Schur complement, meaning this system is not practical.
-However, it has immense theoretical value.
-\end{frame}
-
-\begin{frame}{Adaptive Transmission Conditions}
 We focus on the matrix-vector product $E_{i \to j}^{n+1} \vec{d}_{i \Gamma}^n$.
 Tracing backwards, this is equal to
 \begin{equation*}
@@ -255,275 +405,6 @@ Each vector pair gives such a rank one approximation, but the sum of these appro
 To fix this, we apply \textbf{modified Gram-Schmidt} to the set of vectors $\vec{d}$, resulting in the vectors $\vec{w}$.
 To get the vectors $\vec{v}=E \vec{w}$, a commenserate process must be done on the vectors $\vec{y}$ (NOT MGS!).
 \end{frame}
-
-\begin{frame}{Adaptive Transmission Conditions}
-\begin{algorithm}[H]
-	\caption{Iterative action approximation \\ $[V_n,W_n]=\iaa \left ( \set{\vec{x}_k}_{k=1}^n, E \right )$}
-	\begin{algorithmic}[1]
-		\State Inputs: $\set{\vec{x}_k}_{k=1}^{n} \subset \bbr^M$, $E \in \bbr^{M \times M}$
-		\State $\alpha_1 := 1 / \norm{\vec{x}_1}$, $\vec{w}_1 := \alpha_1 \vec{x}_1$, $\vec{v}_1 := \alpha_1 E \vec{x}_1$
-		\For{$k=2 : n$}
-			\State $\vec{w}_k := \vec{x}_k$, $\vec{v}_k := E \vec{x}_k$
-			\For{$i=1 : k-1$}
-				\State $h \gets \langle \vec{w}_i, \vec{w}_k \rangle$, $\vec{w}_k \gets \vec{w}_k - h \vec{w}_i$
-				\State $\vec{v}_k \gets \vec{v}_k - h \vec{v}_i$ \label{line: implicit}
-			\EndFor
-			\State $\alpha_k := 1 / \norm{\vec{w}_k}$, $\vec{w}_k \gets \alpha_k \vec{w}_k$, $\vec{v}_k \gets \alpha_k \vec{v}_k$
-		\EndFor
-		\State Outputs: $W_{n} = \begin{bmatrix} \vec{w}_1 & \vec{w}_2 & \dots & \vec{w}_{n} \end{bmatrix}$, $V_{n} = \begin{bmatrix} \vec{v}_1 & \vec{v}_2 & \dots & \vec{v}_{n} \end{bmatrix}$
-		\State $V_{n} W_{n}^\top \approx E$
-	\end{algorithmic}
-	\label{alg: IAA}
-\end{algorithm}
-\end{frame}
-
-\begin{frame}{Adaptive Transmission Conditions}
-\begin{lemma} \label{lem: iaa}
-	Let $\mathcal{S}=\set{\vec{x}_k}_{k=1}^n \subset \bbr^M$ be a set of linearly independent vectors, $E \in \bbr^{M \times M}$ a matrix.
-	Let $[V_n,W_n]=\iaa(\mathcal{S},E)$ with columns $\vec{v}_k$ and $\vec{w}_k$, respectively.
-	Let $E^1 := E$ and let $E^{k+1} := E^k - \vec{v}_k \vec{w}_k^\top$.
-	Then
-	\begin{align*}
-		E^{k+1} = & E (I - W_k W_k^\top), \\
-		\vec{v}_k = & E \vec{w}_k = E^k \vec{w}_k
-	\end{align*}
-	for $1 \leq k \leq n$, where $W_k$ is the first $k$ columns of $W_n$.
-\end{lemma}
-\end{frame}
-
-\begin{frame}{Adaptive Transmission Conditions}
-For our adaptive transmission conditions, we want
-\begin{align*}
-	[ V_i^n, W_i^n ] & = \iaa \left ( \set{ \vec{d}_{i \Gamma}^k }_{k=1}^n, E_{i \to j}^1 \right ), \\
-	\text{where} \ E_{i \to j}^1 \vec{d}_{i \Gamma}^k & = -A_{\Gamma i} \vec{d}_i^k + T_{i \to j}^1 \vec{d}_{i \Gamma}^k.
-\end{align*}
-Each time we find a new $\vec{d}_{i \Gamma}^k$, with corresponding $\vec{d}_i^k$, we can compute a new $\vec{v}_i^k$ and $\vec{w}_i^k$.
-This gives us a rank one update to the transmission conditions:
-\begin{equation*}
-	\Delta T_{i \to j}^n = - \vec{v}_i^k \left ( \vec{w}_i^k \right )^\top.
-\end{equation*}
-
-~
-
-This choice of $\Delta T$ eliminates the product $E_{i \to j}^{n+1} \vec{d}_{i \Gamma}^n$ from the earlier systems.
-We must now solve
-\begin{equation*}
-	\begin{bmatrix} A_{jj} & A_{j \Gamma} \\ A_{\Gamma j} & A_{\Gamma \Gamma} + T_{i \to j}^{n+1} \end{bmatrix}
-	\begin{bmatrix} \vec{d}_j^{n+1} \\ \vec{d}_{j \Gamma}^{n+1} \end{bmatrix}
-	= (\vec{w}_i^n)^\top \left ( \vec{u}_{j \Gamma}^n - \vec{u}_{i \Gamma}^{n-1} \right )\begin{bmatrix} ~ \\ \vec{v}_i^n \end{bmatrix}
-\end{equation*}
-at every step.
-\end{frame}
-
-\begin{frame}
-\begin{algorithm}[H]
-	\caption{altAOSM: AOSM applied to multiplicative Schwarz} %nb: include function defn like iaa?
-	\label{alg: alt}
-	\begin{algorithmic}[1]
-		\State Start with initial transmission conditions $T_{1 \to 2}^1$ and $T_{2 \to 1}^1$
-		\State Make initial guess $\vec{u}_{1 \Gamma}^0$
-		\State Calculate $\vec{u}_1^0 = A_{11}^{-1} ( \vec{f}_1 - A_{1 \Gamma} \vec{u}_{1 \Gamma}^0 )$
-		\State Solve for $\vec{u}_2^1$ and $\vec{u}_{2 \Gamma}^1$
-		\State Solve for $\vec{u}_1^2$ and $\vec{u}_{1 \Gamma}^2$
-		\State Calculate $\vec{d}_{1 \Gamma}^2 = \vec{u}_{1 \Gamma}^2 - \vec{u}_{1 \Gamma}^0$ and $\vec{d}_1^2$ and set $n=2$
-		\While{$\norm{ \vec{d}_{1 \Gamma}^n } + \norm{ \vec{d}_{2 \Gamma}^{n-1} } \geq tol$}
-			\For{$i=1 : 2$}
-				\State Run an iteration of IAA
-				\State Set $\Delta T_{i \to j}^n = - \vec{v}_i^n (\vec{w}_i^n)^\top$
-				\State Solve for $\vec{d}_{j \Gamma}^{n+1}$ and $\vec{d}_j^{n+1}$
-				\State $\vec{u}_j^{n+1} := \vec{u}_j^{n-1} + \vec{d}_j^{n+1}$, $\vec{u}_{j \Gamma}^{n+1} := \vec{u}_{j \Gamma}^{n-1} + \vec{d}_{j \Gamma}^{n+1}$
-				\State $n \gets n+1$
-			\EndFor
-		\EndWhile
-		\State Output: $\vec{u} = [ \vec{u}_1^n \ ; \ (\vec{u}_{1 \Gamma}^n + \vec{u}_{2 \Gamma}^{n-1})/2 \ ; \ \vec{u}_2^{n-1} ]$
-	\end{algorithmic}
-\end{algorithm}
-\end{frame}
-
-\begin{frame}
-\begin{algorithm}[H]
-	\caption{paraAOSM: AOSM applied to additive Schwarz} %nb: include function defn like iaa?
-	\label{alg: para}
-	\begin{algorithmic}[1]
-		\State Start with initial transmission conditions $T_{1 \to 2}^1$ and $T_{2 \to 1}^1$
-		\State Make initial guesses $\vec{u}_{1 \Gamma}^0$ and $\vec{u}_{2 \Gamma}^0$
-		\State Calculate $\vec{u}_1^0 = A_{11}^{-1} ( \vec{f}_1 - A_{1 \Gamma} \vec{u}_{1 \Gamma}^0 )$ and equivalently $\vec{u}_2^0$
-		\State Solve both subdomains for $\vec{u}_1^1$, $\vec{u}_{1 \Gamma}^1$, $\vec{u}_2^1$ and $\vec{u}_{2 \Gamma}^1$
-		\State Calculate $\vec{d}_{1 \Gamma}^1$, $\vec{d}_1^1$, $\vec{d}_{2 \Gamma}^1$ and $\vec{d}_2^1$ and set $n=1$
-		\While{$\norm{ \vec{d}_{1 \Gamma}^n } + \norm{ \vec{d}_{2 \Gamma}^n } \geq tol$}
-			\For{$i=1 : 2$}
-				\State Run an iteration of IAA
-				\State Set $\Delta T_{i \to j}^n = - \vec{v}_i^n (\vec{w}_i^n)^\top$
-				\State Solve for $\vec{d}_{j \Gamma}^{n+1}$ and $\vec{d}_j^{n+1}$
-				\State $\vec{u}_j^{n+1} := \vec{u}_j^{n} + \vec{d}_j^{n+1}$, $\vec{u}_{j \Gamma}^{n+1} := \vec{u}_{j \Gamma}^{n} + \vec{d}_{j \Gamma}^{n+1}$
-			\EndFor
-			\State $n \gets n+1$
-		\EndWhile
-		\State Output: $\vec{u} = [ \vec{u}_1^n \ ; \ (\vec{u}_{1 \Gamma}^n + \vec{u}_{2 \Gamma}^n)/2 \ ; \ \vec{u}_2^n ]$
-	\end{algorithmic}
-\end{algorithm}
-\end{frame}
-
-\begin{frame}
-\centering
-\includegraphics[width=0.45\textwidth]{AOSM/TIKZ_AOSM_20230614_3.png}
-\includegraphics[width=0.45\textwidth]{AOSM/TIKZ_AOSM_20230614_4.png}
-\end{frame}
-
-\begin{frame}{Woodbury matrix identity}
-Since the matrices in the linear systems are updated at each iteration, one cannot simply re-use factorizations of these systems.
-To salvage any factorizations of the initial systems, one can employ the \textbf{Woodbury matrix identity}.
-
-\begin{proposition}[Woodbury matrix identity] \label{prop: woodbury}
-If $\tilde{\vec{u}}$ is the solution to $A \tilde{\vec{u}} = \vec{b}$, $A \in \bbr^{N \times N}$, $\vec{b} \in \bbr^N$, then
-\begin{equation} \label{eq: woodbury}
-	\vec{u} = \tilde{\vec{u}} + A^{-1} V (I - W^\top A^{-1} V)^{-1} W^\top \tilde{\vec{u}}
-\end{equation}
-is the solution to $(A - V W^\top) \vec{u} = \vec{b}$, where $V, W \in \bbr^{N \times k}$, $I \in \bbr^{k \times k}$.
-\end{proposition}
-\end{frame}
-
-\begin{frame}{Woodbury matrix identity}
-Applying this to the systems we must solve at every iteration, we instead solve
-\begin{equation*}
-	\begin{bmatrix} A_{jj} & A_{j \Gamma} \\ A_{\Gamma j} & A_{\Gamma \Gamma} + T_{i \to j}^1 \end{bmatrix}
-	\begin{bmatrix} \vec{z}_j^n \\ \vec{z}_{j \Gamma}^n \end{bmatrix}
-	= \begin{bmatrix} ~ \\ \vec{v}_i^n \end{bmatrix},
-\end{equation*}
-with some factorization, then update our vectors using
-\begin{align*}
-	\begin{bmatrix} \vec{d}_j^{n+1} \\ \vec{d}_{j \Gamma}^{n+1} \end{bmatrix}
-	 & = (\vec{w}_i^n)^\top \left ( \vec{u}_{j \Gamma}^n - \vec{u}_{i \Gamma}^{n-1} \right )
-	\Bigg ( \begin{bmatrix} \vec{z}_j^n \\ \vec{z}_{j \Gamma}^n \end{bmatrix}
-	+ \\ & \quad \begin{bmatrix} Z_j^n \\ Z_{j \Gamma}^n \end{bmatrix}
-	\left ( I - (W_i^n)^\top Z_{j \Gamma}^n \right )^{-1} (W_i^n)^\top \vec{z}_{j \Gamma}^n \Bigg ) ,
-\end{align*}
-where $Z_{j \Gamma}^n = \begin{bmatrix} \vec{z}_{j \Gamma}^1 & \dots & \vec{z}_{j \Gamma}^n \end{bmatrix}$, etc.
-\end{frame}
-
-\begin{frame}{Woodbury matrix identity}
-Because the right hand side appears in the Woodbury matrix identity, we can perform some simplifications to the previous equation:
-\begin{align*}
-	& \begin{bmatrix} \vec{z}_j^n \\ \vec{z}_{j \Gamma}^n \end{bmatrix}
-	+ \begin{bmatrix} Z_j^n \\ Z_{j \Gamma}^n \end{bmatrix}
-	\left ( I - (W_i^n)^\top Z_{j \Gamma}^n \right )^{-1} (W_i^n)^\top \vec{z}_{j \Gamma}^n \\
-	& = \begin{bmatrix} Z_j^n \\ Z_{j \Gamma}^n \end{bmatrix}
-	\left ( I+	\left ( I - (W_i^n)^\top Z_{j \Gamma}^n \right )^{-1} (W_i^n)^\top Z_{j \Gamma}^n \right )
-	\begin{bmatrix} ~ \\ 1 \end{bmatrix} \\
-	& = \begin{bmatrix} Z_j^n \\ Z_{j \Gamma}^n \end{bmatrix}
-	\left ( I - (W_i^n)^\top Z_{j \Gamma}^n \right )^{-1}
-	\begin{bmatrix} ~ \\ 1 \end{bmatrix}.
-\end{align*}
-\end{frame}
-
-\begin{frame}{Krylov subspaces}
-We can show that the vectors $\vec{d}_{i \Gamma}^k$ lie within Krylov subspaces.
-
-~
-
-First, if $\Delta T=0$ (fixed transmission conditions), then
-\begin{equation*}
-	\vec{d}_{j \Gamma}^{n+1} = \left ( \hat{A} + E_{i \to j}^1 \right )^{-1} E_{i \to j}^1 \vec{d}_{i \Gamma}^{n}.
-\end{equation*}
-Composing this with the same equation for the other subdomain gives
-\begin{equation*}
-	\vec{d}_{j \Gamma}^{n+1} = \left ( \hat{A} + E_{i \to j}^1 \right )^{-1} E_{i \to j}^1 \left ( \hat{A} + E_{j \to i}^1 \right )^{-1} E_{j \to i}^1 \vec{d}_{j \Gamma}^{n-1}
-		= A_{jK}^1 \vec{d}_{j \Gamma}^{n-1}.
-\end{equation*}
-Then clearly $\vec{d}_{j \Gamma}^{n+1} \in \mathcal{K}_n(A_{jK}^1, \vec{d}_{j \Gamma}^1)$.
-\end{frame}
-
-\begin{frame}{Krylov subspaces}
-Second, for our adaptive transmission conditions,
-\begin{align*}
-	\vec{d}_{j \Gamma}^{n+1} \in & \Span \left ( \set{\vec{z}_{j \Gamma}^k}_{k=1}^n \right ) \\
-		\in & \Span \left ( \set{(\hat{A} + E_{i \to j}^1)^{-1} \vec{v}_i^k}_{k=1}^n \right ) \\
-		\in & \Span \left ( \set{ (\hat{A} + E_{i \to j}^1)^{-1} E_{i \to j}^1 \vec{d}_{i \Gamma}^k }_{k=1}^n \right ).
-\end{align*}
-Composing this with the same result for the other subdomain results in
-\begin{equation*}
-	\vec{d}_{j \Gamma}^{n+1} \in \Span \left ( \set{ A_{jK}^1 \vec{d}_{j \Gamma}^k} \right ) = \mathcal{K}_n(A_{jK}^1, \vec{d}_{j \Gamma}^1).
-\end{equation*}
-
-~
-
-For the paraAOSM, the Krylov subspaces are augmented:
-\begin{equation*}
-	\vec{d}_{j \Gamma}^{n+1} \in \mathcal{K}_k(A_{jK}^1, \vec{d}_{j \Gamma}^1) + \mathcal{K}_l(A_{jK}^1, \vec{d}_{j \Gamma}^2),
-\end{equation*}
-where $k=\lfloor n/2 \rfloor$ and $l=\lfloor (n-1)/2 \rfloor$.
-\end{frame}
-
-\begin{frame}{Optimization of the solution}
-The ideal update to the solution lies within the Krylov subspace $\Span(W_i^n)$ and minimizes the residual of
-\begin{equation*}
-	(I - A_{jK}^1) \vec{u}_\Gamma = \vec{f}_{jK}^{1}
-\end{equation*}
-in the Euclidean norm.
-($A_{jK}^1$ is the matrix that produces the Krylov subspace, while $\vec{f}_{jK}^{1}$ is an appropriate right hand side constructed from $\vec{f}_1$, $\vec{f}_2$ and $\vec{f}_\Gamma$.)
-This would give results equivalent to GMRES.
-
-~
-
-This can be accomplished by saving the Hessenberg matrices produced as part of the IAA and performing an additional (smaller) system solve at each iteration.
-It requires more computation and more communication between the subdomains.
-\end{frame}
-
-\begin{frame}{Optimization of the solution}
-Without these extra steps, the AOSMs as described perform their own optimization, a Galerkin condition.
-
-\begin{theorem} \label{thm: opt}
-If $\hat{A} + E_{i \to j}^{n+1}$ is invertible, then the update to the solution due to an AOSM is $$\vec{d}_{j \Gamma}^{n+1} = \AijE \vec{x},$$ where
-$\vec{x} \in  \Span(W_i^n)$ such that the residual of
-\begin{align*}
-	& \left ( I - \left ( \hat{A} + E_{i \to j}^{n+1} \right )^{-1} E_{i \to j}^{n+1} \right ) \vec{u}_\Gamma \\
-	& = \left ( \hat{A} + E_{i \to j}^{n+1} \right )^{-1} \left ( \vec{f}_\Gamma - A_{\Gamma j} A_{jj}^{-1} \vec{f}_j - A_{\Gamma i} A_{ii}^{-1} \vec{f}_i \right )
-\end{align*}
-applied to $\vec{u}_{i \Gamma}^{n-1} + \vec{x}$ is orthogonal to $\Span(W_i^n)$. 
-\end{theorem}
-\end{frame}
-
-\begin{frame}{Optimization of the solution}
-\textbf{Proof:}
-Apply the Woodbury matrix identity with only the latest rank one update:
-\begin{align*}
-	& \left ( \hat{A} + E_{i \to j}^n - \vec{v}_i^n \vecw \right )^{-1} \vec{v}_i^n \\
-	& = \left ( \hat{A} + E_{i \to j}^n \right )^{-1} \vec{v}_i^n \Bigg ( I + \\
-	& \quad \bigg (I - \vecw \left ( \hat{A} + E_{i \to j}^n \right )^{-1} \vec{v}_i^n \bigg )^{-1} \vecw \left ( \hat{A} + E_{i \to j}^n \right )^{-1} \vec{v}_i^n \Bigg ) \\
-	& = \left ( \hat{A} + E_{i \to j}^n \right )^{-1} \vec{v}_i^n \left ( I - \vecw \left ( \hat{A} + E_{i \to j}^n \right )^{-1} \vec{v}_i^n \right )^{-1} \\
-	& = \frac{\AijE \vec{w}_i^n}{\vecw \left ( I - \AijE \right ) \vec{w}_i^n}.
-\end{align*}
-\end{frame}
-
-\begin{frame}{Optimization of the solution}
-Then the difference vector can be written as
-\begin{align*}
-	\vec{d}_{j \Gamma}^{n+1}
-	&= \frac{\vecw \left ( \vec{u}_{j \Gamma}^n - \vec{u}_{i \Gamma}^{n-1} \right )}{\vecw \left ( I - \AijE \right ) \vec{w}_i^n} \AijE \vec{w}_i^n \\
-	&= \AijE \vec{w}_i^n \gamma.
-\end{align*}
-
-~
-
-Meanwhile, the residual of the equation is $\vec{u}_{j \Gamma}^n - \vec{u}_{i \Gamma}^{n-1}$.
-The Galerkin condition is satisfied by $W_i^n \vec{y}$, where $\vec{y}$ solves
-\begin{equation*}
-	(W_i^n)^\top \left ( I - \AijE \right ) W_i^n \vec{y} = (W_i^n)^\top \vec{u}_{j \Gamma}^n - \vec{u}_{i \Gamma}^{n-1}.
-\end{equation*}
-Since $E_{i \to j}^n$ has nullspace $W_i^{n-1}$, the matrix of this system is upper triangular and we can show the last diagonal entry is $\vecw (I - \AijE) \vec{w}_i^n$.
-\end{frame}
-
-\begin{frame}{Optimization of the solution}
-Thus, $\vec{x} = \gamma \vec{w}_i^n + W_i^{n-1} \tilde{\vec{y}}$, where $\tilde{\vec{y}}$ is $\vec{y}$ without its last entry.
-When applying $\AijE$ to $\vec{x}$, the nullspace of $E_{i \to j}^n$ eliminates the contribution of $W_i^{n-1}$, leaving only
-\begin{equation*}
-	\AijE \vec{x} = \AijE \vec{w}_i^n \gamma = \vec{d}_{j \Gamma}^{n+1}.
-\end{equation*}
-Thus, the difference vectors are chosen to satisfy an implicit Galerkin condition.
-\qed
-\end{frame}
-
-% nb: breakdown?
 
 \begin{frame}{Numerical results}
 \begin{equation*}
