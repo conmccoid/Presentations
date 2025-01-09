@@ -21,15 +21,141 @@
 
 \maketitle
 
-\section{Brief history of domain decomposition} % 5 min
+\section{Brief history of domain decomposition} % 15 min
 
 % Schwarz (incl. keyhole domain)
+\begin{frame}{H.A. Schwarz, 1869}
+
+How do we solve the Laplace equation on complicated domains?
+
+We split the domain into simpler subdomains.
+
+\begin{center}
+\vspace{-3em}
+\includegraphics[width=0.5\textwidth]{AOSM/FIG_keyhole.png}
+\vspace{-4em}
+\end{center}
+
+Alternating Schwarz method:
+\begin{equation*}
+	\begin{cases} \Delta u_1^{n+1} = 0 & \text{in } \Omega_1, \\ u_1^{n+1} = u_2^n & \text{on } \Gamma_1, \end{cases}
+	\quad
+	\begin{cases} \Delta u_2^{n+1} = 0 & \text{in } \Omega_2, \\ u_2^{n+1} = u_1^{n+1} & \text{on } \Gamma_2. \end{cases}
+\end{equation*}
+\end{frame}
 
 % P.L. Lions
+\begin{frame}{P.L. Lions, 1989}
+
+Parallel Schwarz method:
+\begin{equation*}
+	\begin{cases} \Delta u_1^{n+1} = 0 & \text{in } \Omega_1, \\ u_1^{n+1} = u_2^n & \text{on } \Gamma_1, \end{cases}
+	\quad
+	\begin{cases} \Delta u_2^{n+1} = 0 & \text{in } \Omega_2, \\ u_2^{n+1} = u_1^{n} & \text{on } \Gamma_2. \end{cases}
+\end{equation*}
+
+Multiple subdomains:
+\begin{equation*}
+	\begin{cases} \Delta u_i^{n+1} = 0 & \text{in } \Omega_i, \\ u_i^{n+1} = u_j^n & \text{on } \Gamma_{ij} \end{cases}
+\end{equation*}
+where $\Gamma_{ij}$ is the boundary of $\Omega_i$ that lies in $\Omega_j$.
+\end{frame}
+
+\begin{frame}{Algebraic domain decomposition}
+
+\begin{equation*}
+	A \vec{u} = \begin{bmatrix} A_{11} & A_{1 \Gamma} \\ A_{\Gamma 2} & A_{\Gamma \Gamma} & A_{\Gamma 1} \\ ~ & A_{2 \Gamma} & A_{22} \end{bmatrix} \begin{bmatrix} \vec{u}_1 \\ \vec{u}_\Gamma \\ \vec{u}_2 \end{bmatrix} = \begin{bmatrix} \vec{f}_1 \\ \vec{f}_\Gamma \\ \vec{f}_2 \end{bmatrix} = \vec{f}
+\end{equation*}
+
+The domain $\Omega$ is split into $\Omega_1$, which contains the variables in $\vec{u}_1$ and $\vec{u}_\Gamma$, and $\Omega_2$, which contains the variables in $\vec{u}_2$ and $\vec{u}_\Gamma$.
+
+The variables $\vec{u}_\Gamma$ are shared between the two subdomains and forms an \textbf{interface} between the two.
+\end{frame}
+
+\begin{frame}{Algebraic Schwarz methods}
+The two subdomains in algebraic Schwarz are
+\begin{align*}
+	\begin{bmatrix} A_{11} & A_{1 \Gamma} \\ A_{\Gamma 1} & A_{\Gamma \Gamma} + T_{2 \to 1} \end{bmatrix}
+                            \begin{bmatrix} \vec{u}_1^{n+1} \\ \vec{u}_{1 \Gamma}^{n+1} \end{bmatrix}
+                            = \begin{bmatrix} \vec{f}_1 \\ \vec{f}_\Gamma \end{bmatrix}
+                            + \begin{bmatrix} ~ \\ -A_{\Gamma 2} \vec{u}_2^n + T_{2 \to 1} \vec{u}_{2 \Gamma}^n \end{bmatrix}, \\
+       \begin{bmatrix} A_{22} & A_{2 \Gamma} \\ A_{\Gamma 2} & A_{\Gamma \Gamma} + T_{1 \to 2} \end{bmatrix}
+                            \begin{bmatrix} \vec{u}_2^{n+1} \\ \vec{u}_{2 \Gamma}^{n+1} \end{bmatrix}
+                            = \begin{bmatrix} \vec{f}_2 \\ \vec{f}_\Gamma \end{bmatrix}
+                            + \begin{bmatrix} ~ \\ -A_{\Gamma 1} \vec{u}_1^n + T_{1 \to 2} \vec{u}_{1 \Gamma}^n \end{bmatrix} ,
+\end{align*}
+for any choice of matrices $T_{1 \to 2}$ and $T_{2 \to 1}$ (that does not make these systems singular).
+
+Each choice of matrices $T$ corresponds to a choice of boundary conditions on the interface, called \textbf{transmission conditions}, since they transmit information between subdomains.
+\end{frame}
 
 % OSM? incl. algebraic transmission conditions
+\begin{frame}{Options for transmission conditions}
+
+\begin{itemize}
+\item Dirichlet boundary conditions, equivalent to $T=0$
+\item Neumann boundary conditions, allow minimal overlap
+\item Optimized Robin boundary conditions:
+\begin{equation*}
+	\frac{\partial u_1^{n+1}}{\partial x} - p u_1^{n+1} = \frac{\partial u_2^{n}}{\partial x} - p u_2^{n}
+\end{equation*}
+for some $p$ optimized using Fourier analysis
+\item Absorbing boundary conditions, equivalent to Schur complements:
+\begin{equation*}
+	S_{i \to j} := -A_{\Gamma i} A_{ii}^{-1} A_{i \Gamma}
+\end{equation*}
+\end{itemize}
+With absorbing boundary conditions, the method becomes direct.
+However, the Schur complements are expensive to compute and in general dense.
+
+\end{frame}
 
 % ASPIN/MSPIN/RASPEN
+\begin{frame}{Schwarz as a fixed point iteration}
+
+Schwarz methods can be represented as fixed point iterations:
+\begin{equation*}
+	u^{n+1} = g \left ( u^{n-1} \right ),
+\end{equation*}
+where $g(u)$ represents one iteration of a Schwarz method that takes boundary data from the input $u$.
+
+The fixed point of $g$ is the solution on the first subdomain.
+This is also the root of the function $f(u) = g(u) - u$.
+We apply Newton's method:
+\begin{equation*}
+	u^* = u^{n-1} - J(u^{n-1})^{-1} f(u^{n-1}),
+\end{equation*}
+where $J$ is the Jacobian of the function $f$.
+\end{frame}
+
+\begin{frame}{Schwarz-Preconditioned Newton methods (Cai \& Keyes, 2001)}
+
+This is equivalent to preconditioning Newton's method with a Schwarz method.
+
+Let
+\begin{equation*}
+	f(u) = \begin{bmatrix} f_1(u_1, u_2) \\ f_2(u_1,u_2) \end{bmatrix}.
+\end{equation*}
+Then Newton's method tells us to solve the nonlinear problem
+\begin{equation*}
+	\begin{bmatrix} J_{11}^{(n+1)} & J_{12}^{(n+1)} \\ J_{21}^{(n+1)} & J_{22}^{(n+1)} \end{bmatrix} \begin{bmatrix} u_1^{n+1} - u_1^n \\ u_2^{n+1} - u_2^n \end{bmatrix} = \begin{bmatrix} f_1 \\ f_2 \end{bmatrix},
+\end{equation*}
+where $J_{ij}^{(n+1)}$ is the derivative of $f_i$ with respect to $u_j$ evaluated at $u_1^{n+1}$ and $u_2^{n+1}$.
+\end{frame}
+
+\begin{frame}{Schwarz-Preconditioned Newton methods (Cai \& Keyes, 2001)}
+
+Preconditioning this with a parallel Schwarz method tells us to solve
+\begin{equation*}
+	\begin{bmatrix} J_{11}^{(n+1)} \\ & J_{22}^{(n+1)} \end{bmatrix} \begin{bmatrix} u_1^{n+1} - u_1^n \\ u_2^{n+1} - u_2^n \end{bmatrix} = \begin{bmatrix} f_1 \\ f_2 \end{bmatrix} - \begin{bmatrix} & J_{12}^{(n)} \\ J_{21}^{(n)} \end{bmatrix} \begin{bmatrix} u_1^{n} - u_1^{n-1} \\ u_2^{n} - u_2^{n-1} \end{bmatrix},
+\end{equation*}
+and completing the iteration by solving
+\begin{equation*}
+	\begin{bmatrix} J_{11}^{(n+1)} \\ & J_{22}^{(n+1)} \end{bmatrix}^{-1} \begin{bmatrix} J_{11}^{(n+1)} & J_{12}^{(n+1)} \\ J_{21}^{(n+1)} & J_{22}^{(n+1)} \end{bmatrix} \begin{bmatrix} u_1^* - u_1^n \\ u_2^* - u_2^n \end{bmatrix}
+	= \begin{bmatrix} f_1(u_1^{n+1},u_2^{n+1}) \\ f_2(u_1^{n+1},u_2^{n+1}) \end{bmatrix}.
+\end{equation*}
+
+\end{frame}
 
 \section{Alternate minimization in phase-field fracture models} % 15 min
 
@@ -43,18 +169,19 @@
 
 % applying Newton -> MSPIN
 
-\section{Adaptive optimized Schwarz methods} % 30 min
+\section{Adaptive optimized Schwarz methods} % 20 min
 
 % predictor-corrector formulation
 \begin{frame}{Schwarz method with adaptive transmission conditions}
 
 Let $T_{i \to j}$ change at each iteration, so that the transmission conditions adapt.
 We can formulate such a Schwarz method, acting only on the difference in successive solutions,n as
-\begin{equation*}
+\begin{align*}
 	\begin{bmatrix} A_{ii} & A_{i \Gamma} \\ A_{\Gamma i} & A_{\Gamma \Gamma} + T_{j \to i}^{n+1} \end{bmatrix}
 	\begin{bmatrix} \vec{d}_i^{n+1} \\ \vec{d}_{i \Gamma}^{n+1} \end{bmatrix}
-	= \begin{bmatrix} ~ \\ -A_{\Gamma j} \vec{d}_j^n + T_{j \to i}^{n+1} \vec{d}_{j \Gamma}^n - \Delta T_{j \to i}^n \left ( \vec{u}_{i \Gamma}^n - \vec{u}_{j \Gamma}^{n-1} \right ) \end{bmatrix},
-\end{equation*}
+	= & \begin{bmatrix} ~ \\ -A_{\Gamma j} \vec{d}_j^n + T_{j \to i}^{n+1} \vec{d}_{j \Gamma}^n \end{bmatrix} \\
+	& - \begin{bmatrix} ~ \\ \Delta T_{j \to i}^n \left ( \vec{u}_{i \Gamma}^n - \vec{u}_{j \Gamma}^{n-1} \right ) \end{bmatrix},
+\end{align*}
 where $i=1,2$, $j=3-i$, and $\Delta T_{j \to i}^n$ represents the update to the transmission condition $T_{j \to i}^n$ at this step,
 \begin{equation*}
 	T_{j \to i}^{n+1} = T_{j \to i}^n + \Delta T_{j \to i}^n.
@@ -213,199 +340,6 @@ applied to $\vec{u}_{i \Gamma}^{n-1} + \vec{x}$ is orthogonal to $\Span(W_i^n)$.
 \end{frame}
 
 % numerical results: basic comparison with GMRES
-
-% multiple subdomains (Schur complements for red-black)
-
-% symmetrized cells
-
-\begin{frame}{Algebraic Schwarz}
-
-\includegraphics[width=\textwidth]{AOSM/TIKZ_AOSM_20230614_1.png}
-\end{frame}
-
-\begin{frame}{Algebraic Schwarz}
-Consider the following algebraic system with block tridiagonal matrix $A$:
-\begin{equation*}
-	A \vec{u} = \begin{bmatrix} A_{11} & A_{1 \Gamma} \\ A_{\Gamma 2} & A_{\Gamma \Gamma} & A_{\Gamma 1} \\ ~ & A_{2 \Gamma} & A_{22} \end{bmatrix} \begin{bmatrix} \vec{u}_1 \\ \vec{u}_\Gamma \\ \vec{u}_2 \end{bmatrix} = \begin{bmatrix} \vec{f}_1 \\ \vec{f}_\Gamma \\ \vec{f}_2 \end{bmatrix} = \vec{f} .
-\end{equation*}
-
-The solution is divided into two subdomains: $\Omega_1$ contains the variables in $\vec{u}_1$ and $\vec{u}_\Gamma$, and $\Omega_2$ contains the variables in $\vec{u}_2$ and $\vec{u}_\Gamma$.
-The variables $\vec{u}_\Gamma$ are then shared between the two subdomains.
-We will refer to this portion as the \textbf{interface} between the two subdomains.
-
-~
-
-The idea is to find local solutions on each subdomain, a process which is easier to accomplish than solving the system as a whole.
-To find a global solution, local solutions are found iteratively, with information on the interface passing between the two subdomains.
-\end{frame}
-
-\begin{frame}{Algebraic Schwarz}
-There is a physical interpretation of this algebraic splitting, the more commonly seen Schwarz methods.
-Consider the differential equation
-\begin{equation*}
-	\begin{cases} \Delta u(x,y) = f(x,y), & (x,y) \in \Omega = [-1,1] \times [-1,1], \\ u(x,y)=h(x,y), & (x,y) \in \partial \Omega. \end{cases}
-\end{equation*}
-Splitting this up using a Schwarz method results in the following subproblems that are solved iteratively:
-\begin{align*}
-	\begin{cases} \Delta u_1^n(x,y) = f(x,y), & (x,y) \in \Omega_1 = [-1,\alpha] \times [-1,1], \\ u_1^n(\alpha,y)=u_2^{n-1}(\alpha,y), \end{cases} \\
-	\begin{cases} \Delta u_2^n(x,y) = f(x,y), & (x,y) \in \Omega_2 = [\beta,1] \times [-1,1], \\ u_2^n(\beta,y)=u_1^{n-1}(\beta,y). \end{cases}
-\end{align*}
-The \textbf{overlap}, physical equivalent of the interface, is now the region where $\beta \leq x \leq \alpha$.
-Note that Dirichlet boundary conditions on this interface pass information between the subdomains.
-\end{frame}
-
-\begin{frame}{Algebraic Schwarz}
-The two subdomains in algebraic Schwarz are
-\begin{align*}
-	\begin{bmatrix} A_{11} & A_{1 \Gamma} \\ A_{\Gamma 1} & A_{\Gamma \Gamma} + T_{2 \to 1} \end{bmatrix}
-                            \begin{bmatrix} \vec{u}_1^{n+1} \\ \vec{u}_{1 \Gamma}^{n+1} \end{bmatrix}
-                            = \begin{bmatrix} \vec{f}_1 \\ \vec{f}_\Gamma \end{bmatrix}
-                            + \begin{bmatrix} ~ \\ -A_{\Gamma 2} \vec{u}_2^n + T_{2 \to 1} \vec{u}_{2 \Gamma}^n \end{bmatrix}, \\
-       \begin{bmatrix} A_{22} & A_{2 \Gamma} \\ A_{\Gamma 2} & A_{\Gamma \Gamma} + T_{1 \to 2} \end{bmatrix}
-                            \begin{bmatrix} \vec{u}_2^{n+1} \\ \vec{u}_{2 \Gamma}^{n+1} \end{bmatrix}
-                            = \begin{bmatrix} \vec{f}_2 \\ \vec{f}_\Gamma \end{bmatrix}
-                            + \begin{bmatrix} ~ \\ -A_{\Gamma 1} \vec{u}_1^n + T_{1 \to 2} \vec{u}_{1 \Gamma}^n \end{bmatrix} ,
-\end{align*}
-for any choice of matrices $T_{1 \to 2}$ and $T_{2 \to 1}$ (that does not make these systems singular).
-
-~
-
-Each choice of matrices $T$ corresponds to a choice of boundary conditions on the interface, called \textbf{transmission conditions}, since they transmit information between subdomains.
-\end{frame}
-
-\begin{frame}{Algebraic Schwarz}
-For example, choosing $T=0$ is equivalent to Dirichlet transmission conditions (in most cases).
-Note in this case, the Dirichlet information is taken from \textit{outside} the interface.
-
-~
-
-There is thus a disconnect between the physical overlap and the algebraic interface.
-In fact, the same interface can represent both overlapping and non-overlapping subdomains, depending on $T$.
-
-\centering
-\includegraphics[width=0.7\textwidth]{AOSM/TIKZ_AOSM_20230614_2.png}
-\end{frame}
-
-\begin{frame}{Algebraic Schwarz}
-Dirichlet transmission conditions generally provide slow convergence.
-Optimized Schwarz methods use higher order transmission conditions with parameters to improve this convergence.
-Easiest among these is Robin transmission conditions:
-\begin{equation*}
-	\frac{\partial u_1^n}{\partial x} - p u_1^n(0,y)= \frac{\partial u_2^{n-1}}{\partial x} - p u_2^{n-1}(0,y),
-\end{equation*}
-where one can find an optimal $p$.
-This usually takes upfront Fourier analysis or similar methods, but produces significant speed-ups.
-
-~
-
-One can even go higher order, such as with tangential transmission conditions:
-\begin{equation*}
-	\frac{\partial u_1^n}{\partial x} - p u_1^n(0,y) + q \frac{\partial u_1^n}{\partial y}=
-	\frac{\partial u_2^{n-1}}{\partial x} - p u_2^{n-1}(0,y) + q \frac{\partial u_2^n}{\partial y},
-\end{equation*}
-now giving parameters $p$ and $q$ to tweak.
-\end{frame}
-
-\begin{frame}{Algebraic Schwarz}
-One can continue going to higher and higher order, with increasingly non-local information transmitted, until one has as many parameters to adjust as there are variables in the interface.
-At the limit, one arrives at the optimal transmission conditions, \textbf{absorbing boundary conditions (ABCs)}, which are traditionally used to ensure incoming waves do not reflect at the boundary.
-There are numerous methods for approximating ABCs, such as Pad\'e approximants and perfectly matched layers, each with their own benefits and drawbacks.
-
-~
-
-Algebraically, ABCs correspond to replacing the $T$ matrices with the Schur complements:
-\begin{equation*}
-	T_{i \to j} \to S_{i \to j} := -A_{\Gamma i} A_{ii}^{-1} A_{i \Gamma}.
-\end{equation*}
-With these, algebraic Schwarz with two subdomains converges in two iterations.
-\end{frame}
-
-\begin{frame}{Algebraic Schwarz}
-Of course, if one has the Schur complements, algebraic Schwarz becomes a direct method.
-But the Schur complements are expensive to calculate, and in general dense.
-In the time it takes to calculate the Schur complements, one can run roughly the same number of subdomain solves as there are variables in the interface.
-
-~
-
-This puts an artificial limit on the number of iterations of algebraic Schwarz to run.
-Let $M$ be the number of variables in the interface.
-If algebraic Schwarz does not converge in $M$ iterations, we would have been better off computing the Schur complements.
-\end{frame}
-
-\begin{frame}{Adaptive Transmission Conditions}
-We aim to construct black box approximations to these Schur complements / ABCs using vectors produced in the course of the algebraic Schwarz method.
-These approximations will be updated at each iteration of the method.
-The transmission conditions will then be \textbf{adaptive}.
-
-~
-
-This requires reformulating the original algebraic systems with fixed $T$ matrices to ones with adaptive $T$ matrices:
-\begin{align*}
-\begin{bmatrix} A_{11} & A_{1 \Gamma} \\ A_{\Gamma 1} & A_{\Gamma \Gamma} + T_{2 \to 1}^{n+1} \end{bmatrix}
-\begin{bmatrix} \vec{u}_1^{n+1} \\ \vec{u}_{1 \Gamma}^{n+1} \end{bmatrix}
-& = \begin{bmatrix} \vec{f}_1 \\ \vec{f}_\Gamma \end{bmatrix}
-- \begin{bmatrix} ~ \\ A_{\Gamma 2} \vec{u}_2^n \end{bmatrix}
-+ \begin{bmatrix} ~ \\ T_{2 \to 1}^{n+1} \vec{u}_{2 \Gamma}^n \end{bmatrix}, \\
-\begin{bmatrix} A_{22} & A_{2 \Gamma} \\ A_{\Gamma 2} & A_{\Gamma \Gamma} + T_{1 \to 2}^{n+1} \end{bmatrix}
-\begin{bmatrix} \vec{u}_2^{n+1} \\ \vec{u}_{2 \Gamma}^{n+1} \end{bmatrix}
-& = \begin{bmatrix} \vec{f}_2 \\ \vec{f}_\Gamma \end{bmatrix}
-- \begin{bmatrix} ~ \\ A_{\Gamma 1} \vec{u}_1^n \end{bmatrix}
-+ \begin{bmatrix} ~ \\ T_{1 \to 2}^{n+1} \vec{u}_{1 \Gamma}^n \end{bmatrix}.
-\end{align*}
-Now $T_{i \to j}^{n+1}$ represents the transmission conditions used at step $n+1$.
-\end{frame}
-
-\begin{frame}{Adaptive Transmission Conditions}
-How do we extract updates to the transmission conditions?
-Let us reformulate the systems again, into a corrector form that works on the difference between successive iterates:
-\begin{align*}
-	& \begin{bmatrix} A_{11} & A_{1 \Gamma} \\ A_{\Gamma 1} & A_{\Gamma \Gamma} + T_{2 \to 1}^{n+1} \end{bmatrix}
-	\left ( \begin{bmatrix} \vec{u}_1^{n+1} \\ \vec{u}_{1 \Gamma}^{n+1} \end{bmatrix} - \begin{bmatrix} \vec{u}_1^n \\ \vec{u}_{1 \Gamma}^n \end{bmatrix} \right ) \\
-	& = \begin{bmatrix} A_{11} & A_{1 \Gamma} \\ A_{\Gamma 1} & A_{\Gamma \Gamma} + T_{2 \to 1}^{n+1} \end{bmatrix}
-	\begin{bmatrix} \vec{u}_1^{n+1} \\ \vec{u}_{1 \Gamma}^{n+1} \end{bmatrix} \\
-	& \quad - \begin{bmatrix} A_{11} & A_{1 \Gamma} \\ A_{\Gamma 1} & A_{\Gamma \Gamma} + T_{2 \to 1}^n \end{bmatrix}
-	\begin{bmatrix} \vec{u}_1^n \\ \vec{u}_{1 \Gamma}^n \end{bmatrix}
-	- \begin{bmatrix} ~ & ~ \\ ~ & \Delta T_{2 \to 1}^n \end{bmatrix} \begin{bmatrix} \vec{u}_1^n \\ \vec{u}_{1 \Gamma}^n \end{bmatrix} \\
-	& = \begin{bmatrix} \vec{f}_1 \\ \vec{f}_\Gamma \end{bmatrix}
-	- \begin{bmatrix} ~ \\ A_{\Gamma 2} \vec{u}_2^n \end{bmatrix}
-	+ \begin{bmatrix} ~ \\ T_{2 \to 1}^{n+1} \vec{u}_{2 \Gamma}^n \end{bmatrix} \\
-	& \quad - \left ( \begin{bmatrix} \vec{f}_1 \\ \vec{f}_\Gamma \end{bmatrix}
-	- \begin{bmatrix} ~ \\ A_{\Gamma 2} \vec{u}_2^{n-1} \end{bmatrix}
-	+ \begin{bmatrix} ~ \\ T_{2 \to 1}^n \vec{u}_{2 \Gamma}^{n-1} \end{bmatrix} \right )
-	- \begin{bmatrix} ~ \\ \Delta T_{2 \to 1}^n \vec{u}_{1 \Gamma}^{n} \end{bmatrix},
-\end{align*}
-\end{frame}
-
-\begin{frame}{Adaptive Transmission Conditions}
-We focus on the matrix-vector product $E_{i \to j}^{n+1} \vec{d}_{i \Gamma}^n$.
-Tracing backwards, this is equal to
-\begin{equation*}
-	E_{i \to j}^{n+1} \vec{d}_{i \Gamma}^n = -A_{\Gamma i} \vec{d}_i^n + T_{i \to j}^{n+1} \vec{d}_{i \Gamma}^n.
-\end{equation*}
-Thus, we can (and must) compute this matrix-vector product in the course of the method.
-
-~
-
-This gives us a sequence of vector pairs, $(\vec{d}_{i \Gamma}^n, E_{i \to j}^{n+1} \vec{d}_{i \Gamma}^n)$.
-Let's use this sequence to construct an approximation to $E_{i \to j}^{n+1}$.
-If we have an approximation to $E_{i \to j}^{n+1}$, we can subtract it from $T_{i \to j}^{n+1}$ to get an approximation of $S_{i \to j}^{n+1}$.
-\end{frame}
-
-\begin{frame}{Adaptive Transmission Conditions}
-Let $\vec{y} = E \vec{d}$.
-From one vector pair we can extract a rank one approximation of $E$:
-\begin{equation*}
-	E \approx \frac{\vec{y} \vec{d}^\top}{\norm{\vec{d}}_2^2}.
-\end{equation*}
-This approximation is only accurate when multiplying by vectors parallel to $\vec{d}$.
-
-~
-
-Each vector pair gives such a rank one approximation, but the sum of these approximations is only an approximation of $E$ if the vectors $\vec{d}$ are orthogonal, which is not true in general.
-To fix this, we apply \textbf{modified Gram-Schmidt} to the set of vectors $\vec{d}$, resulting in the vectors $\vec{w}$.
-To get the vectors $\vec{v}=E \vec{w}$, a commenserate process must be done on the vectors $\vec{y}$ (NOT MGS!).
-\end{frame}
-
 \begin{frame}{Numerical results}
 \begin{equation*}
 	\begin{cases} \Delta u(x,y) = f(x,y), & (x,y) \in \Omega = [-1,1] \times [-1,1], \\
@@ -413,48 +347,21 @@ To get the vectors $\vec{v}=E \vec{w}$, a commenserate process must be done on t
 	\end{cases}
 \end{equation*}
 \begin{figure}
-	\only<1>{\includegraphics[width=0.75\textwidth]{AOSM/PLOT_faltAOSMConv_Laplace.pdf}}
-	\only<2>{\includegraphics[width=0.75\textwidth]{AOSM/PLOT_fparaAOSMConv_Laplace.pdf}}
-%	\caption{Comparison of altAOSM versions in solving equation (\ref{eq: laplace}) with $N=10,000$, $M=100$, using both Robin and Dirichlet boundary conditions.
-%	Also shown is the OSM with and without GMRES.}
+	\includegraphics[width=0.75\textwidth]{AOSM/PLOT_faltAOSMConv_Laplace.pdf}
+	\caption{Comparison of altAOSM versions with $N=10,000$, $M=100$, using both Robin and Dirichlet boundary conditions.}
 	\label{fig: compare altAOSM}
 	% to update figure: EX_faltAOSMConv_Laplace.m -> h=figure(1); -> exportgraphics(h,'../Figures/PLOT_faltAOSMConv_Laplace.eps');
 \end{figure}
 \end{frame}
 
-\begin{frame}{Numerical results}
-\begin{equation*}
-	\begin{cases} u_t(x,y,t) = \Delta u(x,y,t), & (x,y) \in \Omega = [-1,1] \times [-1,1], \ t \in [0,T] \\
-		u(x,y,0) = u_0(x,y), & (x,y) \in \Omega, \\
-		u(x,y,t) = g(x,y), & (x,y) \in \partial \Omega, \ t \in [0,T]. \end{cases}
-\end{equation*}
-\begin{figure}
-	\includegraphics[width=0.75\textwidth]{AOSM/PLOT_AOSMConv_Heat_v1.pdf}
-%	\caption{Convergence of OSM and AOSMs at the first six time steps of equation (\ref{eq: discrete heat}).
-%		AOSMs that use updated transmission conditions at each time step are labelled `Sat'.}
-	\label{fig: heat 1}
-	% to update figure: EX_AOSMConv_Heat.m -> h=figure(1); -> exportgraphics(h,'../Figures/PLOT_AOSMConv_Heat_v1.eps');
-\end{figure}
-\end{frame}
+% multiple subdomains (Schur complements for red-black)
 
-\begin{frame}{Numerical results}
-\begin{equation*}
-	\begin{cases} -\nabla \left ( \alpha(x,y) \cdot \nabla u(x,y) \right ) = f(x,y), & (x,y) \in \Omega = [0,1] \times [0,1], \\
-		u(x,y) = g(x,y), & (x,y) \in \partial \Omega. % = \set{x=-1} \cup \set{x=1} \cup \set{y=-1} \cup \set{y=1} .
-	\end{cases}
-\end{equation*}
-\begin{figure}
-	\only<1>{\includegraphics[width=0.75\textwidth]{AOSM/PLOT_MEFPP_loneland_K.pdf}}
-	\only<2>{\includegraphics[width=0.75\textwidth]{AOSM/PLOT_MEFPP_loneland_v1.pdf}}
-	\only<3>{\includegraphics[width=0.75\textwidth]{AOSM/PLOT_MEFPP_loneland_v3.pdf}}
-\end{figure}
-\end{frame}
+% symmetrized cells
 
 \begin{frame}{Conclusions and Future Work}
 \begin{itemize}
 \item AOSMs give convergence rates comparable to Krylov subspace methods, but without the extra computations.
 \item Transmission conditions from AOSMs can be re-used to give fast convergence when repeated solves are required.
-\item The paraAOSM has some stability issues that need to be fixed.
 \item Nested decompositions will allow more subdomains, but crosspoints need to be resolved for more general decompositions.
 \end{itemize}
 \end{frame}
