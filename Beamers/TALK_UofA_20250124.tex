@@ -37,7 +37,7 @@
 
 \maketitle
 
-\section{Brief history of domain decomposition} % 15 min
+\section{Introduction to domain decomposition} % 15 min
 
 % Schwarz (incl. keyhole domain)
 \begin{frame}{H.A. Schwarz, 1869}
@@ -47,10 +47,21 @@ How do we solve the Laplace equation on complicated domains?
 We split the domain into simpler subdomains.
 
 \begin{figure}
-\vspace{-3em}
-\includegraphics[width=0.5\textwidth]{AOSM/FIG_keyhole.png}
-\vspace{-4em}
-\caption{Schwarz's original example, taken from wikimedia.org}
+	\centering
+	\begin{tikzpicture}
+		\begin{scope}[blend group = soft light]
+			\filldraw[draw=black, fill=red!50!white, thick] (0,0) circle (1.5);
+			\filldraw[draw=black, fill=green!50!white, thick] (0,-1) rectangle (3,1);
+		\end{scope}
+		\node[left] at (-1.5,0) {$\Omega_1$};
+		\node[right] at (3,0) {$\Omega_2$};
+		\node[left] at (0,0) {$\Gamma_2$};
+		\node[right] at (1.5,0) {$\Gamma_1$};
+	\end{tikzpicture}
+%\vspace{-3em}
+%\includegraphics[width=0.5\textwidth]{AOSM/FIG_keyhole.png}
+%\vspace{-4em}
+%\caption{Schwarz's original example, taken from wikimedia.org}
 \end{figure}
 
 Alternating Schwarz method:
@@ -61,55 +72,135 @@ Alternating Schwarz method:
 \end{equation*}
 \end{frame}
 
-% P.L. Lions
-\begin{frame}{P.L. Lions, 1989}
-
-Parallel Schwarz method:
-\begin{equation*}
-	\begin{cases} \Delta u_1^{n+1} = 0 & \text{in } \Omega_1, \\ u_1^{n+1} = u_2^n & \text{on } \Gamma_1, \end{cases}
-	\quad
-	\begin{cases} \Delta u_2^{n+1} = 0 & \text{in } \Omega_2, \\ u_2^{n+1} = u_1^{n} & \text{on } \Gamma_2. \end{cases}
-\end{equation*}
-
-Multiple subdomains:
-\begin{equation*}
-	\begin{cases} \Delta u_i^{n+1} = 0 & \text{in } \Omega_i, \\ u_i^{n+1} = u_j^n & \text{on } \Gamma_{ij} \end{cases}
-\end{equation*}
-where $\Gamma_{ij}$ is the boundary of $\Omega_i$ that lies in $\Omega_j$.
-\end{frame}
-
-\begin{frame}{Algebraic domain decomposition}
+\begin{frame}{Simple example}
 
 \begin{equation*}
-	A \vec{u} = \begin{bmatrix} A_{11} & A_{1 \Gamma} \\ A_{\Gamma 2} & A_{\Gamma \Gamma} & A_{\Gamma 1} \\ ~ & A_{2 \Gamma} & A_{22} \end{bmatrix} \begin{bmatrix} \vec{u}_1 \\ \vec{u}_\Gamma \\ \vec{u}_2 \end{bmatrix} = \begin{bmatrix} \vec{f}_1 \\ \vec{f}_\Gamma \\ \vec{f}_2 \end{bmatrix} = \vec{f}
+	u''(x) = -1, \quad x \in [-1,1], \quad u(-1)=u(1) = 0
+\end{equation*}
+\begin{equation*}
+	\Omega_1 = [-1,0.18], \quad \Omega_2 = [-0.22, 1]
 \end{equation*}
 
-The domain $\Omega$ is split into $\Omega_1$, which contains the variables in $\vec{u}_1$ and $\vec{u}_\Gamma$, and $\Omega_2$, which contains the variables in $\vec{u}_2$ and $\vec{u}_\Gamma$.
-
-The variables $\vec{u}_\Gamma$ are shared between the two subdomains and forms an \textbf{interface} between the two.
-\end{frame}
-
-\begin{frame}{Interface and overlap}
 \begin{figure}
-\includegraphics[width=\textwidth]{AOSM/TIKZ_AOSM_20230614.pdf}
+	\only<1>{\includegraphics[width=\textwidth]{AOSM/PLOT_SimpleSchwarz1.eps}}
+	\only<2>{\includegraphics[width=\textwidth]{AOSM/PLOT_SimpleSchwarz2.eps}}
+	\only<3>{\includegraphics[width=\textwidth]{AOSM/PLOT_SimpleSchwarz3.eps}}
+	\only<4>{\includegraphics[width=\textwidth]{AOSM/PLOT_SimpleSchwarz4.eps}}
+	\only<5>{\includegraphics[width=\textwidth]{AOSM/PLOT_SimpleSchwarz5.eps}}
 \end{figure}
 \end{frame}
 
-\begin{frame}{Algebraic Schwarz methods}
-The two subdomains in algebraic Schwarz are
+%% P.L. Lions
+%\begin{frame}{P.L. Lions, 1989}
+%
+%Parallel Schwarz method:
+%\begin{equation*}
+%	\begin{cases} \Delta u_1^{n+1} = 0 & \text{in } \Omega_1, \\ u_1^{n+1} = u_2^n & \text{on } \Gamma_1, \end{cases}
+%	\quad
+%	\begin{cases} \Delta u_2^{n+1} = 0 & \text{in } \Omega_2, \\ u_2^{n+1} = u_1^{n} & \text{on } \Gamma_2. \end{cases}
+%\end{equation*}
+%
+%Multiple subdomains:
+%\begin{equation*}
+%	\begin{cases} \Delta u_i^{n+1} = 0 & \text{in } \Omega_i, \\ u_i^{n+1} = u_j^n & \text{on } \Gamma_{ij} \end{cases}
+%\end{equation*}
+%where $\Gamma_{ij}$ is the boundary of $\Omega_i$ that lies in $\Omega_j$.
+%\end{frame}
+
+\begin{frame}{Discretization of continuous problem}
+
+Suppose we have an elliptic PDE:
+\begin{equation*}
+	\begin{cases} \nabla u(x,y) = f(x,y), & x,y \in \Omega, \\ u(x,y) = g(x,y), & x,y \in \partial \Omega, \end{cases}
+\end{equation*}
+that we solve with finite differences on a structured grid:
 \begin{align*}
-	\begin{bmatrix} A_{11} & A_{1 \Gamma} \\ A_{\Gamma 1} & A_{\Gamma \Gamma} + T_{2 \to 1} \end{bmatrix}
+	\nabla u_{i,j}
+	\approx \frac{ u_{i+1,j} + u_{i-1,j} + u_{i,j+1} + u_{i,j-1} - 4u_{i,j} }{h^2}.
+\end{align*}
+
+\begin{figure}
+	\begin{tikzpicture}[scale=0.8]
+		\draw[step=1em,black] (0,0) grid (10em,10em);
+		\node[above] at (5em,10em) {$\Omega$};
+	\end{tikzpicture}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Domain decomposition}
+
+We split the domain into two along a line $x=x_\Gamma$.
+This gives us two domains $\Omega_1$ and $\Omega_2$, as well as the interface between them, $\Gamma$.
+
+\begin{figure}
+	\begin{tikzpicture}
+		\matrix[row sep=1em, column sep=1em, ampersand replacement=\&]{
+%			\draw[step=1em,black] (0,0) grid (10em,10em);
+			\draw[step=1em,red] (0,0) grid (5em,10em);
+			\draw[step=1em,blue] (5em,0) grid (10em,10em);
+			\node[below] at (5em,0) {$x_\Gamma$};
+			\draw[very thick, black] (5em,0) -- (5em,10em);
+			\node[above] at (5em,10em) {$\Omega$};
+			\& \draw[thick,black,->] (0,5em) -- (2,5em); \&
+			\draw[step=1em,red] (0,0) grid (5em,10em);
+			\draw[step=1em,blue] (7em,0) grid (12em,10em);
+			\node[below] at (5em,0) {$x_\Gamma$};
+			\node[below] at (7em,0) {$x_\Gamma$};
+			\draw[very thick, black] (5em,0) -- (5em,10em);
+			\draw[very thick, black] (7em,0) -- (7em,10em);
+			\node[above] at (2.5em,10em) {$\Omega_1$};
+			\node[above] at (9.5em,10em) {$\Omega_2$};
+		\\};
+	\end{tikzpicture}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Discrete problem}
+
+The discrete problem can be represented by a block tridiagonal system:
+\begin{equation*}
+	A \vec{u} = \begin{bmatrix} A_{11} & A_{1 \Gamma} \\ A_{\Gamma 2} & A_{\Gamma \Gamma} & A_{\Gamma 1} \\ ~ & A_{2 \Gamma} & A_{22} \end{bmatrix} \begin{bmatrix} \vec{u}_1 \\ \vec{u}_\Gamma \\ \vec{u}_2 \end{bmatrix} = \begin{bmatrix} \vec{f}_1 \\ \vec{f}_\Gamma \\ \vec{f}_2 \end{bmatrix} = \vec{f},
+\end{equation*}
+where the variables $\vec{u}_1$ represent the solution in the interior of $\Omega_1$, $\vec{u}_2$ those in $\Omega_2$, and $\vec{u}_\Gamma$ those on the interface.
+\end{frame}
+
+%\begin{frame}{Interface and overlap}
+%\begin{figure}
+%\includegraphics[width=\textwidth]{AOSM/TIKZ_AOSM_20230614.pdf}
+%\end{figure}
+%\end{frame}
+
+\begin{frame}{Algebraic decomposition}
+
+The subproblem on $\Omega_1$ is
+\begin{equation*}
+		\begin{bmatrix} A_{11} & A_{1 \Gamma} \\ A_{\Gamma 1} & A_{\Gamma \Gamma} + T_{2 \to 1} \end{bmatrix}
                             \begin{bmatrix} \vec{u}_1^{n+1} \\ \vec{u}_{1 \Gamma}^{n+1} \end{bmatrix}
                             = \begin{bmatrix} \vec{f}_1 \\ \vec{f}_\Gamma \end{bmatrix}
-                            + \begin{bmatrix} ~ \\ -A_{\Gamma 2} \vec{u}_2^n + T_{2 \to 1} \vec{u}_{2 \Gamma}^n \end{bmatrix}, \\
+                            + \begin{bmatrix} ~ \\ -A_{\Gamma 2} \vec{u}_2^n + T_{2 \to 1} \vec{u}_{2 \Gamma}^n \end{bmatrix}
+\end{equation*}
+and the subproblem on $\Omega_2$ is
+\begin{equation*}
        \begin{bmatrix} A_{22} & A_{2 \Gamma} \\ A_{\Gamma 2} & A_{\Gamma \Gamma} + T_{1 \to 2} \end{bmatrix}
                             \begin{bmatrix} \vec{u}_2^{n+1} \\ \vec{u}_{2 \Gamma}^{n+1} \end{bmatrix}
                             = \begin{bmatrix} \vec{f}_2 \\ \vec{f}_\Gamma \end{bmatrix}
-                            + \begin{bmatrix} ~ \\ -A_{\Gamma 1} \vec{u}_1^n + T_{1 \to 2} \vec{u}_{1 \Gamma}^n \end{bmatrix} ,
-\end{align*}
-for any choice of matrices $T_{1 \to 2}$ and $T_{2 \to 1}$ (that does not make these systems singular).
+                            + \begin{bmatrix} ~ \\ -A_{\Gamma 1} \vec{u}_1^n + T_{1 \to 2} \vec{u}_{1 \Gamma}^n \end{bmatrix}.
+\end{equation*}
 
-Each choice of matrices $T$ corresponds to a choice of boundary conditions on the interface, called \textbf{transmission conditions}, since they transmit information between subdomains.
+$\vec{u}_\Gamma$ appears in both subproblems since the interface is shared between the two subdomains.
+These copies are distinct and must be recombined in some way at the end, for example:
+\begin{equation*}
+	\vec{u}_\Gamma = \frac{\vec{u}_{1 \Gamma} + \vec{u}_{2 \Gamma} }{2}.
+\end{equation*}
+\end{frame}
+
+\begin{frame}{Transmission conditions}
+
+Transmission conditions are boundary conditions of the subdomains.
+Algebraically, they are implemented through the matrices $T_{1 \to 2}$ (which dictates how information passes \textit{from} $\Omega_1$ \textit{to} $\Omega_2$) and $T_{2 \to 1}$ ($\Omega_2$ to $\Omega_1$).
+
+So far, we've seen Dirichlet boundary conditions on the subdomains, which is equivalent to $T=0$.
+
 \end{frame}
 
 % OSM? incl. algebraic transmission conditions
