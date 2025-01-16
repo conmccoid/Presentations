@@ -111,11 +111,11 @@ Alternating Schwarz method:
 
 Suppose we have an elliptic PDE:
 \begin{equation*}
-	\begin{cases} \nabla u(x,y) = f(x,y), & x,y \in \Omega, \\ u(x,y) = g(x,y), & x,y \in \partial \Omega, \end{cases}
+	\begin{cases} \Delta u(x,y) = f(x,y), & x,y \in \Omega, \\ u(x,y) = g(x,y), & x,y \in \partial \Omega, \end{cases}
 \end{equation*}
 that we solve with finite differences on a structured grid:
 \begin{align*}
-	\nabla u_{i,j}
+	\Delta u_{i,j}
 	\approx \frac{ u_{i+1,j} + u_{i-1,j} + u_{i,j+1} + u_{i,j-1} - 4u_{i,j} }{h^2}.
 \end{align*}
 
@@ -141,7 +141,7 @@ This gives us two domains $\Omega_1$ and $\Omega_2$, as well as the interface be
 			\node[below] at (5em,0) {$x_\Gamma$};
 			\draw[very thick, black] (5em,0) -- (5em,10em);
 			\node[above] at (5em,10em) {$\Omega$};
-			\& \draw[thick,black,->] (0,5em) -- (2,5em); \&
+			\& \draw[thick,black,->] (0,5em) -- (1,5em); \&
 			\draw[step=1em,red] (0,0) grid (5em,10em);
 			\draw[step=1em,blue] (7em,0) grid (12em,10em);
 			\node[below] at (5em,0) {$x_\Gamma$};
@@ -211,12 +211,12 @@ So far, we've seen Dirichlet boundary conditions on the subdomains, which is equ
 \item Neumann boundary conditions, allow minimal overlap
 \item Optimized Robin boundary conditions:
 \begin{equation*}
-	\frac{\partial u_1^{n+1}}{\partial x} - p u_1^{n+1} = \frac{\partial u_2^{n}}{\partial x} - p u_2^{n}
+	\frac{\partial \vec{u}_1^{n+1}}{\partial x} - p \vec{u}_1^{n+1} = \frac{\partial \vec{u}_2^{n}}{\partial x} - p \vec{u}_2^{n}
 \end{equation*}
 for some $p$ optimized using Fourier analysis
-\item Absorbing boundary conditions, equivalent to Schur complements:
+\item Absorbing boundary conditions, equivalent to using Schur complements:
 \begin{equation*}
-	S_{i \to j} := -A_{\Gamma i} A_{ii}^{-1} A_{i \Gamma}
+	T_{i \to j} = S_{i \to j} := -A_{\Gamma i} A_{ii}^{-1} A_{i \Gamma}
 \end{equation*}
 \end{itemize}
 With absorbing boundary conditions, the method becomes direct.
@@ -238,7 +238,7 @@ However, the Schur complements are expensive to compute and in general dense.
 \begin{frame}{Schwarz method with adaptive transmission conditions}
 
 Let $T_{i \to j}$ change at each iteration, so that the transmission conditions adapt.
-We can formulate such a Schwarz method, acting only on the difference in successive solutions,n as
+We can formulate such a Schwarz method, acting only on $\vec{d}_i^{n+1} = \vec{u}_i^{n+1} - \vec{u}_i^n$, as
 \begin{align*}
 	\begin{bmatrix} A_{ii} & A_{i \Gamma} \\ A_{\Gamma i} & A_{\Gamma \Gamma} + T_{j \to i}^{n+1} \end{bmatrix}
 	\begin{bmatrix} \vec{d}_i^{n+1} \\ \vec{d}_{i \Gamma}^{n+1} \end{bmatrix}
@@ -268,15 +268,16 @@ Combining with the second row of blocks gives
 	& \left ( T_{j \to i}^{n+1} - S_{j \to i} \right ) \vec{d}_{j \Gamma}^n \\
 	& - \Delta T_{j \to i}^n \left ( \vec{u}_{i \Gamma} - \vec{u}_{j \Gamma}^{n-1} \right ).
 \end{align*}
+(Recall $S_{i \to j} = -A_{\Gamma i} A_{ii}^{-1} A_{i \Gamma}$)
 \end{frame}
 
 \begin{frame}{Difference between $T$ and $S$}
-Notice the difference between the $T$ matrices and the Schur complements in these systems.
+Notice the difference between the $T$ and $S$ matrices in these systems.
 If we represent this difference as
 \begin{equation*}
 	E_{i \to j}^{n+1} := T_{i \to j}^{n+1} - S_{i \to j},
 \end{equation*}
-and write $\hat{A} := A_{\Gamma \Gamma} + S_{1 \to 2} + S_{2 \to 1}$, then these systems become
+and write $\hat{A} := A_{\Gamma \Gamma} + S_{1 \to 2} + S_{2 \to 1}$, the Schur complement of the full system, then these systems become
 \begin{equation*}
 	\left ( \hat{A} + E_{i \to j}^{n+1} \right ) \vec{d}_{j \Gamma}^{n+1} = E_{i \to j}^{n+1} \vec{d}_{i \Gamma}^n - \Delta T_{i \to j}^n \left ( \vec{u}_{j \Gamma}^n - \vec{u}_{i \Gamma}^{n-1} \right ).
 \end{equation*}
@@ -285,16 +286,16 @@ However, it has immense theoretical value.
 \end{frame}
 
 \begin{frame}{Action of $E$}
-The matrix-vector product $E_{i \to j}^{n+1} \vec{d}_{i \Gamma}^n$, equal to
 \begin{equation*}
-	E_{i \to j}^{n+1} \vec{d}_{i \Gamma}^n = -A_{\Gamma i} \vec{d}_i^n + T_{i \to j}^{n+1} \vec{d}_{i \Gamma}^n,
+	E_{i \to j}^{n+1} \vec{d}_{i \Gamma}^n = -A_{\Gamma i} \vec{d}_i^n + T_{i \to j}^{n+1} \vec{d}_{i \Gamma}^n
 \end{equation*}
-is computed in the course of the Schwarz method.
-Thus, we will have a sequence of vector pairs, $\left ( \vec{d}_{i \Gamma}^n, E_{i \to j}^{n+1} \vec{d}_{i \Gamma}^n \right )$ which we can use to approximate $E$ without ever calculating it.
+\textit{A standard Schwarz method will compute vector pairs} $\left ( \vec{d}, E \vec{d} \right )$.
+The vectors $\vec{d}$ are needed to find the solutions, while the vectors $E \vec{d}$ are found in the right hand sides of the systems to be solved.
+We can use these vector pairs to approximate $E$ without calculating it.
 
 Each vector pair gives a rank one approximation of $E$:
 \begin{equation*}
-	E_{i \to j}^{n+1} \approx \frac{E_{i \to j}^{n+1} \vec{d}_{i \Gamma}^n}{\norm{\vec{d}_{i \Gamma}^n}_2^2}.
+	E \approx \frac{E \vec{d} \vec{d}^\top}{\norm{\vec{d}}_2^2} = E \frac{\vec{d}}{\norm{\vec{d}}} \frac{\vec{d}^\top}{\norm{\vec{d}}} = E \vec{w} \vec{w}^\top.
 \end{equation*}
 To combine these rank one matrices, we apply \textbf{modified Gram-Schmidt} to the vectors $\vec{d}$ and a commenserate process to the vectors $E \vec{d}$.
 \end{frame}
@@ -302,19 +303,19 @@ To combine these rank one matrices, we apply \textbf{modified Gram-Schmidt} to t
 % IAA algo + lemma
 \begin{frame}
 \begin{algorithm}[H]
-	\caption{Iterative action approximation \\ $[V_n,W_n]=\iaa \left ( \set{\vec{x}_k}_{k=1}^n, E \right )$}
+	\caption{Iterative action approximation ($\iaa$) \\ $[V_n,W_n]=\iaa \left ( \set{\vec{d}_k}_{k=1}^n, E \right )$}
 	\begin{algorithmic}[1]
-		\State Inputs: $\set{\vec{x}_k}_{k=1}^{n} \subset \bbr^M$, $E \in \bbr^{M \times M}$
-		\State $\alpha_1 := 1 / \norm{\vec{x}_1}$, $\vec{w}_1 := \alpha_1 \vec{x}_1$, $\vec{v}_1 := \alpha_1 E \vec{x}_1$
+		\State Inputs: $\set{\vec{d}_k}_{k=1}^{n} \subset \bbr^M$, $E \in \bbr^{M \times M}$
+		\State $\alpha_1 := 1 / \norm{\vec{d}_1}$, $\vec{w}_1 := \alpha_1 \vec{d}_1$, $\vec{v}_1 := \alpha_1 E \vec{d}_1$
 		\For{$k=2 : n$}
-			\State $\vec{w}_k := \vec{x}_k$, $\vec{v}_k := E \vec{x}_k$
+			\State $\vec{w}_k := \vec{d}_k$, $\vec{v}_k := E \vec{d}_k$
 			\For{$i=1 : k-1$}
 				\State $h \gets \langle \vec{w}_i, \vec{w}_k \rangle$, $\vec{w}_k \gets \vec{w}_k - h \vec{w}_i$
 				\State $\vec{v}_k \gets \vec{v}_k - h \vec{v}_i$ \label{line: implicit}
 			\EndFor
 			\State $\alpha_k := 1 / \norm{\vec{w}_k}$, $\vec{w}_k \gets \alpha_k \vec{w}_k$, $\vec{v}_k \gets \alpha_k \vec{v}_k$
 		\EndFor
-		\State Outputs: $W_{n} = \begin{bmatrix} \vec{w}_1 & \vec{w}_2 & \dots & \vec{w}_{n} \end{bmatrix}$, $V_{n} = \begin{bmatrix} \vec{v}_1 & \vec{v}_2 & \dots & \vec{v}_{n} \end{bmatrix}$
+		\State $W_{n} = \begin{bmatrix} \vec{w}_1 & \vec{w}_2 & \dots & \vec{w}_{n} \end{bmatrix}$, $V_{n} = \begin{bmatrix} \vec{v}_1 & \vec{v}_2 & \dots & \vec{v}_{n} \end{bmatrix}$
 		\State $V_{n} W_{n}^\top \approx E$
 	\end{algorithmic}
 	\label{alg: IAA}
@@ -323,8 +324,8 @@ To combine these rank one matrices, we apply \textbf{modified Gram-Schmidt} to t
 
 \begin{frame}{Properties of the IAA}
 \begin{lemma} \label{lem: iaa}
-	Let $\mathcal{S}=\set{\vec{x}_k}_{k=1}^n \subset \bbr^M$ be a set of linearly independent vectors, $E \in \bbr^{M \times M}$ a matrix.
-	Let $[V_n,W_n]=\iaa(\mathcal{S},E)$ with columns $\vec{v}_k$ and $\vec{w}_k$, respectively.
+%	Let $\mathcal{S}=\set{\vec{x}_k}_{k=1}^n \subset \bbr^M$ be a set of linearly independent vectors, $E \in \bbr^{M \times M}$ a matrix.
+%	Let $[V_n,W_n]=\iaa(\mathcal{S},E)$ with columns $\vec{v}_k$ and $\vec{w}_k$, respectively.
 	Let $E^1 := E$ and let $E^{k+1} := E^k - \vec{v}_k \vec{w}_k^\top$.
 	Then
 	\begin{align*}
@@ -333,16 +334,22 @@ To combine these rank one matrices, we apply \textbf{modified Gram-Schmidt} to t
 	\end{align*}
 	for $1 \leq k \leq n$, where $W_k$ is the first $k$ columns of $W_n$.
 \end{lemma}
+
+That is, the updates to $E$ increase its nullspace and preserve the relation between $\vec{w}$ and $\vec{v}$, which is the relation between $\vec{d}$ and $E \vec{d}$.
+\end{frame}
+
+\begin{frame}{Other fun facts about the $\iaa$}
+
+\begin{itemize}
+\item The vectors $\vec{w}_k$ form an orthonormal basis of a Krylov subspace % nb: include defn of this subspace?
+\item Each subdomain has its own set of $\vec{w}_k$ and its own Krylov subspace
+\item The vectors $\vec{v}_k$ are \textit{not} orthogonal
+\end{itemize}
 \end{frame}
 
 % choice of adaptive transmission conditions + altAOSM + solve ladder(s?)
 \begin{frame}{Choice of adaptive transmission conditions}
-For our adaptive transmission conditions, we want
-\begin{align*}
-	[ V_i^n, W_i^n ] & = \iaa \left ( \set{ \vec{d}_{i \Gamma}^k }_{k=1}^n, E_{i \to j}^1 \right ), \\
-	\text{where} \ E_{i \to j}^1 \vec{d}_{i \Gamma}^k & = -A_{\Gamma i} \vec{d}_i^k + T_{i \to j}^1 \vec{d}_{i \Gamma}^k.
-\end{align*}
-Each time we find a new $\vec{d}_{i \Gamma}^k$, with corresponding $\vec{d}_i^k$, we can compute a new $\vec{v}_i^k$ and $\vec{w}_i^k$.
+
 This gives us a rank one update to the transmission conditions:
 \begin{equation*}
 	\Delta T_{i \to j}^n = - \vec{v}_i^k \left ( \vec{w}_i^k \right )^\top.
@@ -369,8 +376,8 @@ at every step.
 		\State Solve for $\vec{u}_2^1$ and $\vec{u}_{2 \Gamma}^1$, then for $\vec{u}_1^2$ and $\vec{u}_{1 \Gamma}^2$
 		\State Calculate $\vec{d}_{1 \Gamma}^2 = \vec{u}_{1 \Gamma}^2 - \vec{u}_{1 \Gamma}^0$ and $\vec{d}_1^2$ and set $n=2$
 		\While{$\norm{ \vec{d}_{1 \Gamma}^n } + \norm{ \vec{d}_{2 \Gamma}^{n-1} } \geq tol$}
-			\For{$i=1 : 2$}
-				\State Run an iteration of IAA
+			\For{$i=1 : 2$ (and $j=3-i$)}
+				\State Run an iteration of $\iaa$
 				\State Set $\Delta T_{i \to j}^n = - \vec{v}_i^n (\vec{w}_i^n)^\top$
 				\State Solve for $\vec{d}_{j \Gamma}^{n+1}$ and $\vec{d}_j^{n+1}$
 				\State $\vec{u}_j^{n+1} := \vec{u}_j^{n-1} + \vec{d}_j^{n+1}$, $\vec{u}_{j \Gamma}^{n+1} := \vec{u}_{j \Gamma}^{n-1} + \vec{d}_{j \Gamma}^{n+1}$
@@ -400,6 +407,15 @@ $\vec{x} \in  \Span(W_i^n)$ such that the residual of
 \end{align*}
 applied to $\vec{u}_{i \Gamma}^{n-1} + \vec{x}$ is orthogonal to $\Span(W_i^n)$. 
 \end{theorem}
+\end{frame}
+
+\begin{frame}{AOSM Galerkin condition}
+
+\begin{enumerate}
+\item The solution on the interface, $\vec{u}_\Gamma$, solves a system $B \vec{u}_\Gamma = \vec{b}$
+\item There is a vector $\vec{x} \in \Span(W_i^n)$ such that $B(\vec{u}_{i \Gamma}^{n-1} + \vec{x}) - \vec{b}$ is orthogonal to $\Span(W_i^n)$
+\item The vector $\vec{d}_{j \Gamma}^{n+1}$, determined by the AOSM, is equal to $$\vec{d}_{j \Gamma}^{n+1} = \AijE \vec{x}$$
+\end{enumerate}
 \end{frame}
 
 % numerical results: basic comparison with GMRES
