@@ -419,17 +419,33 @@ applied to $\vec{u}_{i \Gamma}^{n-1} + \vec{x}$ is orthogonal to $\Span(W_i^n)$.
 \end{frame}
 
 % numerical results: basic comparison with GMRES
-\begin{frame}{Numerical results}
+\section{Numerical results of AOSM}
+
+\begin{frame}{Simple comparison with other methods}
+
 \begin{equation*}
 	\begin{cases} \Delta u(x,y) = f(x,y), & (x,y) \in \Omega = [-1,1] \times [-1,1], \\
 		u(x,y) = g(x,y), & (x,y) \in \partial \Omega. % = \set{x=-1} \cup \set{x=1} \cup \set{y=-1} \cup \set{y=1} .
 	\end{cases}
 \end{equation*}
+
 \begin{figure}
-	\includegraphics[width=0.75\textwidth]{AOSM/PLOT_faltAOSMConv_Laplace.pdf}
-	\caption{Comparison of altAOSM versions with $N=10,000$, $M=100$, using both Robin and Dirichlet boundary conditions.}
-	\label{fig: compare altAOSM}
-	% to update figure: EX_faltAOSMConv_Laplace.m -> h=figure(1); -> exportgraphics(h,'../Figures/PLOT_faltAOSMConv_Laplace.eps');
+	\begin{tikzpicture}
+			\draw[step=1em,red] (0,0) grid (5em,10em);
+			\draw[step=1em,blue] (5em,0) grid (10em,10em);
+			\node[below] at (5em,0) {$x_\Gamma$};
+			\draw[very thick, black] (5em,0) -- (5em,10em);
+			\node[above] at (5em,10em) {$\Omega$};
+			\draw[decorate,decoration={brace, amplitude=1em, raise=0.5em}] (0,0) -- (0,10em) node[midway, xshift=-2.5em] {100};
+			\draw[decorate, decoration={brace, amplitude=0.5em, mirror, raise=0.5em}] (0,0) -- (4em,0) node[midway, yshift=-2em] {49};
+			\draw[decorate, decoration={brace, amplitude=0.5em, mirror, raise=0.5em}] (6em,0) -- (10em,0) node[midway, yshift=-2em] {50};
+	\end{tikzpicture}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Simple comparison with other methods}
+\begin{figure}
+	\includegraphics[width=\textwidth]{AOSM/PLOT_faltAOSMConv_Seminar1.eps}
 \end{figure}
 \end{frame}
 
@@ -466,81 +482,14 @@ applied to $\vec{u}_{i \Gamma}^{n-1} + \vec{x}$ is orthogonal to $\Span(W_i^n)$.
 \begin{frame}{Comparison: stripwise}
 \begin{figure}
 	\centering
-	\includegraphics[width=0.75\textwidth]{AOSM/PLOT_AOSMConv_RedBlack.eps}
+	\includegraphics[width=\textwidth]{AOSM/PLOT_RedBlack_Seminar2.eps}
 \end{figure}
 \end{frame}
 
 \begin{frame}{Adapted transmission conditions: stripwise}
 \begin{figure}
 	\centering
-	\includegraphics[width=0.75\textwidth]{AOSM/PLOT_AOSMConv_RedBlack_T.eps}
-\end{figure}
-\end{frame}
-
-\begin{frame}[fragile]
-\frametitle{Checkerboard decomposition}
-\begin{figure}
-	\centering
-	\small
-	\begin{tikzpicture}[scale={0.1}, every node/.style={scale=0.1}]
-		\matrix[row sep=1em, column sep=1em]{
-			\draw[step=1em,red] (0,0) grid (3em,3em);
-			\draw[step=1em,red] (5em,0) grid (7em,3em);
-			\draw[step=1em,red] (3em,3em) grid (5em,5em);
-			\draw[step=1em,red] (7em,3em) grid (10em,5em);
-			\draw[step=1em,red] (0,5em) grid (3em,7em);
-			\draw[step=1em,red] (5em,5em) grid (7em,7em);
-			\draw[step=1em,red] (3em,7em) grid (5em,10em);
-			\draw[step=1em,red] (7em,7em) grid (10em,10em);
-			\draw[step=1em,blue] (3em,0) grid (5em,3em);
-			\draw[step=1em,blue] (7em,0) grid (10em,3em);
-			\draw[step=1em,blue] (0,3em) grid (3em,5em);
-			\draw[step=1em,blue] (5em,3em) grid (7em,5em);
-			\draw[step=1em,blue] (3em,5em) grid (5em,7em);
-			\draw[step=1em,blue] (7em,5em) grid (10em,7em);
-			\draw[step=1em,blue] (0,7em) grid (3em,10em);
-			\draw[step=1em,blue] (5em,7em) grid (7em,10em);
-			\foreach \x in {3,5,7}{
-				\node[below] at (\x em,0) {$x_\Gamma$};
-				\draw[very thick, black] (\x em,0) -- (\x em,10em);
-				\node[left] at (0,\x em) {$y_\Gamma$};
-				\draw[very thick, black] (0,\x em) -- (10em,\x em);}
-			\node[above] at (5em,10em) {$\Omega$};
-			& \draw[thick,black,->] (0,5em) -- (0.5,5em); &
-			\draw[step=1em,red] (0,0) grid (3em,3em);
-			\draw[step=1em,red] (5em,0) grid (7em,3em);
-			\draw[step=1em,red] (3em,3em) grid (5em,5em);
-			\draw[step=1em,red] (7em,3em) grid (10em,5em);
-			\draw[step=1em,red] (0,5em) grid (3em,7em);
-			\draw[step=1em,red] (5em,5em) grid (7em,7em);
-			\draw[step=1em,red] (3em,7em) grid (5em,10em);
-			\draw[step=1em,red] (7em,7em) grid (10em,10em);
-			\node[above] at (5em,10em) {$\Omega_1$}; \\ & &
-			\draw[step=1em,blue] (3em,0) grid (5em,3em);
-			\draw[step=1em,blue] (7em,0) grid (10em,3em);
-			\draw[step=1em,blue] (0,3em) grid (3em,5em);
-			\draw[step=1em,blue] (5em,3em) grid (7em,5em);
-			\draw[step=1em,blue] (3em,5em) grid (5em,7em);
-			\draw[step=1em,blue] (7em,5em) grid (10em,7em);
-			\draw[step=1em,blue] (0,7em) grid (3em,10em);
-			\draw[step=1em,blue] (5em,7em) grid (7em,10em);
-			\node[above] at (5em,10em) {$\Omega_2$};
-		\\};
-	\end{tikzpicture}
-\end{figure}
-\end{frame}
-
-\begin{frame}{Comparison: checkerboard}
-\begin{figure}
-	\centering
-	\includegraphics[width=0.75\textwidth]{AOSM/PLOT_AOSMConv_Checkerboard.eps}
-\end{figure}
-\end{frame}
-
-\begin{frame}{Adapted transmission conditions: checkerboard}
-\begin{figure}
-	\centering
-	\includegraphics[width=0.75\textwidth]{AOSM/PLOT_AOSMConv_Checkerboard_T.eps}
+	\includegraphics[width=\textwidth]{AOSM/PLOT_RedBlack_T_Seminar3.eps}
 \end{figure}
 \end{frame}
 
