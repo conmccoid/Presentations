@@ -30,12 +30,29 @@
 
 \title{Adaptive optimized Schwarz methods}
 \author{Conor McCoid}
-\institute{McMaster University}
+\institute{McMaster University \\ Joint work with Felix Kwok at the Université Laval}
 \date{January 24th, 2025}
+
+\renewcommand*{\thefootnote}{\fnsymbol{footnote}}
 
 \begin{document}
 
 \maketitle
+
+\begin{frame}{Outline}
+
+\begin{enumerate}
+\item Introduction to domain decomposition
+\item Adaptive optimized Schwarz methods
+	\begin{enumerate}
+	\item Condensed form of the iteration
+	\item Iterative action approximation
+	\item Adaptive transmission conditions
+	\end{enumerate}
+\item Numerical results
+\item Future work
+\end{enumerate}
+\end{frame}
 
 \section{Introduction to domain decomposition} % 15 min
 
@@ -224,13 +241,19 @@ However, the Schur complements are expensive to compute and in general dense.
 
 \end{frame}
 
-% algebraic form of equations
+\begin{frame}{Overview}
 
-% alternate minimization
+Schwarz methods play an important role in parallel computing.
 
-% AltMin as multiplicative Schwarz
+The current research directions for domain decomposition methods include issues with 
+\begin{itemize}
+\item crosspoints (where three or more subdomains meet);
+\item scalability (adding more processors should improve efficiency), and;
+\item convergence rates (effectiveness of each iteration).
+\end{itemize}
 
-% applying Newton -> MSPIN
+The work presented here aims to tackle this last point by finding new types of transmission conditions.
+\end{frame}
 
 \section{Adaptive optimized Schwarz methods} % 20 min
 
@@ -430,6 +453,8 @@ applied to $\vec{u}_{i \Gamma}^{n-1} + \vec{x}$ is orthogonal to $\Span(W_i^n)$.
 \end{equation*}
 
 \begin{figure}
+	\begin{columns}
+	\column{0.6\linewidth}
 	\begin{tikzpicture}
 			\draw[step=1em,red] (0,0) grid (5em,10em);
 			\draw[step=1em,blue] (5em,0) grid (10em,10em);
@@ -440,12 +465,16 @@ applied to $\vec{u}_{i \Gamma}^{n-1} + \vec{x}$ is orthogonal to $\Span(W_i^n)$.
 			\draw[decorate, decoration={brace, amplitude=0.5em, mirror, raise=0.5em}] (0,0) -- (4em,0) node[midway, yshift=-2em] {49};
 			\draw[decorate, decoration={brace, amplitude=0.5em, mirror, raise=0.5em}] (6em,0) -- (10em,0) node[midway, yshift=-2em] {50};
 	\end{tikzpicture}
+	\column{0.3\linewidth}
+	\caption{$100 \times 100$ evenly spaced grid split into two subdomains along the 50th value of $x$}
+	\end{columns}
 \end{figure}
 \end{frame}
 
 \begin{frame}{Simple comparison with other methods}
 \begin{figure}
 	\includegraphics[width=\textwidth]{AOSM/PLOT_faltAOSMConv_Seminar1.eps}
+	\caption{Comparison between Schwarz, AOSM and Krylov-Schwarz on simple elliptic PDE}
 \end{figure}
 \end{frame}
 
@@ -476,6 +505,7 @@ applied to $\vec{u}_{i \Gamma}^{n-1} + \vec{x}$ is orthogonal to $\Span(W_i^n)$.
 			\node[above] at (5em,10em) {$\Omega_2$};
 		\\};
 	\end{tikzpicture}
+	\caption{Splitting the $100 \times 100$ grid into four strips, then pairing the strips into two algebraic subdomains}
 \end{figure}
 \end{frame}
 
@@ -483,26 +513,100 @@ applied to $\vec{u}_{i \Gamma}^{n-1} + \vec{x}$ is orthogonal to $\Span(W_i^n)$.
 \begin{figure}
 	\centering
 	\includegraphics[width=\textwidth]{AOSM/PLOT_RedBlack_Seminar2.eps}
+	\caption{Convergence for AOSM and Schwarz on the stripwise decomposition}
 \end{figure}
 \end{frame}
 
 \begin{frame}{Adapted transmission conditions: stripwise}
 \begin{figure}
 	\centering
-	\includegraphics[width=\textwidth]{AOSM/PLOT_RedBlack_T_Seminar3.eps}
+	\includegraphics[width=0.8\textwidth]{AOSM/PLOT_RedBlack_T_Seminar3.eps}
+	\caption{Matrix $T_{1 \to 2}$ from AOSM after convergence of stripwise example}
 \end{figure}
 \end{frame}
 
-\begin{frame}{New approximations of Schur complements}
+\begin{frame}{Heterogeneous elliptic PDE}
+\begin{equation*}
+	\begin{cases} -\nabla \left ( \alpha(x,y) \cdot \nabla u(x,y) \right ) = f(x,y), & (x,y) \in \Omega = [0,1] \times [0,1], \\
+		u(x,y) = g(x,y), & (x,y) \in \partial \Omega. % = \set{x=-1} \cup \set{x=1} \cup \set{y=-1} \cup \set{y=1} .
+	\end{cases}
+\end{equation*}
 
-It's clear that the transmission conditions we're finding do not need to be so dense.
-For the multiple subdomains, it appears we can approximate the Schur complements with block diagonal matrices.
-
-We could also use completely different approximations to the rank one updates shown in these slides.
-For example, hierarchical decompositions.
-
-These changes require altering how the $T$ matrices are constructed, and will probably not have the same Galerkin condition as before.
+\begin{figure}
+	\begin{columns}
+	\column{0.6\linewidth}
+	\centering
+	\includegraphics[height=0.6\textheight]{AOSM/PLOT_LonelandK_Seminar.eps}
+	\column{0.3\linewidth}
+	\caption{$\alpha(x,y)=1$ except along three thin channels where $\alpha(x,y)=1000$}
+	\end{columns}
+\end{figure}
 \end{frame}
+
+\begin{frame}{Unstructured grid}
+\begin{figure}
+	\begin{columns}
+	\column{0.6\linewidth}
+	\centering
+	\includegraphics[height=0.6\textheight]{AOSM/PLOT_LonelandSubdomains_Seminar.eps}
+	\column{0.3\linewidth}
+	\caption{Splitting an unstructured grid into two subdomains}
+	\end{columns}
+\end{figure}
+\end{frame}
+
+\begin{frame}{First round of solves}
+\begin{figure}
+	\centering
+	\includegraphics[width=\textwidth]{AOSM/PLOT_LonelandFirst_Seminar.eps}
+	\caption{(Lack of) convergence for Schwarz and AOSM for heterogeneous elliptic PDE}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Second round of solves}
+\begin{figure}
+	\centering
+	\includegraphics[width=\textwidth]{AOSM/PLOT_LonelandSecond_Seminar.eps}
+	\caption{Convergence for Schwarz and AOSM using adapted transmission conditions}
+\end{figure}
+\end{frame}
+
+\section{Future work}
+
+\begin{frame}{AOSM difficulties: Crosspoints}
+
+We need to generalize the AOSM for multiple subdomains.
+We've already seen that we need new types of updates to the transmission conditions to account for the shape of the Schur complements.
+
+A common problem with domain decomposition methods for multiple subdomains is \textbf{crosspoints}: points where three or more subdomains meet.
+At this point, it is not clear how information should be transmitted.
+
+Some new results have figured out workarounds for rectilinear grids (Chaudet-Dumas \& Gander, 2023).
+More general techniques are needed.
+\end{frame}
+
+\begin{frame}{AOSM difficulties: Scalability}
+
+Another common issue with domain decomposition methods is \textbf{scalability}.
+A method in parallel computing is scalable if adding more processors always improves efficiency.
+
+For domain decomposition methods, information from each subdomain must pass to every other subdomain, often multiple times.
+This means that the computation time is limited by the length of the longest path through the network of subdomains.
+
+Researchers have found multigrid methods can be combined with domain decomposition methods to overcome much of this issue.
+
+\end{frame}
+
+%\begin{frame}{New approximations of Schur complements}
+%
+%It's clear that the transmission conditions we're finding do not need to be so dense.
+%For the multiple subdomains, it appears we can approximate the Schur complements with block diagonal matrices.
+%
+%We could also use completely different approximations to the rank one updates shown in these slides.
+%For example, hierarchical decompositions.
+%
+%These changes require altering how the $T$ matrices are constructed, and will probably not have the same Galerkin condition as before.
+%\end{frame}
 
 % symmetrized cells
 \begin{frame}[fragile]
@@ -511,7 +615,7 @@ These changes require altering how the $T$ matrices are constructed, and will pr
 As an alternative way to use AOSMs for multiple subdomains,
 one can first prioritize optimizing the transmission conditions for each subproblem.
 
-Isolate the subdomain and symmetrize it, i.e. make one or several virtual copies of the subdomain.
+Isolate the subdomain and symmetrize it, i.e. make one or several \textit{virtual} copies of the subdomain.
 Solve this subproblem repeatedly until the $T$ matrices have adapted.
 Then redistribute the $T$ matrices to their appropriate subproblems.
 
@@ -545,15 +649,16 @@ Then redistribute the $T$ matrices to their appropriate subproblems.
 \end{figure}
 \end{frame}
 
-\begin{frame}{Conclusions and Future Work}
+\begin{frame}{Conclusions}
 \begin{itemize}
-\item AOSMs give convergence rates comparable to Krylov subspace methods, but without the extra computations.
-\item Transmission conditions from AOSMs can be re-used to give fast convergence when repeated solves are required.
-\item We need to generalize the AOSMs for different types of approximations of the Schur complement
-\item Symmetrized cells can be used to find the transmission conditions beforehand
+\item AOSMs give Krylov-Schwarz convergence rates without the extra computations.
+\item Transmission conditions from AOSMs can be re-used to give fast convergence.
+\item We need to generalize the AOSMs for different types of approximations of the Schur complement.
+\item Symmetrized cells can be used to find the transmission conditions beforehand.
 \end{itemize}
 \end{frame}
 
+\iffalse
 % ASPIN/MSPIN/RASPEN
 \begin{frame}{Schwarz as a fixed point iteration}
 
@@ -672,5 +777,7 @@ Candidates:
 \item Some modified Powell's dog-leg method
 \end{itemize}
 \end{frame}
+
+\fi
 
 \end{document}
