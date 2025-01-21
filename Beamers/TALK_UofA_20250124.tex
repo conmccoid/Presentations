@@ -243,7 +243,7 @@ However, the Schur complements are expensive to compute and in general dense.
 
 \begin{frame}{Overview}
 
-Schwarz methods play an important role in parallel computing.
+Schwarz methods play an important role in parallel computing, such as preconditioning Krylov subspace methods.
 
 The current research directions for domain decomposition methods include issues with 
 \begin{itemize}
@@ -364,7 +364,10 @@ That is, the updates to $E$ increase its nullspace and preserve the relation bet
 \begin{frame}{Other fun facts about the $\iaa$}
 
 \begin{itemize}
-\item The vectors $\vec{w}_k$ form an orthonormal basis of a Krylov subspace % nb: include defn of this subspace?
+\item The vectors $\vec{w}_k$ form an orthonormal basis of a Krylov subspace
+\begin{equation*}
+	\vec{w}_k \in \mathcal{K}_k \left ( \left ( \hat{A} + E_{i \to j}^{1} \right )^{-1} E_{i \to j}^{1} \left ( \hat{A} + E_{j \to i}^{1} \right )^{-1} E_{j \to i}^{1}, \vec{d}_{j \Gamma}^2 \right )
+\end{equation*}
 \item Each subdomain has its own set of $\vec{w}_k$ and its own Krylov subspace
 \item The vectors $\vec{v}_k$ are \textit{not} orthogonal
 \end{itemize}
