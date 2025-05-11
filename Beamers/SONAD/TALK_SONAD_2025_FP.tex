@@ -329,4 +329,123 @@ There are an infinite number of ways to construct such a function, but this is t
 
 \end{frame}
 
+\begin{frame}{Newton-accelerated FP in 1D}
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            Apply the Newton analysis to the function $g(x)$.
+            The boundaries of divergence are now when the slope of $g(x)$ is infinite, 1, or between 1 and parallel to
+            \begin{equation*}
+            	g_C(x) = C \sqrt{ \abs{ x - x^*}} + x
+	    \end{equation*}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \begin{figure}
+                \centering
+                \begin{tikzpicture}[scale=0.6]
+                \clip (-4,-4) rectangle (4,4);
+                    \draw[black,thick,->] (-4,-4) -- (4,4) node[below left] {$y=x$};
+                    \draw[black,thick,->] (0,-4) -- (0,4) node[below left] {$g(x)$};
+                    \foreach \a in {1,-1,2,-2,0.5,-0.4,1.5,-1.5} {
+                    \draw[domain=-4:4, smooth, samples=200, variable=\x, black, dashed] plot ({\x},{\a * sqrt(abs(\x)) + \x});
+                    }
+                    \draw[domain=-4:4, smooth, samples=200, variable=\x, red, thick] plot ({\x},{-rad(atan(\x))});
+                    \end{tikzpicture}
+                \label{fig:NRFP}
+            \end{figure}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}
+\frametitle{When does Newton-accelerated FP converge in 1D?}
+
+We can show necessary and sufficient conditions for when accelerating by Newton will guarantee convergence, based on the behaviour of the iterative method.
+\\~\\
+\centering
+    \begin{tabular}{c|c|c}
+        $g(x)$ lies in & Necessary condition & Sufficient condition \\ \hline
+        1 & $g'(x) >1$ \\
+        2 & $g'(x) < 1$ & $g'(x) < 1/2$ \\
+        3 & $g'(x) < 1/2$ & $g'(x) < 0$ \\
+        4 & $g'(x) < 0$
+    \end{tabular}
+\end{frame}
+
+\begin{frame}
+\frametitle{Convergent iterative methods}
+
+It is sometimes possible to prove the guaranteed monotonic convergence of iterative methods, i.e. Schwarz methods with certain PDEs.
+
+This means the fixed point for these methods is a contraction mapping, putting it in region 2 in the above framework.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{A basic algorithm for 1D}
+
+Suppose $g(x)$ lies in region 2.
+Start with some initial guess $x_0$.
+\begin{enumerate}
+\item If $g'(x_n) = 1$, then accelerating with Newton will cause a division by infinity $\to$ use the fixed point iteration
+\item If $\abs{g'(x_n) - 1} < 1/2$, then using Newton with the Davidenko-Branin trick is guaranteed to be convergent $\to$ use Newton
+\item Let $\tilde{x}$ be the point halfway between $x_n$ and the Newton step; if the sign of $g(\tilde{x}) - \tilde{x}$ is the same as $g(x_n) - x_n$, then the fixed point lies between $\tilde{x}$ and the Newton step $\to$ use Newton
+\item If none of these are true, use the fixed point iteration
+\end{enumerate}
+\end{frame}
+
+\begin{frame}
+\frametitle{What about higher dimensions?}
+
+This algorithm relies on the analysis of the boundary between regions 3 and 4.
+In 1D, that was lines parallel to $C \sqrt{\abs{x-x^*}}$.
+
+In higher dimensions, the boundary is significantly more complicated.
+It may not be possible to extract necessary and sufficient conditions from this analysis.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Augmenting Newton's method}
+
+If an iterative method is known to be convergent, then its fixed point iteration can help anchor Newton's method.
+
+There are only three points of interest to an augmented Newton:
+\begin{itemize}
+\item the current iterate, $\vec{x}_n$;
+\item the fixed point step, $\vec{g}(\vec{x}_n)$;
+\item the Newton step, $\vec{F}(\vec{x}_n)$ (and possibly the Newton-Davidenko-Branin step).
+\end{itemize}
+Thus, we need only consider the 2D plane that contains these points.
+(The Newton, Newton-Davidenko-Branin, and current iterate all lie on the same line.)
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Trust region}
+
+Since the method is convergent, $\vec{g}(\vec{x}_n)$ lies closer to $\vec{x}^*$ than $\vec{x}_n$.
+
+% nb: figure
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Line search}
+
+The fixed point step must have a reasonable step size, unlike Newton which may leap a great distance away.
+But the Newton direction may be preferable.
+
+% nb: figure
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Two-step}
+
+Take the fixed point step, then step towards the Newton step, but only part of the way.
+
+% nb: figure
+
+\end{frame}
+
 \end{document}
