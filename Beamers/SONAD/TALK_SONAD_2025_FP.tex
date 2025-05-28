@@ -421,10 +421,56 @@ Thus, we need only consider the 2D plane that contains these points.
 \end{frame}
 
 \begin{frame}
+\frametitle{Plane of interest}
+
+\begin{columns}
+	\begin{column}{0.5\textwidth}
+		\begin{itemize}
+			\item the current iterate, $\vec{x}_n$
+			\item the fixed point step, $\vec{g}(\vec{x}_n)$
+			\item the Newton step, $\vec{F}(\vec{x}_n)$ (and possibly the Newton-Davidenko-Branin step)
+			\item the centre of the red circle is the point in the plane closest to the fixed point $\vec{x}^*$
+		\end{itemize}
+	\end{column}
+	\begin{column}{0.5\textwidth}
+		\begin{figure}
+			\begin{tikzpicture}
+				\draw[red, thick] (0,0) circle (50pt);
+				\filldraw[blue] (-50pt,0) circle (3pt) node[right] {$\vec{x}_n$};
+				\filldraw[black] (-30pt,20pt) circle (3pt) node[right] {$\vec{g}(\vec{x}_n)$};
+				\filldraw[green] (-20pt,-10pt) circle (3pt) node[right] {$-\vec{F}(\vec{x}_n)$};
+				\filldraw[green] (-80pt,10pt) circle (3pt) node[right] {$\vec{F}(\vec{x}_n)$};
+				\draw[green, thick] (-80pt,10pt) -- (-20pt,-10pt);
+			\end{tikzpicture}
+		\end{figure}
+	\end{column}
+\end{columns}
+
+\end{frame}
+
+\begin{frame}
 \frametitle{Trust region}
 
-Since the method is convergent, $\vec{g}(\vec{x}_n)$ lies closer to $\vec{x}^*$ than $\vec{x}_n$.
-
+\begin{columns}
+	\begin{column}{0.5\textwidth}
+		Since the method is convergent, $\vec{g}(\vec{x}_n)$ lies closer to $\vec{x}^*$ than $\vec{x}_n$.
+		\\
+		\vspace{1em}
+		In the example here, the Newton-Davidenko-Branin step lies closer to the fixed point step than to the current iterate, suggesting we can accept it.
+	\end{column}
+	\begin{column}{0.5\textwidth}
+		\begin{figure}
+			\begin{tikzpicture}
+				\filldraw[blue] (-50pt,0) circle (3pt) node[right] {$\vec{x}_n$};
+				\filldraw[black] (0,0) circle (3pt) node[right] {$\vec{g}(\vec{x}_n)$};
+				\draw[blue, dashed] (-25pt, -50pt) -- (-25pt, 50pt);
+				\filldraw[green] (-20pt,-40pt) circle (3pt) node[right] {$-\vec{F}(\vec{x}_n)$};
+				\filldraw[green] (-80pt,40pt) circle (3pt) node[right] {$\vec{F}(\vec{x}_n)$};
+				\draw[green, thick] (-80pt,40pt) -- (-20pt,-40pt);
+			\end{tikzpicture}
+		\end{figure}
+	\end{column}
+\end{columns}
 % nb: figure
 
 \end{frame}
@@ -432,19 +478,56 @@ Since the method is convergent, $\vec{g}(\vec{x}_n)$ lies closer to $\vec{x}^*$ 
 \begin{frame}
 \frametitle{Line search}
 
-The fixed point step must have a reasonable step size, unlike Newton which may leap a great distance away.
-But the Newton direction may be preferable.
-
-% nb: figure
+\begin{columns}
+	\begin{column}{0.5\textwidth}
+		The fixed point step must have a reasonable step size, unlike Newton which may leap a great distance away.
+		But the Newton direction may be preferable.
+	\end{column}
+	\begin{column}{0.5\textwidth}
+		\begin{figure}
+			\begin{tikzpicture}
+				\filldraw[blue] (-50pt,0) circle (3pt) node[left] {$\vec{x}_n$};
+				\filldraw[black] (0,0) circle (3pt) node[right] {$\vec{g}(\vec{x}_n)$};
+				\draw[black, thick] (-50pt,0) -- (0,0) node[above, midway] {$h$};
+				\filldraw[green] (50pt,-30pt) circle (3pt) node[right] {$\vec{F}(\vec{x}_n)$};
+				\draw[green, thick, ->] (-50pt,0) -- (0,-15pt) node[right] {$h$};
+			\end{tikzpicture}
+		\end{figure}
+	\end{column}
+\end{columns}
 
 \end{frame}
 
 \begin{frame}
 \frametitle{Two-step}
 
-Take the fixed point step, then step towards the Newton step, but only part of the way.
+\begin{columns}
+	\begin{column}{0.5\textwidth}
+		Take the fixed point step, then step towards the Newton step, but only part of the way.
+	\end{column}
+	\begin{column}{0.5\textwidth}
+		\begin{figure}
+			\begin{tikzpicture}
+				\filldraw[blue] (-50pt,0) circle (3pt) node[left] {$\vec{x}_n$};
+				\filldraw[black] (0,0) circle (3pt) node[right] {$\vec{g}(\vec{x}_n)$};
+				\draw[black, thick] (-50pt,0) -- (0,0) node[above, midway] {$h$};
+				\filldraw[green] (50pt,-30pt) circle (3pt) node[right] {$\vec{F}(\vec{x}_n)$};
+				\draw[green, thick, ->] (0,0) -- (40pt,-25pt) node[above right] {$h$};
+			\end{tikzpicture}
+		\end{figure}
+	\end{column}
+\end{columns}
 
-% nb: figure
+\end{frame}
+
+\begin{frame}
+\frametitle{Future work}
+
+\begin{itemize}
+\item Apply the region-based analysis to the higher dimension fixed point and Newton methods
+\item Use continuous methods to retrieve the distinction between monotonic and oscillatory behaviour in higher dimensions
+\item Find a way to compare augmented methods
+\end{itemize}
 
 \end{frame}
 
