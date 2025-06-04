@@ -10,6 +10,7 @@
 \DeclareMathOperator{\argmin}{argmin}
 \DeclareMathOperator{\adj}{adj}
 \usepackage{tikz, pgfplots}
+\usepackage{tikz-3dplot}
 \usetikzlibrary{decorations.pathreplacing,positioning,calc,intersections,3d,shapes.geometric,shapes,chains,math,fit,backgrounds}
 
 \title{Symmetrized cells in adaptive optimized Schwarz}
@@ -184,10 +185,33 @@ The transmission matrices will adapt to the iterative method.
 \begin{frame}
 \frametitle{What is a symmetrized cell?}
 
+\begin{columns}
+	\begin{column}{0.5\textwidth}
 For each subdomain, take a copy of it and stitch it together along their shared interface.
 This pair is now perfectly symmetric, and one subproblem describes both copies.
+	\end{column}
 
-% nb: cylindrical figure
+\tdplotsetmaincoords{60}{110}
+\def\SplitAngle{120}
+\def\AngleSplit{300}
+	\begin{column}{0.5\textwidth}
+\begin{figure}
+	\begin{tikzpicture}[tdplot_main_coords]
+		\fill[left color=blue!50] (180:1 and 1) arc (180:\AngleSplit:1 and 1) -- ++(0,0,2) arc (\AngleSplit:180:1 and 1) -- cycle;
+		\fill[left color=blue!50] (1,0,0) arc (360:\AngleSplit:1 and 1) -- ++(0,0,2) arc (\AngleSplit:360:1 and 1) -- cycle;
+		\foreach \x in {-2,...,2} {
+			\draw[gray, thin] (\x,0,-1) -- (\x,0,3);
+		}
+		\foreach \z in {-1,...,3} {
+			\draw[gray, thin] (-2,0,\z) -- (2,0,\z);
+		}
+		\fill[right color=red!10] (\SplitAngle:1 and 1) arc (\SplitAngle:180:1 and 1) -- ++(0,0,2) arc (180:\SplitAngle:1 and 1) -- cycle;
+		\fill[right color=red!10] (1,0,0) arc (0:\SplitAngle:1 and 1) -- ++(0,0,2) arc (\SplitAngle:0:1 and 1) -- cycle;
+	\end{tikzpicture}
+	\caption{A symmetrized square domain with interfaces on two opposing edges}
+\end{figure}
+	\end{column}
+\end{columns}
 \end{frame}
 
 \begin{frame}
@@ -288,7 +312,29 @@ Run these vectors through modified Gram-Schmidt to fix this issue.
 Incidentally, this will give an orthonormal basis for the Krylov subspace.
 There is also an indirect Galerkin condition at work, making this process essentially equivalent to the full orthogonalization method (FOM), precursor to GMRES.
 
-To show that, % nb: now show that
+To show that,
+use the Woodbury matrix identity to write $\vec{d}_{\Gamma i}^{(k+1)}$ as
+\begin{equation*}
+	\vec{d}_{\Gamma i}^{(k+1)} = \frac{ \left ( \hat{A}_i + E_{i}^{(k)} \right )^{-1} E_{i}^{(k)} \vec{d}_{\Gamma i}^{(k)} }{ \vec{w}_k^\top \left ( I - \left ( \hat{A}_i + E_{i}^{(k)} \right )^{-1} E_{i}^{(k)} \right ) \vec{w}_k}
+\end{equation*}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Indirect Galerkin condition}
+
+Next, consider the following Galerkin condition:
+\begin{equation*}	
+	\left ( I - \left ( \hat{A}_i + E_{i}^{(k)} \right )^{-1} E_{i}^{(k)}  \right ) \vec{x} - \vec{d}_{\Gamma i}^{(k)} \perp \mathcal{K}_k, \quad \vec{x} \in \mathcal{K}_k.
+\end{equation*}
+The solution satisfies
+\begin{equation*}
+	\vec{w}_k^\top \vec{x} = \frac{\vec{w}_k^\top \vec{d}_{\Gamma i}^{(k)}}{\vec{w}_k^\top \left ( I - \left ( \hat{A}_i + E_{i}^{(k)} \right )^{-1} E_{i}^{(k)} \right ) \vec{w}_k} .
+\end{equation*}
+Since $E_i^{(k)}$ has $\mathcal{K}_{k-1}$ in its null space, we can write $\vec{d}_{\Gamma i}^{(k+1)}$ as
+\begin{equation*}
+	\vec{d}_{\Gamma i}^{(k+1)} = \left ( \hat{A}_i + E_{i}^{(k)} \right )^{-1} E_{i}^{(k)} \vec{x}.
+\end{equation*}
 
 \end{frame}
 
@@ -369,6 +415,76 @@ After the symmetrized cells iterations, this spectral radius should be small, bu
 
 \end{frame}
 
-%nb: numerical examples
+\begin{frame}
+\frametitle{Rectangular domain split into strips}
+
+% nb: figure
+\begin{columns}
+	\begin{column}{0.5\textwidth}
+		The test problem used is the Poisson equation on a rectangular domain.
+		The subdomains are strips.
+		In weak scaling, we increase both the size of the domain and the number of strips.
+		In strong scaling, we keep the domain fixed but increase the number of strips.
+	\end{column}
+	\begin{column}{0.5\textwidth}
+		\begin{figure}
+			\includegraphics[width=\textwidth]{FIG/MTLB_strips.png}
+			\caption{Solution on rectangular domain}
+		\end{figure}
+	\end{column}
+\end{columns}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Weak scaling}
+
+\begin{columns}
+	\begin{column}{0.5\textwidth}
+		\begin{figure}
+			\includegraphics[width=\textwidth]{FIG/MTLB_strips_weak_error.png}
+			\caption{Error in global reconstruction}
+		\end{figure}
+	\end{column}
+	\begin{column}{0.5\textwidth}
+		\begin{figure}
+			\includegraphics[width=\textwidth]{FIG/MTLB_strips_weak_conv.png}
+			\caption{Convergence rate by number of strips}
+		\end{figure}
+	\end{column}
+\end{columns}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Strong scaling}
+
+\begin{columns}
+	\begin{column}{0.5\textwidth}
+		\begin{figure}
+			\includegraphics[width=\textwidth]{FIG/MTLB_strips_strong_error.png}
+			\caption{Error in global reconstruction}
+		\end{figure}
+	\end{column}
+	\begin{column}{0.5\textwidth}
+		\begin{figure}
+			\includegraphics[width=\textwidth]{FIG/MTLB_strips_strong_conv.png}
+			\caption{Convergence rate by number of strips}
+		\end{figure}
+	\end{column}
+\end{columns}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Conclusions and future work}
+
+\begin{itemize}
+\item Symmetrized cells is a highly parallelizable method for constructing highly convergent transmission matrices
+\item Global reconstruction is scalable for some simple, small examples
+\item Scalability needs to be tested on HPC examples with a parallelized code base
+\end{itemize}
+
+\end{frame}
 
 \end{document}
