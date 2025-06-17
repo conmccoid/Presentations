@@ -503,4 +503,24 @@ After the symmetrized cells iterations, this spectral radius should be small, bu
 
 \end{frame}
 
+\begin{frame}
+\frametitle{FLOP count}
+
+\begin{description}
+\item[$k$] maximum number of symmetrized cell iterations
+\item[$\ell$] number of global reconstruction iterations
+\item[$m$] number of cells
+\item[$N$] size of each cell
+\item[$M$] size of the global interface
+\end{description}
+
+\begin{tabular}{r | l l}
+	& Symmetrized cells & Global reconstruction \\ \hline
+	mult. & $mkM(N+M) + m\frac{3k^2}{2} M$ & $m \ell M (N+M)$ \\
+	add. & $mkM(N+M) + m\frac{3k^2}{2} M$ & $m \ell (N+M) + mM$ \\
+	sys. solve & $mk$ & $m \ell$
+\end{tabular}
+
+\end{frame}
+
 \end{document}
