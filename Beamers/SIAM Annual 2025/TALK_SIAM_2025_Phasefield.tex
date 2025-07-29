@@ -7,7 +7,7 @@
 \usepackage{algorithm,algorithmicx,algpseudocode}
 \newtheorem{proposition}{Proposition}
 \DeclareMathOperator{\Span}{span}
-\DeclareMathOperator{\argmin}{argmin}
+\DeclareMathOperator*{\argmin}{argmin}
 \DeclareMathOperator{\adj}{adj}
 \usepackage{tikz, pgfplots}
 \usetikzlibrary{decorations.pathreplacing,positioning,calc,intersections,3d,shapes.geometric,shapes,chains,math,fit,backgrounds}
@@ -65,8 +65,13 @@ This algorithm, AltMin, then has guaranteed convergence to at least a local mini
 \frametitle{AltMin slow-downs}
 
 In practice, AltMin takes a long time at critical moments of the model, usually when cracks begin to propagate.
+\href{MOV_CTFM_propagation.mp4}{\textcolor{blue}{(animation)}}
 
-% nb: figure
+\begin{figure}
+	\centering
+	\includegraphics[width=0.8\textwidth]{PLOT_CTFM_its.png}
+\end{figure}
+
 
 \end{frame}
 
@@ -91,7 +96,7 @@ This could lead to robustness issues if we're not careful.
 \end{equation*}
 where $g(x,y)$ represents the two steps of AltMin:
 \begin{equation*}
-	g(x,y) = \begin{pmatrix} \argmin_u E(u, y) \\ \argmin_v E(\argmin_u E(u,y), v) \end{pmatrix}.
+	g(x,y) = \begin{pmatrix} \argmin\limits_u E(u, y) \\ \argmin\limits_v E(\argmin\limits_u E(u,y), v) \end{pmatrix}.
 \end{equation*}
 
 We seek the fixed point of $g(x,y)$:
@@ -237,6 +242,23 @@ In the picture below, we would drop $p$ in favour of $-p$.
 	\end{column}
 \end{columns}
 
+\end{frame}
+
+\begin{frame}
+\frametitle{Comparing methods}
+
+\begin{figure}
+\includegraphics[width=\textwidth]{FIG_GD_its_full.png}
+\end{figure}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Comparing methods}
+
+\begin{figure}
+\includegraphics[width=\textwidth]{FIG_GD_its_2step.png}
+\end{figure}
 \end{frame}
 
 \begin{frame}
