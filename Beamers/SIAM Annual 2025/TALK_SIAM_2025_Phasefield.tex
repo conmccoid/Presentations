@@ -54,7 +54,7 @@ This minimization problem is non-convex.
 
 \textbf{But} these two problems \textit{are} convex:
 \begin{align*}
-	u_{k+1} = & \argmin_u E(u, v_k), \\ v_{k+1} = & \argmin_v E(u_{k+1}, v).
+	u_{k+1} = & \argmin_u E(u, v_k) - f, \\ v_{k+1} = & \argmin_v E(u_{k+1}, v) - f.
 \end{align*}
 
 This algorithm, AltMin, then has guaranteed convergence to at least a local minimum of $E(u,v)$.
@@ -118,10 +118,11 @@ The Jacobian of this function is
 	J(x,y) = \begin{pmatrix} E_{uu} \\ E_{vu} & E_{vv} \end{pmatrix}^{-1} \begin{pmatrix} E_{uu} & E_{uv} \\ E_{vu} & E_{vv} \end{pmatrix}
 \end{equation*}
 
-We can then form an inexact Newton-Krylov method by approximately solving
+We can then approximately solve
 \begin{equation*}
 	J(x,y) p = -f(x,y),
 \end{equation*}
+with an inexact Newton-Krylov method,
 then setting $(u_{k+1}, v_{k+1}) = (u_k, v_k) + p$.
 
 \end{frame}
@@ -174,7 +175,7 @@ In the picture below, we would drop $p$ in favour of $-p$.
 
 \begin{columns}
 	\begin{column}{0.5\textwidth}
-		Since the method is convergent, $g(x,y)$ lies closer to the solution than $(x,y)$.
+		Since AltMin is convergent, $g(x,y)$ lies closer to the solution than $(x,y)$.
 		\\
 		\vspace{1em}
 		In the example here, the Newton-Davidenko-Branin step lies closer to the fixed point step than to the current iterate, suggesting we can accept it.
