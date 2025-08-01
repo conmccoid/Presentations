@@ -27,11 +27,11 @@
 \frametitle{Phase-field energy}
 
 Energy in the phase-field model combines elastic potential energy with energy related to the size and shape of any fractures in the material:
-\begin{equation*}
-E(u,v) = \int_\Omega \left ( v^2 + k_c \right ) \lvert \nabla u \rvert^2 d\Omega
-		+ \int_\Omega \left ( c \lvert \nabla v \rvert^2 + \frac{(1 - v)^2}{4c} \right ) d\Omega,
-\end{equation*}
-where $c$ is a regularization parameter, $k_c$ a constant depending on $c$, $u \in W^{1,2}(\Omega)$ is the vertical displacement and $v \in W^{1,2}(\Omega; [0,1])$ is the auxiliary variable representing damage on the material.
+\begin{align*}
+E(u,v) = & \frac{1}{2} \int_\Omega \left ( (1-v)^2 + k_\ell \right ) \sigma_0(u) \cdot \epsilon(u) d\Omega \\
+		& + \frac{G_c}{c_w} \int_\Omega \frac{v^2}{\ell} + \ell \lvert \nabla v \rvert^2 d\Omega,
+\end{align*}
+where $\sigma_0$ is the stress tensor, $\epsilon$ is the strain tensor, $\ell$ is a regularization parameter, $k_\ell$, $G_c$ and $c_w$ are constants, $u \in W^{1,2}(\Omega)$ is the displacement and $v \in W^{1,2}(\Omega; [0,1])$ is the auxiliary variable representing damage on the material.
 
 \end{frame}
 
