@@ -16,6 +16,8 @@
 \usepackage{tikz-3dplot}
 \usetikzlibrary{decorations.pathreplacing,positioning,calc,intersections,3d,shapes.geometric,shapes,chains,math,fit,backgrounds}
 
+\usepackage{chronosys}
+
 \tikzset{
 	pics/starred/.style={code={
 		\filldraw[magenta] (0,0) -- (0,1) -- (1,1) -- (1,0) -- cycle;
@@ -29,6 +31,15 @@
 %		\node[star, fill=magenta!30!black] at (0.5,0.5) {};
 	}}
 }
+
+%===School colours===%
+\definecolor{MacMaroon}{HTML}{7A003C} % Primary (dark)
+\definecolor{UnigePink}{RGB}{207,0,99}
+\definecolor{UnigeGreen}{RGB}{0,126,100}
+\definecolor{SFURed}{HTML}{CC0633}
+\definecolor{SFUDarkRed}{HTML}{A6192E}
+\definecolor{uLavalGold}{RGB}{255,193,3}
+\definecolor{uLavalRed}{RGB}{227,5,19}
 
 \title{??}
 \author{Conor McCoid}
@@ -65,6 +76,21 @@
 \end{frame}
 
 % timeline
+\begin{frame}
+\frametitle{Career timeline}
+
+%\begin{figure}
+%\centering
+%\begin{tikzpicture}
+	\startchronology[startyear=2016, stopyear=2025, height=5em, color=MacMaroon]
+	\chronoperiode[color=SFURed]{2016}{2018}{MSc in Applied Mathematics, Simon Fraser University}
+	\chronoperiode[color=UnigeGreen]{2018}{2022}{PhD in Applied Mathematics, University of Geneva}
+	\chronoperiode[color=uLavalGold]{2022}{2024}{CRM-uLaval PDF, Universit\'e Laval}
+	\chronoperiode[color=MacMaroon]{2024}{2025}{PDF, McMaster University}
+	\stopchronology
+%\end{tikzpicture}
+%\end{figure}
+\end{frame}
 
 % CV highlights
 \begin{frame}
