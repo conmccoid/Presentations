@@ -16,8 +16,6 @@
 \usepackage{tikz-3dplot}
 \usetikzlibrary{decorations.pathreplacing,positioning,calc,intersections,3d,shapes.geometric,shapes,chains,math,fit,backgrounds}
 
-\usepackage{chronosys}
-
 \tikzset{
 	pics/starred/.style={code={
 		\filldraw[magenta] (0,0) -- (0,1) -- (1,1) -- (1,0) -- cycle;
@@ -41,7 +39,7 @@
 \definecolor{uLavalGold}{RGB}{255,193,3}
 \definecolor{uLavalRed}{RGB}{227,5,19}
 
-\title{??}
+\title{Advances in Schwarz methods}
 \author{Conor McCoid}
 \institute{Joint work with Felix Kwok at the Université Laval \\ and Blaise Bourdin at McMaster University}
 \date{December 15th, 2025}
@@ -61,16 +59,18 @@
 \begin{tikzpicture} % position of first is dependent upon total position at end
 	\node (camp01) {\includegraphics[width=0.75\textwidth]{FIG/camp01.jpg}};
 	\pause
-	\node (camp02) at (camp01.east) {\includegraphics[width=0.75\textwidth]{FIG/camp02.jpg}};
+%	\node (camp02) at (camp01.east) {\includegraphics[width=0.75\textwidth]{FIG/camp02.jpg}};
 %	\pause
-%	\node (canoe01) at (camp02.north west) {\includegraphics[width=0.75\textwidth]{FIG/canoe01.jpg}};
-%	\pause
-%	\node (canoe02) at (canoe01.south east) {\includegraphics[width=0.75\textwidth]{FIG/canoe02.jpg}};
+	\node (canoe01) at (1,-1) {\includegraphics[width=0.75\textwidth]{FIG/canoe01.jpg}};
+	\pause
+	\node (canoe02) at (-1,0) {\includegraphics[width=0.75\textwidth]{FIG/canoe02.jpg}};
+	\pause
+	\node (climb01) at (1,1) {\includegraphics[width=0.75\textwidth]{FIG/climb01.jpg}};
+	\pause
+	\node (climb02) at (-1,-1) {\includegraphics[width=0.75\textwidth]{FIG/climb02.jpg}};
+	\pause
+	\node (ski01) at (1,0) {\includegraphics[width=0.75\textwidth]{FIG/ski01.jpg}};
 \end{tikzpicture}
-%\only<5>{\includegraphics[width=0.75\textwidth]{FIG/climb01.jpg}}
-%\only<6>{\includegraphics[width=0.75\textwidth]{FIG/climb02.jpg}}
-%\only<3>{\includegraphics[width=0.75\textwidth]{FIG/ski01.jpg}}
-%\only<4>{\includegraphics[width=0.75\textwidth]{FIG/ski02.jpg}}
 \end{figure}
 
 \end{frame}
@@ -79,69 +79,31 @@
 \begin{frame}
 \frametitle{Career timeline}
 
-%\begin{figure}
-%\centering
-%\begin{tikzpicture}
-	\startchronology[startyear=2016, stopyear=2025, height=5em, color=MacMaroon]
-	\chronoperiode[color=SFURed]{2016}{2018}{MSc in Applied Mathematics, Simon Fraser University}
-	\chronoperiode[color=UnigeGreen]{2018}{2022}{PhD in Applied Mathematics, University of Geneva}
-	\chronoperiode[color=uLavalGold]{2022}{2024}{CRM-uLaval PDF, Universit\'e Laval}
-	\chronoperiode[color=MacMaroon]{2024}{2025}{PDF, McMaster University}
-	\stopchronology
-%\end{tikzpicture}
-%\end{figure}
-\end{frame}
-
-\begin{frame}
-\frametitle{Career timeline}
-
-\begin{tikzpicture}
-%bachelor
-\draw [line width=1mm] (0.3, 0.4) -- (0, 0) -- (2.2, 0) -- (2.5, 0.4) -- (2.2, 0.8) -- (0, 0.8) -- (0.3, 0.4);
-\fill [purple!50] (0, 0) -- (2.2, 0) -- (2.5, 0.4) -- (2.2, 0.8) -- (0, 0.8) -- (0.3, 0.4) -- (0, 0);
-\node at (1.3, 0.4) {\bf 2013 -- 2016};
-\node at (1.3, 2.7) [thick, rectangle, draw, align = left] 
-{BSc. in Mathematics};
-\draw [thick] (1.3, 0.8) -- (1.3, 1.8);
-%master
-\draw [line width=1mm] (2.8, 0.4) -- (2.5, 0) -- (4.9, 0) -- (5.2, 0.4) -- (4.9, 0.8) -- (2.5, 0.8) -- (2.8, 0.4);
-\fill [purple!50] (2.5, 0) -- (4.9, 0) -- (5.2, 0.4) -- (4.9, 0.8) -- (2.5, 0.8) -- (2.8, 0.4) -- (2.5, 0);
-\node at (3.9, 0.4) {\bf 2016 - 2018};
-\node at (3.5, -1.7) [thick, rectangle, draw, align = left] 
-{MSc. in Mathematics \\
-of modelling};
-\draw [thick] (4.7, 0) -- (4.7, -1.05);
-%PhD
-\draw [line width=1mm] (5.5, 0.4) -- (5.2, 0) -- (8.2, 0) -- (8.5, 0.4) -- (8.2, 0.8) -- (5.2, 0.8) -- (5.5, 0.4);
-\fill [purple!50] (5.2, 0) -- (8.2, 0) -- (8.5, 0.4) -- (8.2, 0.8) -- (5.2, 0.8) -- (5.5, 0.4) -- (5.2, 0);
-\node at (6.8, 0.4) {\bf 2018 -- 2021};
-\node at (6.8, 2.7) [thick, rectangle, draw, align = left] 
-{PhD in {\bf Microalgae }\\
-{\bf modelling and}\\
-{\bf optimization}};
-\draw [thick] (6.1, 0.8) -- (6.1, 1.85);
-\node at (7, -1.7) [thick, rectangle, draw, align = left] 
-{Research stay in\\
-02/2020 -- 04/2021};
-\draw [thick] (7.7, 0) -- (7.7, -1);
-%unige
-\draw [line width=1mm] (8.8, 0.4) -- (8.5, 0) -- (11.5, 0) -- (11.8, 0.4) -- (11.5, 0.8) -- (8.5, 0.8) -- (8.8, 0.4);
-\fill [purple!50] (8.5, 0) -- (11.5, 0) -- (11.8, 0.4) -- (11.5, 0.8) -- (8.5, 0.8) -- (8.8, 0.4) -- (8.5, 0);
-\node at (10.1, 0.4) {\bf 2021 -- 2025};
-\node at (10.5, -1.7) [thick, rectangle, draw, align = left] 
-{Postdoc in {\bf Parallel}\\
-{\bf computing for PDEs}};
-\draw [thick] (11.2, 0) -- (11.2, -1.05);
-%\draw [thick] (8.9, -1.9) -- (12.1, -1.9);
-%lund
-\draw [line width=1mm] (12.1, 0.4) -- (11.8, 0) -- (13.5, 0) -- (13.8, 0.4) -- (13.5, 0.8) -- (11.8, 0.8) -- (12.1, 0.4);
-\fill [purple!50] (11.8, 0) -- (13.5, 0) -- (13.8, 0.4) -- (13.5, 0.8) -- (11.8, 0.8) -- (12.1, 0.4) -- (11.8, 0);
-\node at (12.7, 0.4) {\bf 2025 -- };
-\node at (12.5, 2.7) [thick, rectangle, draw, align = left] 
-{Postdoc in {\bf Coupling} \\
-{\bf problems for climate} \\
-{\bf model}};
-\draw [thick] (12.1, 0.8) -- (12.1, 1.85);
+\begin{tikzpicture}[every text node part/.style={align=left}]
+	\def\timelinelength{10cm}
+	\def\yearlength{\timelinelength/16}
+	\draw[thick,->] (0,0) -- (\timelinelength,0) node[below] {2026};
+	\foreach \i/\year in {0/2010,2/2012,4/2014,6/2016,8/2018,10/2020,12/2022,14/2024} {
+		\draw[thick] (\i*\yearlength,0.5) -- (\i*\yearlength,0) node[below] {\year};
+		}
+	\node[fill=SFURed, shape=signal, minimum width=5*\yearlength, draw, right] at (0,0.5) {BSc};
+	\filldraw (5.5*\yearlength,0.5) circle (2pt);
+	\node[fill=SFURed, shape=signal, signal from=west, signal to=east, minimum width=2*\yearlength, draw, right] at (6*\yearlength,0.5) {MSc};
+	\node[fill=UnigeGreen, text=UnigePink, shape=signal, signal from=west, signal to=east, minimum width=4*\yearlength, draw, right] at (8*\yearlength,0.5) {PhD};
+	\node[fill=uLavalGold, shape=signal, signal from=west, signal to=east, minimum width=2*\yearlength, draw, right] at (12*\yearlength,0.5) {PDF};
+	\node[fill=MacMaroon, text=MacGold, shape=signal, signal from=west, signal to=east, minimum width=2*\yearlength, draw, right] at (14*\yearlength,0.5) {PDF};
+	\draw (1*\yearlength,0.25) -- (1*\yearlength,-1);
+	\draw (5.5*\yearlength,0.5) -- (5*\yearlength,1.5);
+	\draw (7*\yearlength,0.25) -- (6*\yearlength,-2.5);
+	\draw (11*\yearlength,0.75) -- (11*\yearlength,2.5);
+	\draw (13*\yearlength,0.75) -- (11.5*\yearlength,2);
+	\draw (15*\yearlength,0.25) -- (16*\yearlength,-1);
+	\filldraw[fill=SFURed] (1*\yearlength,-1) circle (3pt) node[fill=SFURed!50, right, draw] {\textbf{Mathematical Physics} \\ SFU};
+	\filldraw (5*\yearlength,1.5) circle (3pt) node[fill=SFURed!50, left, draw] {\textbf{USRA} \\ SFU};
+	\filldraw[fill=SFURed] (6*\yearlength,-2.5) circle (3pt) node[fill=SFURed!50, right, draw] {\textbf{Applied Mathematics} \\ \textit{Pseudospectral methods} \\ SFU};
+	\filldraw[fill=UnigeGreen] (11*\yearlength,2.5) circle (3pt) node[fill=UnigeGreen!50, left,draw] {\textbf{Applied Mathematics} \\ \textit{Domain decomposition} \\ UniGe};
+	\filldraw[fill=uLavalGold] (11.5*\yearlength,2) circle (3pt) node[fill=uLavalGold!50, right,draw] {\textbf{CRM-Laval PDF} \\ \textit{Adaptive Schwarz} \\ uLaval};
+	\filldraw[fill=MacMaroon] (16*\yearlength,-1) circle (3pt) node[fill=MacMaroon!50, left, draw] {\textit{Phasefield fracture} \\ McMaster};
 \end{tikzpicture}
 
 \end{frame}
@@ -155,7 +117,7 @@ of modelling};
 \item 15 invited presentations at conferences
 \item Co-organized 2 minisymposia
 \item Founded careers workshop at McMaster
-\item Serving on EDII committee at McMaster as postdoc reppresentative
+\item Serving on EDII committee at McMaster as postdoc representative
 \item Prix Henri Fehr for best thesis in mathematics at the University of Geneva
 \end{itemize}
 
