@@ -70,6 +70,10 @@
 	\node (climb02) at (-1,-1) {\includegraphics[width=0.75\textwidth]{FIG/climb02.jpg}};
 	\pause
 	\node (ski01) at (1,0) {\includegraphics[width=0.75\textwidth]{FIG/ski01.jpg}};
+	\foreach \x in {1,2,3,4,5} {
+	\pause
+	\node (bake0\x) at (0,0) {\includegraphics[width=0.75\textwidth]{FIG/bake0\x.jpg}};
+	}
 \end{tikzpicture}
 \end{figure}
 
@@ -92,15 +96,15 @@
 	\node[fill=UnigeGreen, text=UnigePink, shape=signal, signal from=west, signal to=east, minimum width=4*\yearlength, draw, right] at (8*\yearlength,0.5) {PhD};
 	\node[fill=uLavalGold, shape=signal, signal from=west, signal to=east, minimum width=2*\yearlength, draw, right] at (12*\yearlength,0.5) {PDF};
 	\node[fill=MacMaroon, text=MacGold, shape=signal, signal from=west, signal to=east, minimum width=2*\yearlength, draw, right] at (14*\yearlength,0.5) {PDF};
-	\draw (1*\yearlength,0.25) -- (1*\yearlength,-1);
-	\draw (5.5*\yearlength,0.5) -- (5*\yearlength,1.5);
-	\draw (7*\yearlength,0.25) -- (6*\yearlength,-2.5);
-	\draw (11*\yearlength,0.75) -- (11*\yearlength,2.5);
-	\draw (13*\yearlength,0.75) -- (11.5*\yearlength,2);
-	\draw (15*\yearlength,0.25) -- (16*\yearlength,-1);
+	\draw[thick] (1*\yearlength,0.25) -- (1*\yearlength,-1);
+	\draw[thick] (5.5*\yearlength,0.5) -- (5*\yearlength,1.5);
+	\draw[thick] (7*\yearlength,0.25) -- (4*\yearlength,-2.5);
+	\draw[thick] (11*\yearlength,0.75) -- (11*\yearlength,2.5);
+	\draw[thick] (13*\yearlength,0.75) -- (11.5*\yearlength,2);
+	\draw[thick] (15*\yearlength,0.25) -- (16*\yearlength,-1);
 	\filldraw[fill=SFURed] (1*\yearlength,-1) circle (3pt) node[fill=SFURed!50, right, draw] {\textbf{Mathematical Physics} \\ SFU};
-	\filldraw (5*\yearlength,1.5) circle (3pt) node[fill=SFURed!50, left, draw] {\textbf{USRA} \\ SFU};
-	\filldraw[fill=SFURed] (6*\yearlength,-2.5) circle (3pt) node[fill=SFURed!50, right, draw] {\textbf{Applied Mathematics} \\ \textit{Pseudospectral methods} \\ SFU};
+	\filldraw (5*\yearlength,1.5) circle (3pt) node[fill=SFURed!50, left, draw] {\textbf{NSERC USRA} \\ SFU};
+	\filldraw[fill=SFURed] (4*\yearlength,-2.5) circle (3pt) node[fill=SFURed!50, right, draw] {\textbf{Applied Mathematics, NSERC CGS-M} \\ \textit{Pseudospectral methods} \\ SFU};
 	\filldraw[fill=UnigeGreen] (11*\yearlength,2.5) circle (3pt) node[fill=UnigeGreen!50, left,draw] {\textbf{Applied Mathematics} \\ \textit{Domain decomposition} \\ UniGe};
 	\filldraw[fill=uLavalGold] (11.5*\yearlength,2) circle (3pt) node[fill=uLavalGold!50, right,draw] {\textbf{CRM-Laval PDF} \\ \textit{Adaptive Schwarz} \\ uLaval};
 	\filldraw[fill=MacMaroon] (16*\yearlength,-1) circle (3pt) node[fill=MacMaroon!50, left, draw] {\textit{Phasefield fracture} \\ McMaster};
@@ -213,13 +217,186 @@ Field-split multiplicative Schwarz:
 
 \end{frame}
 
-% phasefield
+%% ASPIN/MSPIN/RASPEN
+%\begin{frame}{Schwarz as a fixed point iteration}
+%
+%Schwarz methods can be represented as fixed point iterations:
+%\begin{equation*}
+%	u^{n+1} = g \left ( u^{n-1} \right ),
+%\end{equation*}
+%where $g(u)$ represents one iteration of a Schwarz method that takes boundary data from the input $u$.
+%
+%The fixed point of $g$ is the solution on the first subdomain.
+%This is also the root of the function $f(u) = g(u) - u$.
+%We apply Newton's method:
+%\begin{equation*}
+%	u^* = u^{n-1} - J(u^{n-1})^{-1} f(u^{n-1}),
+%\end{equation*}
+%where $J$ is the Jacobian of the function $f$.
+%\end{frame}
+%
+%\begin{frame}{Schwarz-Preconditioned Newton methods (Cai \& Keyes, 2001)}
+%
+%This is equivalent to preconditioning Newton's method with a Schwarz method.
+%
+%Let
+%\begin{equation*}
+%	f(u) = \begin{bmatrix} f_1(u_1, u_2) \\ f_2(u_1,u_2) \end{bmatrix}.
+%\end{equation*}
+%Then Newton's method tells us to solve the nonlinear problem
+%\begin{equation*}
+%	\begin{bmatrix} J_{11}^{(n+1)} & J_{12}^{(n+1)} \\ J_{21}^{(n+1)} & J_{22}^{(n+1)} \end{bmatrix} \begin{bmatrix} u_1^{n+1} - u_1^n \\ u_2^{n+1} - u_2^n \end{bmatrix} = \begin{bmatrix} f_1 \\ f_2 \end{bmatrix},
+%\end{equation*}
+%where $J_{ij}^{(n+1)}$ is the derivative of $f_i$ with respect to $u_j$ evaluated at $u_1^{n+1}$ and $u_2^{n+1}$.
+%\end{frame}
+%
+%\begin{frame}{Schwarz-Preconditioned Newton methods (Cai \& Keyes, 2001)}
+%
+%Preconditioning this with a parallel Schwarz method tells us to solve
+%\begin{equation*}
+%	\begin{bmatrix} J_{11}^{(n+1)} \\ & J_{22}^{(n+1)} \end{bmatrix} \begin{bmatrix} u_1^{n+1} - u_1^n \\ u_2^{n+1} - u_2^n \end{bmatrix} = \begin{bmatrix} f_1 \\ f_2 \end{bmatrix} - \begin{bmatrix} & J_{12}^{(n)} \\ J_{21}^{(n)} \end{bmatrix} \begin{bmatrix} u_1^{n} - u_1^{n-1} \\ u_2^{n} - u_2^{n-1} \end{bmatrix},
+%\end{equation*}
+%and completing the iteration by solving
+%\begin{equation*}
+%	\begin{bmatrix} J_{11}^{(n+1)} \\ & J_{22}^{(n+1)} \end{bmatrix}^{-1} \begin{bmatrix} J_{11}^{(n+1)} & J_{12}^{(n+1)} \\ J_{21}^{(n+1)} & J_{22}^{(n+1)} \end{bmatrix} \begin{bmatrix} u_1^* - u_1^n \\ u_2^* - u_2^n \end{bmatrix}
+%	= \begin{bmatrix} f_1(u_1^{n+1},u_2^{n+1}) \\ f_2(u_1^{n+1},u_2^{n+1}) \end{bmatrix}.
+%\end{equation*}
+%
+%\end{frame}
 
-% AltMin (history?)
+\section{Newton-Schwarz methods} % 15 min
+
+% phasefield
+\begin{frame}{Brittle fracture}
+
+\begin{figure}
+\includegraphics[width=\textwidth]{FIG/FIG_BrittleFracture.png}
+\caption{Crack propagation in brittle material, image taken from ResearchGate, uploaded by Dana Ashkenazi}
+\end{figure}
+\end{frame}
+
+% phase-field fracture model
+\begin{frame}{Phasefield fracture model}
+
+\begin{equation*}
+	E_\ell(u,\alpha) = \int \frac{1}{2} (1 - \alpha)^2 A e(u) \cdot e(u) dx + \frac{G_c}{4 c_w} \int \frac{w(\alpha)}{\ell} + \ell \abs{\nabla \alpha}^2 dx
+\end{equation*}
+\begin{itemize}
+\item $u$ is a vector field which defines the displacement
+\item $\alpha$ is a scalar field that is 0 away from the crack and 1 on the crack
+\item $e(u)$ is the strain tensor, $A$ the stiffness tensor
+\item $\ell$ determines the accuracy of the approximation of the Hausdorff measure of the crack
+\item $w(0)=0$, $w(1)=1$, $w'(x) \geq 0$, $w \in C^1(0,1)$, $c_w = \int_0^1 \sqrt{w(s)} ds$
+\item $G_c$ is the critical energy release rate
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Alternate minimization}
+
+Cracks propagate to minimize $E_\ell(u,\alpha)$.
+To model this, we then need to minimize over both $u$ and $\alpha$:
+\begin{equation*}
+	\begin{bmatrix} F(u,v) \\ G(u,v) \end{bmatrix} = \begin{bmatrix} \dx{}{u} E_\ell(u,\alpha) \\ \dx{}{\alpha} E_\ell(u,\alpha) \end{bmatrix} = \begin{bmatrix} 0 \\ 0 \end{bmatrix}.
+\end{equation*}
+
+The energy $E_\ell$ is not convex in both variables, but it is convex if either $u$ or $\alpha$ is kept constant.
+This leads to alternate minimization.
+\begin{algorithm}[H]
+	\caption{Alternate Minimization (AltMin)}
+	\begin{algorithmic}[1]
+		\State Make initial guess $\alpha_0$ and set $n=0$
+		\While{$\norm{\alpha_{n+1} - \alpha_n}$ is greater than tolerance}
+			\State Find $u_{n+1} = \argmin_u E_\ell(u, \alpha_n)$
+			\State Find $\alpha_{n+1} = \argmin_\alpha E_\ell(u_{n+1},\alpha)$
+		\EndWhile
+	\end{algorithmic}
+\end{algorithm}
+\end{frame}
 
 % MSPIN
+\begin{frame}{Applying Newton (Kopanicakova, Kothari \& Krause, 2023)}
 
-% parallelogram minimization
+AltMin can be thought of as a fixed point iteration over $\alpha$:
+\begin{equation*}
+	\alpha_{n+1} = \text{AltMin}(\alpha_n),
+\end{equation*}
+which stops when $\alpha_{n+1}$ is sufficiently close to $\alpha_n$.
+
+To accelerate the otherwise linear convergence, we can apply Newton's method to AltMin($\alpha$) - $\alpha$ after line 4:
+\begin{equation*}
+	\begin{bmatrix} J_{uu} \\ J_{\alpha u} & J_{\alpha \alpha} \end{bmatrix}^{-1} \begin{bmatrix} J_{uu} & J_{u \alpha} \\ J_{\alpha u} & J_{\alpha \alpha} \end{bmatrix} \begin{bmatrix} u_* - u_n \\ \alpha_* - \alpha_n \end{bmatrix} = \begin{bmatrix} u_{n+1} - u_n \\ \alpha_{n+1} - \alpha_n \end{bmatrix},
+\end{equation*}
+where $J_{ij}$ is the second derivative of $E_\ell(u,\alpha)$ with respect to $i$ then $j$.
+
+In practice, we solve this system inexactly and usually with some kind of backtracking to globalize Newton's method.
+The resulting method is called multiplicative Schwarz preconditioning inexact Newton's method (MSPIN).
+\end{frame}
+
+\begin{frame}{Globalization techniques}
+
+Newton's method needs globalization techniques to converge when the starting guess is far from a minimum.
+The default choice is cubic backtracking:
+\begin{algorithm}[H]
+\caption{Cubic backtracking}
+\begin{algorithmic}[1]
+\State Inputs: current iterate $x_c$, search direction $p$, objective function $F(x)$
+\State Set $\lambda_0 = 1$
+\State Set $\lambda_1$ such that $x_p = x_c + \lambda_1 p$ minimizes the quadratic polynomial interpolating $F(x_c)$, $F(x_c + p)$ and $\nabla F(x_c)^\top p$
+\While{$F(x_c + \lambda_1 p) \geq F(x_c)$ and $\norm{p} <$ some tolerance}
+	\State Set $\lambda_2$ such that $x_c + \lambda_2 p$ minimizes the cubic polynomial interpolating $F(x_c)$, $F(x_c + \lambda_0 p)$, $F(x_c + \lambda_1 p)$ and $\nabla F(x_c)^\top p$
+	\State $\lambda_0 \gets \lambda_1$, $\lambda_1 \gets \lambda_2$
+\EndWhile
+\end{algorithmic}
+\end{algorithm}
+\end{frame}
+
+% parallelogram
+\begin{frame}
+\frametitle{Parallelogram minimization}
+
+MSPIN is well-suited for a new kind of globalization technique because it requires finding two solutions for the same problem:
+\begin{itemize}
+\item the result from multiplicative Schwarz/AltMin, $x_c + q$, and;
+\item the result from the Newton's method step, $x_c + p$.
+\end{itemize}
+This gives us two directions to look in, meaning we should seek our minimum in a parallelogram.
+
+\centering
+\begin{tikzpicture}
+	\node[below left] at (0,0) {$x_c$};
+	\node[below right] at (3,0) {$x_c + p$};
+	\node[above left] at (1,2) {$x_c + q$};
+	\node[above right] at (4,2) {$x_c + p + q$};
+	\draw (0,0) -- (3,0) -- (4,2) -- (1,2) -- cycle;
+\end{tikzpicture}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Parallelogram minimization}
+
+Given an objective function $F(x)$, minimize the polynomial $P(i,j) = ai^2 + b ij + cj^2 + d i + e j + f$, where
+\begin{align*}
+	f = & F(x_c),
+	& e = & \nabla F(x_c)^\top p,
+	& d = & \nabla F(x_c)^\top q,
+	\\ c = & F(x_c + p) - e - f,
+	& a = & F(x_c + q) - c - f,
+\end{align*}
+\begin{equation*}
+	b = F(x_c + p + q) - F(x_c + p) - F(x_c + q) + f,
+\end{equation*}
+in the region where $0 < i, j < 1$.
+\begin{equation*}
+	\begin{bmatrix} i_{\text{min}} \\ j_{\text{min}} \end{bmatrix} \in \set{ \begin{bmatrix} \frac{-2cd + be}{4ac - b^2} \\ \frac{-2ae + bd}{4ac - b^2} \end{bmatrix}, 
+	\begin{bmatrix} 0 \\ -\frac{e}{2c} \end{bmatrix}, \begin{bmatrix} -\frac{d}{2a} \\ 0 \end{bmatrix}, \begin{bmatrix} 1 \\ -\frac{e + b}{2c} \end{bmatrix}, \begin{bmatrix} -\frac{d + b}{2a} \\ 1 \end{bmatrix}, 
+	\begin{bmatrix} 0 \\ 1 \end{bmatrix}, \begin{bmatrix} 1 \\ 0 \end{bmatrix}, \begin{bmatrix} 1 \\ 1 \end{bmatrix} }
+\end{equation*}
+\end{frame}
+
+% nb: numerical results?
+
+% nb: project proposal: analyze parallelogram minimization
 
 \section{Adaptive optimized Schwarz methods}
 
@@ -230,7 +407,7 @@ Field-split multiplicative Schwarz:
 		\begin{figure}
 			\centering
 			\includegraphics[width=\textwidth]{FIG/Saad_airfoil.png}
-			\caption{Also from Saad's ``Iterative Methods''}
+			\caption{Airfoil from Saad's ``Iterative Methods''}
 		\end{figure}
 	\end{column}
 	\begin{column}{0.5\textwidth}
@@ -404,7 +581,7 @@ For subsequent iterations, we have to orthogonalize the vectors $\vec{d}_{\Gamma
 		\State Set $\vec{w}_k := \vec{d}_{\Gamma i}^{(k)}$ and $\vec{v}_k := E_i^{(k)} \vec{d}_{\Gamma i}^{(k)}$
 		\For{$j=1:k-1$}
 			\State $h \gets \langle \vec{d}_{\Gamma i}^{(j)}, \vec{w}_k \rangle$, $\vec{w}_k \gets \vec{w}_k - h \vec{d}_{\Gamma i}^{(j)}$
-			\State $\vec{v}_k \gets \vec{v}_k - h E_i^{(j)} \vec{d}_{\Gamma i}^{(j)}$
+			\State $\vec{v}_k \gets \vec{v}_k - h E_i^{(j)} \vec{d}_{\Gamma i}^{(j)}$ % nb: I think this line is unnecessary since E_i^{(k)} has d^{(j)} in its null space
 		\EndFor
 		\State Output: $E_i^{(k+1)} := E_i^{(k)} - \vec{v}_k \vec{w}_k^\top$
 	\end{algorithmic}
@@ -429,16 +606,28 @@ where $\vec{x} \in \mathcal{K}_k$ such that
 	- \left ( \hat{A}_i + E_i^{(1)} \right )^{-1} \left ( \vec{f}_\Gamma - 2 A_{\Gamma i} A_i^{-1} \vec{f}_i \right ) & \perp \mathcal{K}_k.
 \end{align*}
 This is a Galerkin condition on the pre-image of the next difference.
-This makes the AOSM equivalent to the full orthogonalization method (FOM), a precursor to the generalized minimal residual method (GMRES).
+\end{frame}
+
+\begin{frame}
+\frametitle{AOSM is equivalent to FOM}
+
+\begin{block}{Equivalence theorem of AOSM for general matrices, CM. (2025)}
+The AOSM is equivalent to the full orthogonalization method (FOM).
+\end{block}
+
+FOM is a precursor to the generalized minimal residual method (GMRES), considered by some the default iterative method for solving asymmetric linear systems.
+
+By adding in a small least squares problem to the AOSM to correct the vectors $\vec{d}_{\Gamma i}^{(k)}$ and $\vec{d}_i^{(k)}$, we can get equivalence to GMRES.
+This would minimize the residual within the Krylov subspace at each iteration.
 \end{frame}
 
 \begin{frame}
 \frametitle{Convergence of the AOSM}
 
-Because of the equivalence to FOM, we can use the research there to tell us how AOSM will converge.
+Because of the equivalence to FOM (and FOM's relations to GMRES), we can use the research there to tell us how AOSM will converge.
 Unfortunately, that research tells us we can't know anything \textit{a priori}:
-\begin{block}{Greenbaum, Ptak and Strakos (YYYY)}
-
+\begin{block}{Greenbaum, Ptak and Strakos (1996)}
+Given a non-increasing positive sequence $\set{f_i}$ of real numbers and an arbitrary set of eigenvalues, there exists a matrix $A$ with these eigenvalues and a vector $\vec{b}$ such that the sequence of residuals of GMRES applied to the linear system $A \vec{x} = \vec{b}$ has norms equal to $\set{f_i}$.
 \end{block}
 
 Recent work has brought us closer to understanding the convergence properties of these methods. % nb: cite?
@@ -456,6 +645,45 @@ Also study known worst-case convergence curves and if preconditioning techniques
 
 \textbf{Mentoring opportunities:} Studying GMRES convergence curves makes for a great PhD project.
 The problem is well known in the community and any progress on it would make for an impressive thesis.
+
+\end{frame}
+
+% CG variant
+\begin{frame}
+\frametitle{AOSM on symmetric matrices}
+
+When the matrix is symmetric, the target transmission conditions are as well.
+Starting from a symmetric guess, the matrix $E_i^{(1)}$ will be also.
+
+We want to choose updates that preserve symmetry:
+\begin{equation*}
+	T_i^{(k+1)} := T_i^{(k)} - \frac{\vec{v}_k \vec{v}_k^\top}{\vec{v}_k^\top \vec{w}_k}.
+\end{equation*}
+
+The orthogonalization is now with respect to an A-norm:
+\begin{algorithmic}[1]
+\State Inputs: $\vec{d}_{\Gamma i}^{(k)}$, $E_i^{(k)} \vec{d}_{\Gamma i}^{(k)}$, all previous $\vec{d}_{\Gamma i}^{(j)}$ and $E_i^{(j)} \vec{d}_{\Gamma i}^{(j)}$
+\State Set $\vec{w}_k := \vec{d}_{\Gamma i}^{(k)}$ and $\vec{v}_k := E_i^{(k)} \vec{d}_{\Gamma i}^{(k)}$
+\For{j=1:k-1}
+	\State $h \gets \langle \vec{w}_k, \vec{v}_j \rangle$
+	\State $\vec{w}_k \gets \vec{w}_k - h \vec{w}_j$
+\EndFor
+\State Output: $E_i^{(k+1)} := E_i^{(k)} - \frac{\vec{v}_k \vec{v}_k^\top}{\vec{v}_k^\top \vec{w}_k}$
+\end{algorithmic}
+\end{frame}
+
+\begin{frame}
+\frametitle{Symmetric AOSM is equivalent to CG}
+
+\begin{block}{Equivalence theorem of symmetric AOSM, CM. (preprint)}
+The AOSM for symmetric matrices is equivalent to the conjugate gradient method (CG).
+\end{block}
+
+CG also minimizes an A-norm, but since the $A$ in question is symmetric, this is equivalent to minimizing the 2-norm. %nb: triple check this
+Unlike for general matrices, the convergence properties of CG are known.
+\begin{block}{Covnergence of AOSM for symmetric matrices}
+The AOSM converges linearly and if the eigenvalues of $I -  \left ( \hat{A}_i + E_i^{(1)} \right )^{-1} E_i^{(1)}$ are clustered, then the AOSM converges superlinearly.
+\end{block}
 
 \end{frame}
 
@@ -588,127 +816,5 @@ The problem is well known in the community and any progress on it would make for
 	\caption{Convergence for Schwarz and AOSM using adapted transmission conditions}
 \end{figure}
 \end{frame}
-
-\iffalse
-% ASPIN/MSPIN/RASPEN
-\begin{frame}{Schwarz as a fixed point iteration}
-
-Schwarz methods can be represented as fixed point iterations:
-\begin{equation*}
-	u^{n+1} = g \left ( u^{n-1} \right ),
-\end{equation*}
-where $g(u)$ represents one iteration of a Schwarz method that takes boundary data from the input $u$.
-
-The fixed point of $g$ is the solution on the first subdomain.
-This is also the root of the function $f(u) = g(u) - u$.
-We apply Newton's method:
-\begin{equation*}
-	u^* = u^{n-1} - J(u^{n-1})^{-1} f(u^{n-1}),
-\end{equation*}
-where $J$ is the Jacobian of the function $f$.
-\end{frame}
-
-\begin{frame}{Schwarz-Preconditioned Newton methods (Cai \& Keyes, 2001)}
-
-This is equivalent to preconditioning Newton's method with a Schwarz method.
-
-Let
-\begin{equation*}
-	f(u) = \begin{bmatrix} f_1(u_1, u_2) \\ f_2(u_1,u_2) \end{bmatrix}.
-\end{equation*}
-Then Newton's method tells us to solve the nonlinear problem
-\begin{equation*}
-	\begin{bmatrix} J_{11}^{(n+1)} & J_{12}^{(n+1)} \\ J_{21}^{(n+1)} & J_{22}^{(n+1)} \end{bmatrix} \begin{bmatrix} u_1^{n+1} - u_1^n \\ u_2^{n+1} - u_2^n \end{bmatrix} = \begin{bmatrix} f_1 \\ f_2 \end{bmatrix},
-\end{equation*}
-where $J_{ij}^{(n+1)}$ is the derivative of $f_i$ with respect to $u_j$ evaluated at $u_1^{n+1}$ and $u_2^{n+1}$.
-\end{frame}
-
-\begin{frame}{Schwarz-Preconditioned Newton methods (Cai \& Keyes, 2001)}
-
-Preconditioning this with a parallel Schwarz method tells us to solve
-\begin{equation*}
-	\begin{bmatrix} J_{11}^{(n+1)} \\ & J_{22}^{(n+1)} \end{bmatrix} \begin{bmatrix} u_1^{n+1} - u_1^n \\ u_2^{n+1} - u_2^n \end{bmatrix} = \begin{bmatrix} f_1 \\ f_2 \end{bmatrix} - \begin{bmatrix} & J_{12}^{(n)} \\ J_{21}^{(n)} \end{bmatrix} \begin{bmatrix} u_1^{n} - u_1^{n-1} \\ u_2^{n} - u_2^{n-1} \end{bmatrix},
-\end{equation*}
-and completing the iteration by solving
-\begin{equation*}
-	\begin{bmatrix} J_{11}^{(n+1)} \\ & J_{22}^{(n+1)} \end{bmatrix}^{-1} \begin{bmatrix} J_{11}^{(n+1)} & J_{12}^{(n+1)} \\ J_{21}^{(n+1)} & J_{22}^{(n+1)} \end{bmatrix} \begin{bmatrix} u_1^* - u_1^n \\ u_2^* - u_2^n \end{bmatrix}
-	= \begin{bmatrix} f_1(u_1^{n+1},u_2^{n+1}) \\ f_2(u_1^{n+1},u_2^{n+1}) \end{bmatrix}.
-\end{equation*}
-
-\end{frame}
-
-\section{Alternate minimization in phase-field fracture models} % 15 min
-
-\begin{frame}{Brittle fracture}
-
-\begin{figure}
-\includegraphics[width=\textwidth]{Fractures/FIG_BrittleFracture.png}
-\caption{Crack propagation in brittle material, image taken from ResearchGate, uploaded by Dana Ashkenazi}
-\end{figure}
-\end{frame}
-
-% phase-field fracture model
-\begin{frame}{Phase-field fracture model}
-
-\begin{equation*}
-	E_\ell(u,\alpha) = \int \frac{1}{2} (1 - \alpha)^2 A e(u) \cdot e(u) dx + \frac{G_c}{4 c_w} \int \frac{w(\alpha)}{\ell} + \ell \abs{\nabla \alpha}^2 dx
-\end{equation*}
-\begin{itemize}
-\item $u$ is a vector field which defines the displacement
-\item $\alpha$ is a scalar field that is 0 away from the crack and 1 on the crack
-\item $e(u)$ is the strain tensor, $A$ the stiffness tensor
-\item $\ell$ determines the accuracy of the approximation of the Hausdorff measure of the crack
-\item $w(0)=0$, $w(1)=1$, $w'(x) \geq 0$, $w \in C^1(0,1)$, $c_w = \int_0^1 \sqrt{w(s)} ds$
-\item $G_c$ is the critical energy release rate
-\end{itemize}
-\end{frame}
-
-\begin{frame}{Alternate minimization}
-
-Cracks propagate to minimize $E_\ell(u,\alpha)$.
-To model this, we then need to minimize over both $u$ and $\alpha$.
-
-The energy $E_\ell$ is not convex in both variables, but it is convex if either $u$ or $\alpha$ is kept constant.
-This leads to the idea of alternate minimization.
-\begin{algorithm}[H]
-	\caption{Alternate Minimization (AltMin)}
-	\begin{algorithmic}[1]
-		\State Make initial guess $\alpha_0$ and set $n=0$
-		\While{$\norm{\alpha_{n+1} - \alpha_n}$ is greater than tolerance}
-			\State Find $u_{n+1} = \argmin_u E_\ell(u, \alpha_n)$
-			\State Find $\alpha_{n+1} = \argmin_\alpha E_\ell(u_{n+1},\alpha)$
-		\EndWhile
-	\end{algorithmic}
-\end{algorithm}
-\end{frame}
-
-\begin{frame}{Applying SPN (Kopanicakova, Kothari \& Krause, 2023)}
-
-AltMin is in fact an alternating Schwarz method.
-It is then a natural candidate for SPN methods, which can be achieved by adding a Newton step after line 4:
-\begin{equation*}
-	\begin{bmatrix} J_{uu} \\ J_{\alpha u} & J_{\alpha \alpha} \end{bmatrix}^{-1} \begin{bmatrix} J_{uu} & J_{u \alpha} \\ J_{\alpha u} & J_{\alpha \alpha} \end{bmatrix} \begin{bmatrix} u_* - u_n \\ \alpha_* - \alpha_n \end{bmatrix} = \begin{bmatrix} u_{n+1} - u_n \\ \alpha_{n+1} - \alpha_n \end{bmatrix},
-\end{equation*}
-where $J_{ij}$ is the second derivative of $E_\ell(u,\alpha)$ with respect to $i$ then $j$.
-\end{frame}
-
-\begin{frame}{Issues with MSPIN on phase-field models}
-
-AltMin slows down significantly when it approaches local minima and saddle points.
-Away from these, both AltMin and MSPIN work great, so we need MSPIN to pick up the slack in these problem areas.
-
-However, the Newton step becomes unstable in these areas.
-This can slow it down or even cause it to diverge.
-
-We need some way to combine the AltMin step and Newton step to speed up AltMin in these problem areas.
-
-Candidates:
-\begin{itemize}
-\item Anderson mixing using exact Jacobian
-\item Some modified Powell's dog-leg method
-\end{itemize}
-\end{frame}
-
-\fi
 
 \end{document}
