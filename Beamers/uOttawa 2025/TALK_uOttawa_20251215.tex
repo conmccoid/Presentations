@@ -583,7 +583,7 @@ For subsequent iterations, we have to orthogonalize the vectors $\vec{d}_{\Gamma
 		\State Set $\vec{w}_k := \vec{d}_{\Gamma i}^{(k)}$ and $\vec{v}_k := E_i^{(k)} \vec{d}_{\Gamma i}^{(k)}$
 		\For{$j=1:k-1$}
 			\State $h \gets \langle \vec{d}_{\Gamma i}^{(j)}, \vec{w}_k \rangle$, $\vec{w}_k \gets \vec{w}_k - h \vec{d}_{\Gamma i}^{(j)}$
-			\State $\vec{v}_k \gets \vec{v}_k - h E_i^{(j)} \vec{d}_{\Gamma i}^{(j)}$ % nb: I think this line is unnecessary since E_i^{(k)} has d^{(j)} in its null space
+			\State $\vec{v}_k \gets \vec{v}_k - h \vec{v}_j$ % nb: I think this line is unnecessary since E_i^{(k)} has d^{(j)} in its null space
 		\EndFor
 		\State Output: $E_i^{(k+1)} := E_i^{(k)} - \vec{v}_k \vec{w}_k^\top$
 	\end{algorithmic}
@@ -668,7 +668,8 @@ The orthogonalization is now with respect to an A-norm:
 \State Set $\vec{w}_k := \vec{d}_{\Gamma i}^{(k)}$ and $\vec{v}_k := E_i^{(k)} \vec{d}_{\Gamma i}^{(k)}$
 \For{j=1:k-1}
 	\State $h \gets \langle \vec{w}_k, \vec{v}_j \rangle$
-	\State $\vec{w}_k \gets \vec{w}_k - h \vec{w}_j$
+	\State $\vec{w}_k \gets \vec{w}_k - h \vec{w}_j/\vec{v}_j^\top \vec{w}_j$
+	\State $\vec{v}_k \gets \vec{v}_k - h \vec{v}_j / \vec{v}_j^\top \vec{w}_j$
 \EndFor
 \State Output: $E_i^{(k+1)} := E_i^{(k)} - \frac{\vec{v}_k \vec{v}_k^\top}{\vec{v}_k^\top \vec{w}_k}$
 \end{algorithmic}
@@ -686,6 +687,18 @@ Unlike for general matrices, the convergence properties of CG are known.
 \begin{block}{Covnergence of AOSM for symmetric matrices}
 The AOSM converges linearly and if the eigenvalues of $I -  \left ( \hat{A}_i + E_i^{(1)} \right )^{-1} E_i^{(1)}$ are clustered, then the AOSM converges superlinearly.
 \end{block}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Project proposal: AOSM versions of Krylov-Schwarz}
+
+\textbf{Project idea:} Develop AOSM versions of existing Krylov subspace methods and compare against Krylov-Schwarz methods.
+Also investigate best practices for size and shape of global interface, passing information between subdomains, and restricting global interface to local interface.
+
+\textbf{Possible collaborations:} % nb: fill this out, maybe mention Felix and Martin
+
+\textbf{Mentoring opportunities:} Modifications to an established algorithm would make for a good PhD project, and a straightforward introduction to high-performance computing.
 
 \end{frame}
 
