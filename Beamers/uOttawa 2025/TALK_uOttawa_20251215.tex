@@ -70,10 +70,12 @@
 	\node (climb02) at (-1,-1) {\includegraphics[width=0.75\textwidth]{FIG/climb02.jpg}};
 	\pause
 	\node (ski01) at (1,0) {\includegraphics[width=0.75\textwidth]{FIG/ski01.jpg}};
-	\foreach \x in {1,2,3,4,5} {
+	\foreach \x in {1,3,4,5} {
 	\pause
 	\node (bake0\x) at (0,0) {\includegraphics[width=0.75\textwidth]{FIG/bake0\x.jpg}};
 	}
+	\pause
+	\node (bake02) at (0,0) {\includegraphics[width=0.75\textwidth, angle=-90]{FIG/bake02.jpg}};
 \end{tikzpicture}
 \end{figure}
 
@@ -93,7 +95,7 @@
 	\node[fill=SFURed, shape=signal, minimum width=5*\yearlength, draw, right] at (0,0.5) {BSc};
 	\filldraw (5.5*\yearlength,0.5) circle (2pt);
 	\node[fill=SFURed, shape=signal, signal from=west, signal to=east, minimum width=2*\yearlength, draw, right] at (6*\yearlength,0.5) {MSc};
-	\node[fill=UnigeGreen, text=UnigePink, shape=signal, signal from=west, signal to=east, minimum width=4*\yearlength, draw, right] at (8*\yearlength,0.5) {PhD};
+	\node[fill=UnigeGreen, text=white, shape=signal, signal from=west, signal to=east, minimum width=4*\yearlength, draw, right] at (8*\yearlength,0.5) {PhD};
 	\node[fill=uLavalGold, shape=signal, signal from=west, signal to=east, minimum width=2*\yearlength, draw, right] at (12*\yearlength,0.5) {PDF};
 	\node[fill=MacMaroon, text=MacGold, shape=signal, signal from=west, signal to=east, minimum width=2*\yearlength, draw, right] at (14*\yearlength,0.5) {PDF};
 	\draw[thick] (1*\yearlength,0.25) -- (1*\yearlength,-1);
@@ -102,12 +104,12 @@
 	\draw[thick] (11*\yearlength,0.75) -- (11*\yearlength,2.5);
 	\draw[thick] (13*\yearlength,0.75) -- (11.5*\yearlength,2);
 	\draw[thick] (15*\yearlength,0.25) -- (16*\yearlength,-1);
-	\filldraw[fill=SFURed] (1*\yearlength,-1) circle (3pt) node[fill=SFURed!50, right, draw] {\textbf{Mathematical Physics} \\ SFU};
-	\filldraw (5*\yearlength,1.5) circle (3pt) node[fill=SFURed!50, left, draw] {\textbf{NSERC USRA} \\ SFU};
-	\filldraw[fill=SFURed] (4*\yearlength,-2.5) circle (3pt) node[fill=SFURed!50, right, draw] {\textbf{Applied Mathematics, NSERC CGS-M} \\ \textit{Pseudospectral methods} \\ SFU};
-	\filldraw[fill=UnigeGreen] (11*\yearlength,2.5) circle (3pt) node[fill=UnigeGreen!50, left,draw] {\textbf{Applied Mathematics} \\ \textit{Domain decomposition} \\ UniGe};
-	\filldraw[fill=uLavalGold] (11.5*\yearlength,2) circle (3pt) node[fill=uLavalGold!50, right,draw] {\textbf{CRM-Laval PDF} \\ \textit{Adaptive Schwarz} \\ uLaval};
-	\filldraw[fill=MacMaroon] (16*\yearlength,-1) circle (3pt) node[fill=MacMaroon!50, left, draw] {\textit{Phasefield fracture} \\ McMaster};
+	\filldraw[fill=SFURed] (1*\yearlength,-1) circle (3pt) node[SFURed, thick, text=black, fill=white, right, draw] {\textbf{Mathematical Physics} \\ SFU};
+	\filldraw (5*\yearlength,1.5) circle (3pt) node[SFURed, thick, text=black, left, draw] {\textbf{NSERC USRA} \\ SFU};
+	\filldraw[fill=SFURed] (4*\yearlength,-2.5) circle (3pt) node[SFURed, thick, text=black, fill=white, right, draw] {\textbf{Applied Mathematics, NSERC CGS-M} \\ \textit{Pseudospectral methods} \\ SFU};
+	\filldraw[fill=UnigeGreen] (11*\yearlength,2.5) circle (3pt) node[UnigeGreen, thick, text=black, left,draw] {\textbf{Applied Mathematics} \\ \textit{Domain decomposition} \\ UniGe};
+	\filldraw[fill=uLavalGold] (11.5*\yearlength,2) circle (3pt) node[uLavalGold, thick, text=black, fill=white, right,draw] {\textbf{CRM-Laval PDF} \\ \textit{Adaptive Schwarz} \\ uLaval};
+	\filldraw[fill=MacMaroon] (16*\yearlength,-1) circle (3pt) node[MacMaroon, thick, text=black, fill=white, left, draw] {\textit{Phasefield fracture} \\ McMaster};
 \end{tikzpicture}
 
 \end{frame}
@@ -117,9 +119,11 @@
 \frametitle{CV highlights}
 
 \begin{itemize}
-\item 6 journal articles, 3 proceedings
-\item 15 invited presentations at conferences
+\item 6 journal articles in Q1 journals, 3 conference proceedings papers
+\item 15 invited presentations at international conferences
 \item Co-organized 2 minisymposia
+\item 8 seminar presentations
+\item Instructor for 5 courses
 \item Founded careers workshop at McMaster
 \item Serving on EDII committee at McMaster as postdoc representative
 \item Prix Henri Fehr for best thesis in mathematics at the University of Geneva
@@ -139,10 +143,8 @@
 \item Adaptive optimized Schwarz methods
 	\begin{enumerate}
 	\item Symmetrized cells
-	\item Asymmetric systems and FOM
-	\item Symmetric systems and CG
+	\item Equivalence to Krylov subspace methods
 	\end{enumerate}
-\item Geometric intersections % time permitting?
 \end{enumerate}
 \end{frame}
 
@@ -151,7 +153,7 @@
 % Schwarz (incl. keyhole domain)
 \begin{frame}{H.A. Schwarz, 1869}
 
-How do we solve the Laplace equation on complicated domains?
+How do we solve the Laplace equation ($\Delta u =0$) on complicated domains?
 
 We split the domain into simpler subdomains.
 
@@ -214,6 +216,11 @@ Field-split multiplicative Schwarz:
 \begin{equation*}
 	F(u^{(n+1)},v^{(n)}) = f, \quad G(u^{(n+1)},v^{(n+1)}) = g.
 \end{equation*}
+
+%A simple example:
+%\begin{equation*}
+%	\begin{bmatrix} v \exp(u) \\ u \exp(v) \end{bmatrix} = \begin{bmatrix} f \\ g \end{bmatrix}
+%\end{equation*}
 
 \end{frame}
 
@@ -324,7 +331,7 @@ AltMin can be thought of as a fixed point iteration over $\alpha$:
 \end{equation*}
 which stops when $\alpha_{n+1}$ is sufficiently close to $\alpha_n$.
 
-To accelerate the otherwise linear convergence, we can apply Newton's method to AltMin($\alpha$) - $\alpha$ after line 4:
+To accelerate the otherwise linear convergence, we can apply Newton's method to AltMin($\alpha$) - $\alpha$ after the minimization steps:
 \begin{equation*}
 	\begin{bmatrix} J_{uu} \\ J_{\alpha u} & J_{\alpha \alpha} \end{bmatrix}^{-1} \begin{bmatrix} J_{uu} & J_{u \alpha} \\ J_{\alpha u} & J_{\alpha \alpha} \end{bmatrix} \begin{bmatrix} u_* - u_n \\ \alpha_* - \alpha_n \end{bmatrix} = \begin{bmatrix} u_{n+1} - u_n \\ \alpha_{n+1} - \alpha_n \end{bmatrix},
 \end{equation*}
@@ -565,6 +572,7 @@ where
 \begin{equation*}
 	\hat{A}_i = A_{\Gamma \Gamma} - 2 A_{\Gamma i} A_{ii}^{-1} A_{i \Gamma}, \quad E_i^{(k)} = T_i^{(k)} + A_{\Gamma i} A_{ii}^{-1} A_{i \Gamma}.
 \end{equation*}
+$E_i^{(k)} \vec{d}_{\Gamma i}^{(k)}$ is then the non-zero part of the right hand side of \eqref{eq: sym cells AOSM}.
 
 \end{frame}
 
@@ -576,58 +584,43 @@ This is enough to give a rank one approximation of $E_i^{(k)}$, which we can use
 \begin{equation*}
 	T_i^{(k+1)} := T_i^{(k)} - E_i^{(k)} \frac{\vec{d}_{\Gamma i}^{(k)} \left ( \vec{d}_{\Gamma i}^{(k)} \right )^\top}{\norm{\vec{d}_{\Gamma i}^{(k)}}^2}.
 \end{equation*}
+For subsequent iterations, we have to orthogonalize the vectors $\vec{d}_{\Gamma i}^{(k)}$, i.e. with modified Gram-Schmidt.
 
-For subsequent iterations, we have to orthogonalize the vectors $\vec{d}_{\Gamma i}^{(k)}$:
-	\begin{algorithmic}[1]
-		\State Inputs: $\vec{d}_{\Gamma i}^{(k)}$, $E_i^{(k)} \vec{d}_{\Gamma i}^{(k)}$, all previous $\vec{d}_{\Gamma i}^{(j)}$ and $E_i^{(j)} \vec{d}_{\Gamma i}^{(j)}$
-		\State Set $\vec{w}_k := \vec{d}_{\Gamma i}^{(k)}$ and $\vec{v}_k := E_i^{(k)} \vec{d}_{\Gamma i}^{(k)}$
-		\For{$j=1:k-1$}
-			\State $h \gets \langle \vec{d}_{\Gamma i}^{(j)}, \vec{w}_k \rangle$, $\vec{w}_k \gets \vec{w}_k - h \vec{d}_{\Gamma i}^{(j)}$
-			\State $\vec{v}_k \gets \vec{v}_k - h \vec{v}_j$ % nb: I think this line is unnecessary since E_i^{(k)} has d^{(j)} in its null space
-		\EndFor
-		\State Output: $E_i^{(k+1)} := E_i^{(k)} - \vec{v}_k \vec{w}_k^\top$
-	\end{algorithmic}
+If the matrix is symmetric, then the target transmission conditions are as well.
+We want to choose updates that preserve that symmetry:
+\begin{equation*}
+	T_i^{(k+1)} := T_i^{(k)} - \frac{E_i^{(k)} \vec{d}_{\Gamma i}^{(k)} \left ( E_i^{(k)} \vec{d}_{\Gamma i}^{(k)} \right )^\top}{\left ( \vec{d}_{\Gamma i}^{(k)} \right )^\top E_i^{(k)} \vec{d}_{\Gamma i}^{(k)}} .
+\end{equation*}
+The orthogonalization is now with respect to an A-norm.
+
 \end{frame}
 
 \begin{frame}
-\frametitle{Equivalence to a Krylov subspace method}
+\frametitle{AOSM is equivalent to Krylov subspace methods}
 
-From static condensation \eqref{eq: static} we have that the vectors $\vec{d}_{\Gamma i}^{(k)}$ form a Krylov subspace:
-\begin{equation*}
-	\vec{d}_{\Gamma i}^{(k)} \in \mathcal{K}_k \left ( \left ( \hat{A}_i + E_i^{(1)} \right )^{-1} E_i^{(1)}, \vec{d}_{\Gamma i}^{(1)} \right ) = \mathcal{K}_k.
-\end{equation*}
-% mention or prove that this space doesn't change when updating T?
-
-By solving the system \eqref{eq: sym cells AOSM} the vector $\vec{d}_{\Gamma i}^{(k+1)}$ is equal to
-\begin{equation*}
-	\vec{d}_{\Gamma i}^{(k+1)} = \left ( \hat{A}_i + E_i^{(k)} \right )^{-1} E_i^{(k)} \vec{x},
-\end{equation*}
-where $\vec{x} \in \mathcal{K}_k$ such that
-\begin{align*}
-	\left ( I -  \left ( \hat{A}_i + E_i^{(1)} \right )^{-1} E_i^{(1)} \right ) \left ( \vec{u}_{\Gamma i}^{(k-1)} + \vec{x} \right ) & \\
-	- \left ( \hat{A}_i + E_i^{(1)} \right )^{-1} \left ( \vec{f}_\Gamma - 2 A_{\Gamma i} A_i^{-1} \vec{f}_i \right ) & \perp \mathcal{K}_k.
-\end{align*}
-This is a Galerkin condition on the pre-image of the next difference.
-\end{frame}
-
-\begin{frame}
-\frametitle{AOSM is equivalent to FOM}
-
-\begin{block}{Equivalence theorem of AOSM for general matrices, CM. (2025)}
-The AOSM is equivalent to the full orthogonalization method (FOM).
+\begin{block}{Equivalence theorem of general AOSM, CM. \& Kwok (2025)}
+The AOSM for general matrices is equivalent to the full orthogonalization method (FOM).
 \end{block}
 
 FOM is a precursor to the generalized minimal residual method (GMRES), considered by some the default iterative method for solving asymmetric linear systems.
 
 By adding in a small least squares problem to the AOSM to correct the vectors $\vec{d}_{\Gamma i}^{(k)}$ and $\vec{d}_i^{(k)}$, we can get equivalence to GMRES.
 This would minimize the residual within the Krylov subspace at each iteration.
+
+\begin{block}{Equivalence theorem of symmetric AOSM, CM. (preprint)}
+The AOSM for symmetric matrices is equivalent to the conjugate gradient method (CG).
+\end{block}
+
 \end{frame}
 
 \begin{frame}
 \frametitle{Convergence of the AOSM}
 
-Because of the equivalence to FOM (and FOM's relations to GMRES), we can use the research there to tell us how AOSM will converge.
-Unfortunately, that research tells us we can't know anything \textit{a priori}:
+\begin{block}{Convergence of AOSM for symmetric matrices}
+The symmetric AOSM converges linearly and if the eigenvalues of $I -  \left ( \hat{A}_i + E_i^{(1)} \right )^{-1} E_i^{(1)}$ are clustered, then the AOSM converges superlinearly.
+\end{block}
+
+Unfortunately, for general matrices research tells us we can't know anything about the convergence of FOM or GMRES \textit{a priori}:
 \begin{block}{Greenbaum, Ptak and Strakos (1996)}
 Given a non-increasing positive sequence $\set{f_i}$ of real numbers and an arbitrary set of eigenvalues, there exists a matrix $A$ with these eigenvalues and a vector $\vec{b}$ such that the sequence of residuals of GMRES applied to the linear system $A \vec{x} = \vec{b}$ has norms equal to $\set{f_i}$.
 \end{block}
@@ -647,58 +640,6 @@ Also study known worst-case convergence curves and if preconditioning techniques
 
 \textbf{Mentoring opportunities:} Studying GMRES convergence curves makes for a great PhD project.
 The problem is well known in the community and any progress on it would make for an impressive thesis.
-
-\end{frame}
-
-% CG variant
-\begin{frame}
-\frametitle{AOSM on symmetric matrices}
-
-When the matrix is symmetric, the target transmission conditions are as well.
-Starting from a symmetric guess, the matrix $E_i^{(1)}$ will be also.
-
-We want to choose updates that preserve symmetry:
-\begin{equation*}
-	T_i^{(k+1)} := T_i^{(k)} - \frac{\vec{v}_k \vec{v}_k^\top}{\vec{v}_k^\top \vec{w}_k}.
-\end{equation*}
-
-The orthogonalization is now with respect to an A-norm:
-\begin{algorithmic}[1]
-\State Inputs: $\vec{d}_{\Gamma i}^{(k)}$, $E_i^{(k)} \vec{d}_{\Gamma i}^{(k)}$, all previous $\vec{d}_{\Gamma i}^{(j)}$ and $E_i^{(j)} \vec{d}_{\Gamma i}^{(j)}$
-\State Set $\vec{w}_k := \vec{d}_{\Gamma i}^{(k)}$ and $\vec{v}_k := E_i^{(k)} \vec{d}_{\Gamma i}^{(k)}$
-\For{j=1:k-1}
-	\State $h \gets \langle \vec{w}_k, \vec{v}_j \rangle$
-	\State $\vec{w}_k \gets \vec{w}_k - h \vec{w}_j/\vec{v}_j^\top \vec{w}_j$
-	\State $\vec{v}_k \gets \vec{v}_k - h \vec{v}_j / \vec{v}_j^\top \vec{w}_j$
-\EndFor
-\State Output: $E_i^{(k+1)} := E_i^{(k)} - \frac{\vec{v}_k \vec{v}_k^\top}{\vec{v}_k^\top \vec{w}_k}$
-\end{algorithmic}
-\end{frame}
-
-\begin{frame}
-\frametitle{Symmetric AOSM is equivalent to CG}
-
-\begin{block}{Equivalence theorem of symmetric AOSM, CM. (preprint)}
-The AOSM for symmetric matrices is equivalent to the conjugate gradient method (CG).
-\end{block}
-
-CG also minimizes an A-norm, but since the $A$ in question is symmetric, this is equivalent to minimizing the 2-norm. %nb: triple check this
-Unlike for general matrices, the convergence properties of CG are known.
-\begin{block}{Covnergence of AOSM for symmetric matrices}
-The AOSM converges linearly and if the eigenvalues of $I -  \left ( \hat{A}_i + E_i^{(1)} \right )^{-1} E_i^{(1)}$ are clustered, then the AOSM converges superlinearly.
-\end{block}
-
-\end{frame}
-
-\begin{frame}
-\frametitle{Project proposal: AOSM versions of Krylov-Schwarz}
-
-\textbf{Project idea:} Develop AOSM versions of existing Krylov subspace methods and compare against Krylov-Schwarz methods.
-Also investigate best practices for size and shape of global interface, passing information between subdomains, and restricting global interface to local interface.
-
-\textbf{Possible collaborations:} % nb: fill this out, maybe mention Felix and Martin
-
-\textbf{Mentoring opportunities:} Modifications to an established algorithm would make for a good PhD project, and a straightforward introduction to high-performance computing.
 
 \end{frame}
 
@@ -778,14 +719,6 @@ Also investigate best practices for size and shape of global interface, passing 
 \end{figure}
 \end{frame}
 
-\begin{frame}{Adapted transmission conditions: stripwise}
-\begin{figure}
-	\centering
-	\includegraphics[width=0.8\textwidth]{../AOSM/PLOT_RedBlack_T_Seminar3.eps}
-	\caption{Matrix $T_{1 \to 2}$ from AOSM after convergence of stripwise example}
-\end{figure}
-\end{frame}
-
 \begin{frame}{Heterogeneous elliptic PDE}
 \begin{equation*}
 	\begin{cases} -\nabla \left ( \alpha(x,y) \cdot \nabla u(x,y) \right ) = f(x,y), & (x,y) \in \Omega = [0,1] \times [0,1], \\
@@ -829,6 +762,86 @@ Also investigate best practices for size and shape of global interface, passing 
 	\centering
 	\includegraphics[width=\textwidth]{../AOSM/PLOT_LonelandSecond_Seminar.eps}
 	\caption{Convergence for Schwarz and AOSM using adapted transmission conditions}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+
+\begin{center}
+\LARGE{Thank you}
+\end{center}
+
+\end{frame}
+
+\section{Appendices}
+
+\begin{frame}
+\frametitle{Project proposal: AOSM versions of Krylov-Schwarz}
+
+\textbf{Project idea:} Develop AOSM versions of existing Krylov subspace methods and compare against Krylov-Schwarz methods.
+Also investigate best practices for size and shape of global interface, passing information between subdomains, and restricting global interface to local interface.
+
+\textbf{Possible collaborations:} % nb: fill this out, maybe mention Felix and Martin
+
+\textbf{Mentoring opportunities:} Modifications to an established algorithm would make for a good PhD project, and a straightforward introduction to high-performance computing.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Equivalence to a Krylov subspace method}
+
+From static condensation \eqref{eq: static} we have that the vectors $\vec{d}_{\Gamma i}^{(k)}$ form a Krylov subspace:
+\begin{equation*}
+	\vec{d}_{\Gamma i}^{(k)} \in \mathcal{K}_k \left ( \left ( \hat{A}_i + E_i^{(1)} \right )^{-1} E_i^{(1)}, \vec{d}_{\Gamma i}^{(1)} \right ) = \mathcal{K}_k.
+\end{equation*}
+% mention or prove that this space doesn't change when updating T?
+
+By solving the system \eqref{eq: sym cells AOSM} the vector $\vec{d}_{\Gamma i}^{(k+1)}$ is equal to
+\begin{equation*}
+	\vec{d}_{\Gamma i}^{(k+1)} = \left ( \hat{A}_i + E_i^{(k)} \right )^{-1} E_i^{(k)} \vec{x},
+\end{equation*}
+where $\vec{x} \in \mathcal{K}_k$ such that
+\begin{align*}
+	\left ( I -  \left ( \hat{A}_i + E_i^{(1)} \right )^{-1} E_i^{(1)} \right ) \left ( \vec{u}_{\Gamma i}^{(k-1)} + \vec{x} \right ) & \\
+	- \left ( \hat{A}_i + E_i^{(1)} \right )^{-1} \left ( \vec{f}_\Gamma - 2 A_{\Gamma i} A_i^{-1} \vec{f}_i \right ) & \perp \mathcal{K}_k.
+\end{align*}
+This is a Galerkin condition on the pre-image of the next difference.
+\end{frame}
+
+\begin{frame}
+\frametitle{Pseudocode for AOSM orthogonalization steps}
+
+Asymmetric matrices:
+	\begin{algorithmic}[1]
+		\State Inputs: $\vec{d}_{\Gamma i}^{(k)}$, $E_i^{(k)} \vec{d}_{\Gamma i}^{(k)}$, all previous $\vec{d}_{\Gamma i}^{(j)}$ and $E_i^{(j)} \vec{d}_{\Gamma i}^{(j)}$
+		\State Set $\vec{w}_k := \vec{d}_{\Gamma i}^{(k)}$ and $\vec{v}_k := E_i^{(1)} \vec{d}_{\Gamma i}^{(k)}$
+		\For{$j=1:k-1$}
+			\State $h \gets \langle \vec{d}_{\Gamma i}^{(j)}, \vec{w}_k \rangle$, $\vec{w}_k \gets \vec{w}_k - h \vec{d}_{\Gamma i}^{(j)}$
+			\State $\vec{v}_k \gets \vec{v}_k - h \vec{v}_j$ % nb: I think this line is unnecessary since E_i^{(k)} has d^{(j)} in its null space
+		\EndFor
+		\State Output: $E_i^{(k+1)} := E_i^{(k)} - \vec{v}_k \vec{w}_k^\top$
+	\end{algorithmic}
+\end{frame}
+\begin{frame}
+Symmetric matrices:
+\begin{algorithmic}[1]
+\State Inputs: $\vec{d}_{\Gamma i}^{(k)}$, $E_i^{(k)} \vec{d}_{\Gamma i}^{(k)}$, all previous $\vec{d}_{\Gamma i}^{(j)}$ and $E_i^{(j)} \vec{d}_{\Gamma i}^{(j)}$
+\State Set $\vec{w}_k := \vec{d}_{\Gamma i}^{(k)}$ and $\vec{v}_k := E_i^{(1)} \vec{d}_{\Gamma i}^{(k)}$
+\For{j=1:k-1}
+	\State $h \gets \langle \vec{w}_k, \vec{v}_j \rangle$
+	\State $\vec{w}_k \gets \vec{w}_k - h \vec{w}_j/\vec{v}_j^\top \vec{w}_j$
+	\State $\vec{v}_k \gets \vec{v}_k - h \vec{v}_j / \vec{v}_j^\top \vec{w}_j$
+\EndFor
+\State Output: $E_i^{(k+1)} := E_i^{(k)} - \frac{\vec{v}_k \vec{v}_k^\top}{\vec{v}_k^\top \vec{w}_k}$
+\end{algorithmic}
+
+\end{frame}
+
+\begin{frame}{Adapted transmission conditions: stripwise}
+\begin{figure}
+	\centering
+	\includegraphics[width=0.8\textwidth]{../AOSM/PLOT_RedBlack_T_Seminar3.eps}
+	\caption{Matrix $T_{1 \to 2}$ from AOSM after convergence of stripwise example}
 \end{figure}
 \end{frame}
 
