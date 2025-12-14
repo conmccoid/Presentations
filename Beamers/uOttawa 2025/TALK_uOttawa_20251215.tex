@@ -403,9 +403,39 @@ in the region where $0 < i, j < 1$.
 \end{equation*}
 \end{frame}
 
-% nb: numerical results?
+\begin{frame}
+\frametitle{Example calculations}
 
-% nb: project proposal: analyze parallelogram minimization
+\begin{figure}
+	\includegraphics[height=18em]{FIG/EX_CTFM_AltMin01.png}
+	\includegraphics[height=18em]{FIG/EX_CTFM_AltMin02.png}
+	\includegraphics[height=18em]{FIG/EX_CTFM_AltMin03.png}
+\end{figure}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Computation time}
+
+\begin{figure}
+	\includegraphics[width=\textwidth]{FIG/FIG_CTFM_its.png}
+\end{figure}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Project proposal: Parallelogram minimization}
+
+\textbf{Project idea:} Extend minimization over the parallelogram to use a cubic polynomial instead.
+Analyze minimization in several contexts where both a fixed point iteration and a Newton's method can be employed.
+Can this be used more generally for all Newton-Schwarz methods?
+
+\textbf{Possible collaborations:} Diane Guignard (stressed plates similar to phasefield model), Arian Novruzi (optimization)
+
+\textbf{Mentoring opportunities:} This type of project marked the start of my PhD research.
+The convergence of Newton's method and the need for globalization is well known and easy to grasp.
+
+\end{frame}
 
 \section{Adaptive optimized Schwarz methods}
 
@@ -636,7 +666,7 @@ One project I propose is to build on this work in the specific context of Schwar
 \textbf{Project idea:} Investigate the convergence of GMRES and FOM by applying recent analysis methods to Schwarz-preconditioned systems.
 Also study known worst-case convergence curves and if preconditioning techniques can improve rates.
 
-\textbf{Possible collaborations:} Currently proposed as a postdoctoral project with Chen Greif (UBC) and Manfred Trummer (SFU), could also involve % nb: Yves, maybe Diane?
+\textbf{Possible collaborations:} Currently proposed as a postdoctoral project with Chen Greif (UBC) and Manfred Trummer (SFU), could also involve Yves Bourgault.
 
 \textbf{Mentoring opportunities:} Studying GMRES convergence curves makes for a great PhD project.
 The problem is well known in the community and any progress on it would make for an impressive thesis.
@@ -781,7 +811,9 @@ The problem is well known in the community and any progress on it would make for
 \textbf{Project idea:} Develop AOSM versions of existing Krylov subspace methods and compare against Krylov-Schwarz methods.
 Also investigate best practices for size and shape of global interface, passing information between subdomains, and restricting global interface to local interface.
 
-\textbf{Possible collaborations:} % nb: fill this out, maybe mention Felix and Martin
+\textbf{Possible collaborations:} Felix Kwok (uLaval).
+I am also looking for PDEs to test these on.
+Some thoughts: Frithjof Lutscher, Stacey Smith?, Steve Desjardins.
 
 \textbf{Mentoring opportunities:} Modifications to an established algorithm would make for a good PhD project, and a straightforward introduction to high-performance computing.
 
@@ -817,7 +849,7 @@ Asymmetric matrices:
 		\State Set $\vec{w}_k := \vec{d}_{\Gamma i}^{(k)}$ and $\vec{v}_k := E_i^{(1)} \vec{d}_{\Gamma i}^{(k)}$
 		\For{$j=1:k-1$}
 			\State $h \gets \langle \vec{d}_{\Gamma i}^{(j)}, \vec{w}_k \rangle$, $\vec{w}_k \gets \vec{w}_k - h \vec{d}_{\Gamma i}^{(j)}$
-			\State $\vec{v}_k \gets \vec{v}_k - h \vec{v}_j$ % nb: I think this line is unnecessary since E_i^{(k)} has d^{(j)} in its null space
+			\State $\vec{v}_k \gets \vec{v}_k - h \vec{v}_j$
 		\EndFor
 		\State Output: $E_i^{(k+1)} := E_i^{(k)} - \vec{v}_k \vec{w}_k^\top$
 	\end{algorithmic}
