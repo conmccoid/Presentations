@@ -119,7 +119,7 @@
 \frametitle{CV highlights}
 
 \begin{itemize}
-\item 6 journal articles in Q1 journals, 3 conference proceedings papers
+\item 6 journal articles, 3 conference proceedings papers
 \item 15 invited presentations at international conferences
 \item Co-organized 2 minisymposia
 \item 8 seminar presentations
@@ -401,6 +401,7 @@ in the region where $0 < i, j < 1$.
 	\begin{bmatrix} 0 \\ -\frac{e}{2c} \end{bmatrix}, \begin{bmatrix} -\frac{d}{2a} \\ 0 \end{bmatrix}, \begin{bmatrix} 1 \\ -\frac{e + b}{2c} \end{bmatrix}, \begin{bmatrix} -\frac{d + b}{2a} \\ 1 \end{bmatrix}, 
 	\begin{bmatrix} 0 \\ 1 \end{bmatrix}, \begin{bmatrix} 1 \\ 0 \end{bmatrix}, \begin{bmatrix} 1 \\ 1 \end{bmatrix} }
 \end{equation*}
+Our new minimum is $x_n = x_c + i_{\text{min}} q + j_{\text{min}} p$.
 \end{frame}
 
 \begin{frame}
@@ -796,11 +797,39 @@ The problem is well known in the community and any progress on it would make for
 \end{frame}
 
 \begin{frame}
+\frametitle{Summary}
+
+Domain decomposition and Schwarz methods permit parallelization and can improve problem conditioning.
+We need additional methods to accelerate convergence rates above linear.
+
+Newton-Schwarz methods need globalization techniques to stabilize them for difficult problems.
+Parallelogram minimization combines both the Newton and Schwarz directions for faster convergence.
+
+AOSMs implement Krylov subspace methodology for faster convergence.
+This implementation is more natural and more re-usable than traditional algorithms.
+
+\end{frame}
+
+\begin{frame}
 
 \begin{center}
 \LARGE{Thank you}
 \end{center}
 
+\end{frame}
+
+\begin{frame}
+\frametitle{References}
+\fontsize{10pt}{0}{
+\begin{itemize}
+\item Bourdin, B. \textbf{Numerical implementation of the variational formulation for quasi-static brittle fracture.} \textit{Interfaces and Free Boundaries} 9 (2007).
+\item Kopanicakova, A., Kothari, H. \& Krause, R. \textbf{Nonlinear field-split preconditioners for solving monolithic phase-field models of brittle fracture.} \textit{Computer methods in applied mechanics and engineering} 403 (2023).
+\item Cai, X.C. \& Keyes, D.E. \textbf{Nonlinearly preconditioned inexact Newton algorithms.} \textit{SIAM Journal on Scientific Computing} 24 (2002).
+\item Saad, Y. \textbf{Iterative methods for sparse linear systems.} Society for Industrial and Applied Mathematics, 2003.
+\item McCoid, C. \& Kwok, F. \textbf{Adaptive algebraic optimized Schwarz methods.} \textit{SIAM Journal on Matrix Analysis and Applications} 46 (2025).
+\item Greenbaum, A., Ptak, V. \& Strakos, Z. \textbf{Any nonincreasing convergence curve is possible for GMRES.} \textit{SIAM Journal on Matrix Analysis and Applications} 17 (1996).
+\end{itemize}
+}
 \end{frame}
 
 \section{Appendices}
