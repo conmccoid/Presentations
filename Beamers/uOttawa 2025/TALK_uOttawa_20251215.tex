@@ -674,126 +674,18 @@ The problem is well known in the community and any progress on it would make for
 
 \end{frame}
 
-% numerical results: basic comparison with GMRES
-\section{Numerical results of AOSM}
-
-\begin{frame}{Simple comparison with other methods}
+\begin{frame}
+\frametitle{Example: Laplace equation}
 
 \begin{equation*}
-	\begin{cases} \Delta u(x,y) = f(x,y), & (x,y) \in \Omega = [-1,1] \times [-1,1], \\
-		u(x,y) = g(x,y), & (x,y) \in \partial \Omega. % = \set{x=-1} \cup \set{x=1} \cup \set{y=-1} \cup \set{y=1} .
-	\end{cases}
+	\begin{cases} \Delta u = -1 & x, y \in [-1,1] \\
+	u(\pm1,y) = u(x,\pm1) = 0 \end{cases}
 \end{equation*}
 
 \begin{figure}
-	\begin{columns}
-	\column{0.6\linewidth}
-	\begin{tikzpicture}
-			\draw[step=1em,red] (0,0) grid (5em,10em);
-			\draw[step=1em,blue] (5em,0) grid (10em,10em);
-			\node[below] at (5em,0) {$x_\Gamma$};
-			\draw[very thick, black] (5em,0) -- (5em,10em);
-			\node[above] at (5em,10em) {$\Omega$};
-			\draw[decorate,decoration={brace, amplitude=1em, raise=0.5em}] (0,0) -- (0,10em) node[midway, xshift=-2.5em] {100};
-			\draw[decorate, decoration={brace, amplitude=0.5em, mirror, raise=0.5em}] (0,0) -- (4em,0) node[midway, yshift=-2em] {49};
-			\draw[decorate, decoration={brace, amplitude=0.5em, mirror, raise=0.5em}] (6em,0) -- (10em,0) node[midway, yshift=-2em] {50};
-	\end{tikzpicture}
-	\column{0.3\linewidth}
-	\caption{$100 \times 100$ evenly spaced grid split into two subdomains along the 50th value of $x$}
-	\end{columns}
+	\includegraphics[width=\textwidth]{FIG/MTLB_9blocks.png}
 \end{figure}
-\end{frame}
 
-\begin{frame}{Simple comparison with other methods}
-\begin{figure}
-	\includegraphics[width=\textwidth]{../AOSM/PLOT_faltAOSMConv_Seminar1.eps}
-	\caption{Comparison between Schwarz, AOSM and Krylov-Schwarz on simple elliptic PDE}
-\end{figure}
-\end{frame}
-
-% multiple subdomains (Schur complements for red-black)
-\begin{frame}[fragile]
-\frametitle{Precursor to multiple subdomains: red-black decompositions}
-\begin{figure}
-	\centering
-	\begin{tikzpicture}
-		\matrix[row sep=1em, column sep=1em]{%, ampersand replacement=\amp]{
-			\draw[step=1em,red] (0,0) grid (3em,10em);
-			\draw[step=1em,blue] (3em,0) grid (5em,10em);
-			\draw[step=1em,red] (5em,0em) grid (7em,10em);
-			\draw[step=1em,blue] (7em,0em) grid (10em,10em);
-			\node[below] at (3em,0) {$x_\Gamma$};
-			\draw[very thick, black] (3em,0) -- (3em,10em);
-			\node[below] at (5em,0) {$x_\Gamma$};
-			\draw[very thick, black] (5em,0) -- (5em,10em);
-			\node[below] at (7em,0) {$x_\Gamma$};
-			\draw[very thick, black] (7em,0) -- (7em,10em);
-			\node[above] at (5em,10em) {$\Omega$};
-			& \draw[thick,black,->] (0,5em) -- (0.5,5em); &
-			\draw[step=1em,red] (0,0) grid (3em,10em);
-			\draw[step=1em,red] (5em,0em) grid (7em,10em);
-			\node[above] at (5em,10em) {$\Omega_1$}; &
-			\draw[step=1em,blue] (3em,0) grid (5em,10em);
-			\draw[step=1em,blue] (7em,0em) grid (10em,10em);
-			\node[above] at (5em,10em) {$\Omega_2$};
-		\\};
-	\end{tikzpicture}
-	\caption{Splitting the $100 \times 100$ grid into four strips, then pairing the strips into two algebraic subdomains}
-\end{figure}
-\end{frame}
-
-\begin{frame}{Comparison: stripwise}
-\begin{figure}
-	\centering
-	\includegraphics[width=\textwidth]{../AOSM/PLOT_RedBlack_Seminar2.eps}
-	\caption{Convergence for AOSM and Schwarz on the stripwise decomposition}
-\end{figure}
-\end{frame}
-
-\begin{frame}{Heterogeneous elliptic PDE}
-\begin{equation*}
-	\begin{cases} -\nabla \left ( \alpha(x,y) \cdot \nabla u(x,y) \right ) = f(x,y), & (x,y) \in \Omega = [0,1] \times [0,1], \\
-		u(x,y) = g(x,y), & (x,y) \in \partial \Omega. % = \set{x=-1} \cup \set{x=1} \cup \set{y=-1} \cup \set{y=1} .
-	\end{cases}
-\end{equation*}
-
-\begin{figure}
-	\begin{columns}
-	\column{0.6\linewidth}
-	\centering
-	\includegraphics[height=0.6\textheight]{../AOSM/PLOT_LonelandK_Seminar.eps}
-	\column{0.3\linewidth}
-	\caption{$\alpha(x,y)=1$ except along three thin channels where $\alpha(x,y)=1000$}
-	\end{columns}
-\end{figure}
-\end{frame}
-
-\begin{frame}{Unstructured grid}
-\begin{figure}
-	\begin{columns}
-	\column{0.6\linewidth}
-	\centering
-	\includegraphics[height=0.6\textheight]{../AOSM/PLOT_LonelandSubdomains_Seminar.eps}
-	\column{0.3\linewidth}
-	\caption{Splitting an unstructured grid into two subdomains}
-	\end{columns}
-\end{figure}
-\end{frame}
-
-\begin{frame}{First round of solves}
-\begin{figure}
-	\centering
-	\includegraphics[width=\textwidth]{../AOSM/PLOT_LonelandFirst_Seminar.eps}
-	\caption{(Lack of) convergence for Schwarz and AOSM for heterogeneous elliptic PDE}
-\end{figure}
-\end{frame}
-
-\begin{frame}{Second round of solves}
-\begin{figure}
-	\centering
-	\includegraphics[width=\textwidth]{../AOSM/PLOT_LonelandSecond_Seminar.eps}
-	\caption{Convergence for Schwarz and AOSM using adapted transmission conditions}
-\end{figure}
 \end{frame}
 
 \begin{frame}
@@ -898,6 +790,82 @@ Symmetric matrices:
 
 \end{frame}
 
+% numerical results: basic comparison with GMRES
+\section{Numerical results of AOSM on 2 subdomains}
+
+\begin{frame}{Simple comparison with other methods}
+
+\begin{equation*}
+	\begin{cases} \Delta u(x,y) = f(x,y), & (x,y) \in \Omega = [-1,1] \times [-1,1], \\
+		u(x,y) = g(x,y), & (x,y) \in \partial \Omega. % = \set{x=-1} \cup \set{x=1} \cup \set{y=-1} \cup \set{y=1} .
+	\end{cases}
+\end{equation*}
+
+\begin{figure}
+	\begin{columns}
+	\column{0.6\linewidth}
+	\begin{tikzpicture}
+			\draw[step=1em,red] (0,0) grid (5em,10em);
+			\draw[step=1em,blue] (5em,0) grid (10em,10em);
+			\node[below] at (5em,0) {$x_\Gamma$};
+			\draw[very thick, black] (5em,0) -- (5em,10em);
+			\node[above] at (5em,10em) {$\Omega$};
+			\draw[decorate,decoration={brace, amplitude=1em, raise=0.5em}] (0,0) -- (0,10em) node[midway, xshift=-2.5em] {100};
+			\draw[decorate, decoration={brace, amplitude=0.5em, mirror, raise=0.5em}] (0,0) -- (4em,0) node[midway, yshift=-2em] {49};
+			\draw[decorate, decoration={brace, amplitude=0.5em, mirror, raise=0.5em}] (6em,0) -- (10em,0) node[midway, yshift=-2em] {50};
+	\end{tikzpicture}
+	\column{0.3\linewidth}
+	\caption{$100 \times 100$ evenly spaced grid split into two subdomains along the 50th value of $x$}
+	\end{columns}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Simple comparison with other methods}
+\begin{figure}
+	\includegraphics[width=\textwidth]{../AOSM/PLOT_faltAOSMConv_Seminar1.eps}
+	\caption{Comparison between Schwarz, AOSM and Krylov-Schwarz on simple elliptic PDE}
+\end{figure}
+\end{frame}
+
+% multiple subdomains (Schur complements for red-black)
+\begin{frame}[fragile]
+\frametitle{Precursor to multiple subdomains: red-black decompositions}
+\begin{figure}
+	\centering
+	\begin{tikzpicture}
+		\matrix[row sep=1em, column sep=1em]{%, ampersand replacement=\amp]{
+			\draw[step=1em,red] (0,0) grid (3em,10em);
+			\draw[step=1em,blue] (3em,0) grid (5em,10em);
+			\draw[step=1em,red] (5em,0em) grid (7em,10em);
+			\draw[step=1em,blue] (7em,0em) grid (10em,10em);
+			\node[below] at (3em,0) {$x_\Gamma$};
+			\draw[very thick, black] (3em,0) -- (3em,10em);
+			\node[below] at (5em,0) {$x_\Gamma$};
+			\draw[very thick, black] (5em,0) -- (5em,10em);
+			\node[below] at (7em,0) {$x_\Gamma$};
+			\draw[very thick, black] (7em,0) -- (7em,10em);
+			\node[above] at (5em,10em) {$\Omega$};
+			& \draw[thick,black,->] (0,5em) -- (0.5,5em); &
+			\draw[step=1em,red] (0,0) grid (3em,10em);
+			\draw[step=1em,red] (5em,0em) grid (7em,10em);
+			\node[above] at (5em,10em) {$\Omega_1$}; &
+			\draw[step=1em,blue] (3em,0) grid (5em,10em);
+			\draw[step=1em,blue] (7em,0em) grid (10em,10em);
+			\node[above] at (5em,10em) {$\Omega_2$};
+		\\};
+	\end{tikzpicture}
+	\caption{Splitting the $100 \times 100$ grid into four strips, then pairing the strips into two algebraic subdomains}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Comparison: stripwise}
+\begin{figure}
+	\centering
+	\includegraphics[width=\textwidth]{../AOSM/PLOT_RedBlack_Seminar2.eps}
+	\caption{Convergence for AOSM and Schwarz on the stripwise decomposition}
+\end{figure}
+\end{frame}
+
 \begin{frame}{Adapted transmission conditions: stripwise}
 \begin{figure}
 	\centering
@@ -905,5 +873,127 @@ Symmetric matrices:
 	\caption{Matrix $T_{1 \to 2}$ from AOSM after convergence of stripwise example}
 \end{figure}
 \end{frame}
+
+\begin{frame}{Heterogeneous elliptic PDE}
+\begin{equation*}
+	\begin{cases} -\nabla \left ( \alpha(x,y) \cdot \nabla u(x,y) \right ) = f(x,y), & (x,y) \in \Omega = [0,1] \times [0,1], \\
+		u(x,y) = g(x,y), & (x,y) \in \partial \Omega. % = \set{x=-1} \cup \set{x=1} \cup \set{y=-1} \cup \set{y=1} .
+	\end{cases}
+\end{equation*}
+
+\begin{figure}
+	\begin{columns}
+	\column{0.6\linewidth}
+	\centering
+	\includegraphics[height=0.6\textheight]{../AOSM/PLOT_LonelandK_Seminar.eps}
+	\column{0.3\linewidth}
+	\caption{$\alpha(x,y)=1$ except along three thin channels where $\alpha(x,y)=1000$}
+	\end{columns}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Unstructured grid}
+\begin{figure}
+	\begin{columns}
+	\column{0.6\linewidth}
+	\centering
+	\includegraphics[height=0.6\textheight]{../AOSM/PLOT_LonelandSubdomains_Seminar.eps}
+	\column{0.3\linewidth}
+	\caption{Splitting an unstructured grid into two subdomains}
+	\end{columns}
+\end{figure}
+\end{frame}
+
+\begin{frame}{First round of solves}
+\begin{figure}
+	\centering
+	\includegraphics[width=\textwidth]{../AOSM/PLOT_LonelandFirst_Seminar.eps}
+	\caption{(Lack of) convergence for Schwarz and AOSM for heterogeneous elliptic PDE}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Second round of solves}
+\begin{figure}
+	\centering
+	\includegraphics[width=\textwidth]{../AOSM/PLOT_LonelandSecond_Seminar.eps}
+	\caption{Convergence for Schwarz and AOSM using adapted transmission conditions}
+\end{figure}
+\end{frame}
+
+\section{Numerical geometric intersections}
+
+%	\begin{frame}
+%		\frametitle{What can go wrong?}
+%		
+%		\begin{figure}
+%			\begin{tikzpicture}
+%				\coordinate (R1) at (-1,0);
+%				\coordinate (R2) at (1,0);
+%				\coordinate (R3) at (0,2);
+%				
+%				\coordinate (B1) at (-1.1,-0.1);
+%				\coordinate (B2) at (0,0.1);
+%				\coordinate (B3) at (-0.5,0.9);
+%				
+%				\draw[blue] (B1)--(B2)--(B3)--cycle;
+%				\draw[red] (R1)--(R2)--(R3)--cycle;
+%				\filldraw[blue] (B2) circle (1pt);
+%				\filldraw[blue] (B3) circle (1pt);
+%			\end{tikzpicture}
+%			\caption{Blue vertices in red triangle}
+%		\end{figure}
+%	\end{frame}
+%	\begin{frame}
+%	\begin{figure}
+%		\begin{tikzpicture}
+%		\coordinate (R1) at (-1,0);
+%		\coordinate (R2) at (1,0);
+%		\coordinate (R3) at (0,2);
+%		
+%		\coordinate (B1) at (-0.9,0.1);
+%		\coordinate (B2) at (0,0.1);
+%		\coordinate (B3) at (-0.5,0.9);
+%		
+%		\draw[blue] (B1)--(B2)--(B3)--cycle;
+%		\draw[red] (R1)--(R2)--(R3)--cycle;
+%		\end{tikzpicture}
+%		\caption{Red vertices in blue triangle}
+%	\end{figure}
+%	\end{frame}
+%	\begin{frame}
+%	\begin{figure}
+%		\begin{tikzpicture}
+%		\coordinate (R1) at (-1,0);
+%		\coordinate (R2) at (1,0);
+%		\coordinate (R3) at (0,2);
+%		
+%		\coordinate (B1) at (-0.9,0.1);
+%		\coordinate (B2) at (0,0.1);
+%		\coordinate (B3) at (-0.5,0.9);
+%		
+%		\draw[blue] (B1)--(B2)--(B3)--cycle;
+%		\draw[red] (R1)--(R2)--(R3)--cycle;
+%		\end{tikzpicture}
+%		\caption{Edge intersections}
+%	\end{figure}
+%	\end{frame}
+%	\begin{frame}
+%	\begin{figure}
+%		\begin{tikzpicture}
+%		\coordinate (R1) at (-1,0);
+%		\coordinate (R2) at (1,0);
+%		\coordinate (R3) at (0,2);
+%		
+%		\coordinate (B1) at (-0.9,0.1);
+%		\coordinate (B2) at (0,0.1);
+%		\coordinate (B3) at (-0.5,0.9);
+%
+%		\draw[purple] (B2)--(B3);
+%			\filldraw[purple] (B2) circle (1pt);
+%			\filldraw[purple] (B3) circle (1pt);
+%		\end{tikzpicture}
+%		\caption{Final result - no intersection!}
+%	\end{figure}
+%	\end{frame}
 
 \end{document}
