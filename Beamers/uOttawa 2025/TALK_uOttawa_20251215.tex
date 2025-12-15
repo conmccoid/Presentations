@@ -922,78 +922,140 @@ Symmetric matrices:
 
 \section{Numerical geometric intersections}
 
-%	\begin{frame}
-%		\frametitle{What can go wrong?}
-%		
-%		\begin{figure}
-%			\begin{tikzpicture}
-%				\coordinate (R1) at (-1,0);
-%				\coordinate (R2) at (1,0);
-%				\coordinate (R3) at (0,2);
-%				
-%				\coordinate (B1) at (-1.1,-0.1);
-%				\coordinate (B2) at (0,0.1);
-%				\coordinate (B3) at (-0.5,0.9);
-%				
-%				\draw[blue] (B1)--(B2)--(B3)--cycle;
-%				\draw[red] (R1)--(R2)--(R3)--cycle;
-%				\filldraw[blue] (B2) circle (1pt);
-%				\filldraw[blue] (B3) circle (1pt);
-%			\end{tikzpicture}
-%			\caption{Blue vertices in red triangle}
-%		\end{figure}
-%	\end{frame}
-%	\begin{frame}
-%	\begin{figure}
-%		\begin{tikzpicture}
-%		\coordinate (R1) at (-1,0);
-%		\coordinate (R2) at (1,0);
-%		\coordinate (R3) at (0,2);
-%		
-%		\coordinate (B1) at (-0.9,0.1);
-%		\coordinate (B2) at (0,0.1);
-%		\coordinate (B3) at (-0.5,0.9);
-%		
-%		\draw[blue] (B1)--(B2)--(B3)--cycle;
-%		\draw[red] (R1)--(R2)--(R3)--cycle;
-%		\end{tikzpicture}
-%		\caption{Red vertices in blue triangle}
-%	\end{figure}
-%	\end{frame}
-%	\begin{frame}
-%	\begin{figure}
-%		\begin{tikzpicture}
-%		\coordinate (R1) at (-1,0);
-%		\coordinate (R2) at (1,0);
-%		\coordinate (R3) at (0,2);
-%		
-%		\coordinate (B1) at (-0.9,0.1);
-%		\coordinate (B2) at (0,0.1);
-%		\coordinate (B3) at (-0.5,0.9);
-%		
-%		\draw[blue] (B1)--(B2)--(B3)--cycle;
-%		\draw[red] (R1)--(R2)--(R3)--cycle;
-%		\end{tikzpicture}
-%		\caption{Edge intersections}
-%	\end{figure}
-%	\end{frame}
-%	\begin{frame}
-%	\begin{figure}
-%		\begin{tikzpicture}
-%		\coordinate (R1) at (-1,0);
-%		\coordinate (R2) at (1,0);
-%		\coordinate (R3) at (0,2);
-%		
-%		\coordinate (B1) at (-0.9,0.1);
-%		\coordinate (B2) at (0,0.1);
-%		\coordinate (B3) at (-0.5,0.9);
-%
-%		\draw[purple] (B2)--(B3);
-%			\filldraw[purple] (B2) circle (1pt);
-%			\filldraw[purple] (B3) circle (1pt);
-%		\end{tikzpicture}
-%		\caption{Final result - no intersection!}
-%	\end{figure}
-%	\end{frame}
+%===Paper-specific commands===%
+% coordinates and signs
+\newcommand{\pcoord}[2]{#1 \cdot \vec{e}_{#2}}
+\newcommand{\qcoord}[2]{\vec{q}_{#2}^{#1}}
+\newcommand{\xcoord}[2]{\pcoord{\vec{x}_{#1}}{#2}}
+\newcommand{\wcoord}[2]{\vec{w}_{#2}^{#1}}
+\newcommand{\signx}[2]{\sign(\xcoord{#1}{#2})}
+\newcommand{\signq}[3]{\sign(\pcoord{\qcoord{#1}{#2}}{#3})}
+
+\begin{frame}
+\frametitle{Reference coordinate system}
+
+Let the coordinates of the vertices of a clipping polytope $V$ be
+\begin{equation*}
+	\hat{V} = \begin{bmatrix} \vec{v}_0 & \vec{v}_1 & \dots & \vec{v}_n \end{bmatrix}.
+\end{equation*}
+This clipping polytope intersects a subject polytope $U$ with vertices with coordinates $\hat{U}$.
+
+Transform both $V$ and $U$ such that $V$ has its facets aligned with cardinal hyperplanes:
+\begin{equation*}
+	\begin{bmatrix} \vec{v}_1 & \dots & \vec{v}_n \end{bmatrix} \hat{X} = \hat{U} - \vec{v}_0 \vec{1}^\top.
+\end{equation*}
+
+In addition to the $n$ Euclidean coordinates, add a 0th coordinate:
+\begin{equation*}
+	\vec{x} \cdot \vec{e}_0 = 1 - \sum_{i=1}^n \vec{x} \cdot \vec{e}_i.
+\end{equation*}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Binary sign and vertices inside $V$}
+
+Use a binary-valued sign function to avoid degenerecies:
+\begin{equation*}
+	\sign(x) = \begin{cases} 1 & x \geq 0, \\ 0 & x < 0. \end{cases}
+\end{equation*}
+
+A vertex of $U$ lies in $V$ if its transformed coordinates satisfy
+\begin{equation*}
+	\chi(\vec{x}) = \prod_{i=0}^n \sign(\vec{x} \cdot \vec{e}_i) = 1.
+\end{equation*}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Intersections}
+
+If some of the vertices have different signs for some of these coordinates, then there are intersections.
+Those intersections have coordinates:
+\begin{equation*}
+\pcoord{\qcoord{J}{\Gamma}}{\eta} = \frac{ \begin{vmatrix}
+\xcoord{j_0}{\eta} & \xcoord{j_0}{i_1} & \dots & \xcoord{j_0}{i_k} \\
+\vdots & \vdots & & \vdots \\
+\xcoord{j_k}{\eta} & \xcoord{j_k}{i_1} & & \xcoord{j_k}{i_k} \end{vmatrix} }{ \begin{vmatrix}
+1 & \xcoord{j_0}{i_1} & \dots & \xcoord{j_0}{i_k} \\
+\vdots & \vdots & & \vdots \\
+1 & \xcoord{j_k}{i_1} & & \xcoord{j_k}{i_k} \end{vmatrix} }
+\end{equation*}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Signs of intersection coordinates}
+
+For robustness, we need the signs of the coordinates of intersections to be consistent with one another.
+
+\begin{block}{Definition of $\otimes$}
+	The operator $\otimes$ that acts as $0 \otimes 0 = 1$, $1 \otimes 1 = 1$ and $0 \otimes 1 = 0$ is called the logical biconditional operator.
+\end{block}
+
+\begin{block}{Lemma}
+	Suppose $\signq{J_1}{\Gamma}{i} \neq \signq{J_2}{\Gamma}{i}$ and $\signq{J_1}{\Gamma}{j} \neq \signq{J_2}{\Gamma}{j}$ for two adjacent sets $J_1$ and $J_2$, then
+	\begin{equation*}
+		\signq{J_1 \cup J_2}{\Gamma \cup \set{i}}{j} \otimes \signq{J_1 \cup J_2}{\Gamma \cup \set{j}}{i} = \signq{J_1}{\Gamma}{i} \otimes \signq{J_2}{\Gamma}{j} .
+	\end{equation*}
+\end{block}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Straight line principle}
+
+\begin{block}{Straight line principle}
+Let $\qcoord{J}{\Gamma}$ and $\qcoord{K}{\Gamma}$ be two intersections such that $J$ is adjacent to $K$.
+Suppose the line between them intersects $m \geq 3$ hyperplanes, i.e. $\signq{J}{\Gamma}{i} \neq \signq{K}{\Gamma}{i}$ for $m$ choices of $i$.
+If
+\begin{equation*}
+	\signq{J \cup K}{\Gamma \cup \set{\gamma}}{i} = \signq{J}{\Gamma}{i}, \quad
+	\signq{J \cup K}{\Gamma \cup \set{\gamma}}{j} \neq \signq{J}{\Gamma}{j},
+\end{equation*}
+then
+\begin{align*}
+	\signq{J \cup K}{\Gamma \cup \set{j}}{i} = \signq{J}{\Gamma}{i}, \\
+	\signq{J \cup K}{\Gamma \cup \set{i}}{j} = \signq{K}{\Gamma}{j} \neq \signq{J}{\Gamma}{j}.
+\end{align*}
+\end{block}
+
+\end{frame}
+\begin{frame}
+
+\begin{figure}
+	\centering
+	\begin{tikzpicture}
+		\coordinate (i0) at (-3,0);
+		\coordinate (i1) at (1,0);
+		\coordinate (j0) at (0,-1);
+		\coordinate (j1) at (0,3);
+		\coordinate (k0) at (1,-1);
+		\coordinate (k1) at (-3,3);
+		\draw[thick,->,black] (i0)--(i1) node[right] {$i$};
+		\draw[thick,->,black] (j0)--(j1) node[right] {$j$};
+		
+		\node (qJ) at (-3,-1) {$\qcoord{J}{\Gamma}$};
+		\node (qK) at (1,2) {$\qcoord{K}{\Gamma}$};
+		\draw[thick,dashed,red] (qJ)--(qK);
+		\filldraw[blue] (intersection of i0--i1 and qJ--qK) circle (2pt) node[below right, black] {$\qcoord{J \cup K}{\Gamma \cup \set{j}}$};
+		\filldraw[blue] (intersection of j0--j1 and qJ--qK) circle (2pt) node[below right, black] {$\qcoord{J \cup K}{\Gamma \cup \set{i}}$};
+		\filldraw[blue] (intersection of k0--k1 and qJ--qK) circle (2pt) node[above left, black] {$\qcoord{J \cup K}{\Gamma \cup \set{\gamma}}$};
+	\end{tikzpicture}
+\end{figure}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{More intersections to consider}
+
+\begin{itemize}
+\item 2D-3D, and other mixed dimension
+\item More general polytopes (non-simplex)
+\item Non-convex objects
+\item Combinatorics of intersections
+\end{itemize}
+
+\end{frame}
 
 \end{document}
